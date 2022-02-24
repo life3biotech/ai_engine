@@ -1,0 +1,22 @@
+{
+  "template": "https://github.com/aimakerspace/ml-project-cookiecutter-gcp",
+  "commit": "b10a22b0d7ffe6a48e7e67c3891bac441e4c8664",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "project_name": "Life3 Biotech",
+      "description": "Using object detection to analyse cell numbers and cell sizes of microalgae on microscopic images",
+      "repo_name": "life3-biotech",
+      "src_package_name": "life3_biotech",
+      "src_package_name_short": "life3",
+      "gcp_project_id": "life3-aut0",
+      "author_name": "AISG",
+      "open_source_license": "No license file",
+      "_copy_without_render": [
+        "aisg-context/polyaxon/polyaxonfiles"
+      ],
+      "_template": "https://github.com/aimakerspace/ml-project-cookiecutter-gcp"
+    }
+  },
+  "directory": null
+}
