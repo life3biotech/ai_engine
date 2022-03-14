@@ -24,9 +24,12 @@ class PipelineConfig:
             const.PROCESSED_DATA_PATH = data_prep_params["processed_data_path"]
             const.RAW_DATA_PATH = data_prep_params["raw_data_path"]
             const.LOAD_DATA = data_prep_params["load_data"]
+            const.MODELS = data_prep_params["models"]
             const.ANNOTATIONS_SUBDIR = data_prep_params["annotations_subdir"]
             const.IMAGES_SUBDIR = data_prep_params["images_subdir"]
             const.COCO_ANNOTATION_FILENAME = data_prep_params["coco_annotations_filename"]
+            const.CLASS_MAP = data_prep_params["class_map"]
+            const.REMAP_CLASS = data_prep_params["remap_class"]
 
         # Initialise constants for training all models
         if 'train' in params:
