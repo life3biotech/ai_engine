@@ -5,3 +5,4 @@ the model through a REST API."""
 from . import general_utils
 from . import data_prep
 from . import modeling
+from . import config

@@ -26,21 +26,21 @@ def load_datasets(current_working_dir, args):
 
     train_ds = tf.keras.preprocessing.text_dataset_from_directory(
         os.path.join(data_path, "train"),
-        batch_size=args["train"]["bs"],
+        batch_size=args["train"]["batch_size"],
         validation_split=args["train"]["val_split"],
         subset="training",
         seed=args["train"]["seed"])
 
     val_ds = tf.keras.preprocessing.text_dataset_from_directory(
         os.path.join(data_path, "train"),
-        batch_size=args["train"]["bs"],
+        batch_size=args["train"]["batch_size"],
         validation_split=args["train"]["val_split"],
         subset="validation",
         seed=args["train"]["seed"])
 
     test_ds = tf.keras.preprocessing.text_dataset_from_directory(
         os.path.join(data_path, "test"),
-        batch_size=args["train"]["bs"])
+        batch_size=args["train"]["batch_size"])
 
     datasets = {
         "train": train_ds,

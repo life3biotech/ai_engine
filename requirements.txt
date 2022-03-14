@@ -26,3 +26,4 @@ Pillow==8.3.2
 tensorflow-gpu==2.8.0
 progressbar2
 tqdm==4.45.0
+pconst==1.0.0
