@@ -1,0 +1,54 @@
+data_prep:
+  load_data: True
+  models:
+    - "efficientdet"
+  data_subdirs_paths:
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 1-7 revised"
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 8-24 revised"
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 25-35 revised"
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 36-55 revised"
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 56-75 revised"
+    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 76-100 revised"
+  raw_data_path: "/polyaxon-v1-data/workspaces/jannah/data/raw"
+  processed_data_path: "/polyaxon-v1-data/workspaces/jannah/data/processed"
+  annotations_subdir: "annotations"
+  images_subdir: "images"
+  coco_annotations_filename: "instances_default.json"
+  class_map: {
+        'Cells': 0,
+        'cell accumulation (small cells)': 1,
+        'cell accumulation (large cells)': 2
+    }
+  remap_class: {
+    }
+
+train:
+  setup_mlflow: false
+  mlflow_autolog: false
+  mlflow_tracking_uri: "mlflow-nginx-server-svc.polyaxon-v1.svc.local"
+  mlflow_exp_name: "life3-biotech"
+  mlflow_artifact_location: "gs://life3-biotech-artifacts/mlflow-tracking-server"
+  data_path: "../life3-biotech-data/processed/subdir"
+  val_split: 0.2 # The proportion of data allocated to the validation set, based on the proportion of the overall data
+  test_split: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
+  batch_size: 8
+  seed: 4002
+  epochs: 3
+  optimiser: "adam"
+  metric: "accuracy"
+  # Augmentation
+  run_data_augmentation: False
+  save_augmented_images: False
+  run_tiling: False
+  early_stopping: True
+  patience: 20
+
+train_augmentation:
+  aug_seed: 42
+
+inference:
+  model_name: "efficientdet"
+  input_data_dir: "/polyaxon-v1-data/workspaces/jannah/data/inference"
+  save_output_image: True
+  inference_output_path: ""
+  inference_mode: "multiple"
