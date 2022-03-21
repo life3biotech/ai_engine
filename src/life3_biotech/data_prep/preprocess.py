@@ -71,8 +71,11 @@ class Preprocessor:
             df_concat_list.append(final_df)
 
         concatenated_df = pd.concat(df_concat_list, ignore_index=True)
-        concatenated_df[['bbox_x','bbox_y', 'bbox_width', 'bbox_height']] = pd.DataFrame(concatenated_df.bbox.tolist(), index=concatenated_df.index)
+        concatenated_df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(concatenated_df.bbox.tolist(), index=concatenated_df.index)
+        concatenated_df['bbox_x_max'] = concatenated_df['bbox_x_min'] + concatenated_df['bbox_width']
+        concatenated_df['bbox_y_max'] = concatenated_df['bbox_y_min'] + concatenated_df['bbox_height']
         concatenated_df.drop('bbox', axis=1, inplace=True)
+    
         if save_csv:
             annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, "annotations_all.csv")
             concatenated_df.to_csv(annot_processed_path)
