@@ -1,7 +1,8 @@
 data_prep:
   load_data: True
-  models:
-    - "efficientdet"
+  models: [
+    # "efficientdet"
+    ]
   data_subdirs_paths:
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 1-7 revised"
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 8-24 revised"
@@ -14,6 +15,8 @@ data_prep:
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
+  excluded_images:
+    - "3 c10L d10 20x undilut OD8.jpg"
   class_map: {
         'Cells': 0,
         'cell accumulation (small cells)': 1,

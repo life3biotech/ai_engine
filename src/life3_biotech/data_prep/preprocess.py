@@ -1,4 +1,13 @@
-from . import EfficientDetPipeline
+import pandas as pd
+import os
+import shutil
+
+from .preprocess_efficientdet import EfficientDetPipeline
+from pathlib import Path, PurePath
+from csv import DictWriter, writer
+from typing import Dict, List, Tuple
+from pconst import const
+from json import load
 
 class Preprocessor:
     def __init__(self, logger):
@@ -7,21 +16,12 @@ class Preprocessor:
     
     def preprocess_annotations(self):
         self._convert_raw_annotations()
-        
-    def generate_image_tiles(self):
-        pass
-
-    def split_data(self, save_csv=False):
-        pass
-    
-    def preprocess_efficientdet(self):
-        ed_pipeline = EfficientDetPipeline()
-        ed_pipeline.generate_annotations()
+        self._copy_raw_images()
 
     def _get_raw_annotation_file_paths(self):
         annot_files = []
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
-            annot_path = PurePath(data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME)
+            annot_path = Path(data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME)
             if annot_path.exists():
                 annot_files.append(annot_path)
         return annot_files
@@ -74,7 +74,8 @@ class Preprocessor:
         concatenated_df[['bbox_x','bbox_y', 'bbox_width', 'bbox_height']] = pd.DataFrame(concatenated_df.bbox.tolist(), index=concatenated_df.index)
         concatenated_df.drop('bbox', axis=1, inplace=True)
         if save_csv:
-            concatenated_df.to_csv(PurePath(const.PROCESSED_DATA_PATH, "annotations_all.csv"))
+            annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, "annotations_all.csv")
+            concatenated_df.to_csv(annot_processed_path)
             self.logger.info(f'Annotations saved to {annot_processed_path}')
         self.processed_annotations_df = concatenated_df.copy()
 
@@ -116,3 +117,25 @@ class Preprocessor:
         if save_csv:
             self._create_class_mapping_csv()
         return class_dict
+
+    def _copy_raw_images(self) -> None:
+         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
+            img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
+            self.logger.debug(f"Copying images from {img_src_dir_path}")
+            for filename in os.listdir(img_src_dir_path):
+                self.logger.debug(f"Destination file path: {Path(const.RAW_DATA_PATH, filename)}")
+                if filename not in const.EXCLUDED_IMAGES and not Path(const.RAW_DATA_PATH, filename).exists():
+                    try:
+                        shutil.copy(PurePath(img_src_dir_path, filename), const.RAW_DATA_PATH)
+                    except OSError as e:
+                        self.logger.error(f"Error occurred while copying file: {e}")
+
+    def generate_image_tiles(self):
+        pass
+
+    def split_data(self, save_csv=False):
+        pass
+    
+    def preprocess_efficientdet(self):
+        ed_pipeline = EfficientDetPipeline()
+        ed_pipeline.generate_annotations()
