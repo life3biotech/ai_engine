@@ -2,7 +2,6 @@ import pandas as pd
 import os
 import shutil
 
-from .preprocess_efficientdet import EfficientDetPipeline
 from pathlib import Path, PurePath
 from csv import DictWriter, writer
 from typing import Dict, List, Tuple
@@ -77,7 +76,7 @@ class Preprocessor:
         concatenated_df.drop('bbox', axis=1, inplace=True)
     
         if save_csv:
-            annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, "annotations_all.csv")
+            annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
             concatenated_df.to_csv(annot_processed_path)
             self.logger.info(f'Annotations saved to {annot_processed_path}')
         self.processed_annotations_df = concatenated_df.copy()
@@ -138,7 +137,3 @@ class Preprocessor:
 
     def split_data(self, save_csv=False):
         pass
-    
-    def preprocess_efficientdet(self):
-        ed_pipeline = EfficientDetPipeline()
-        ed_pipeline.generate_annotations()

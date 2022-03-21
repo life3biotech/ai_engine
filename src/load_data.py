@@ -28,7 +28,9 @@ def main(args):
         preprocessor.split_data() # to be implemented
 
         if 'efficientdet' in const.MODELS:
-            preprocessor.preprocess_efficientdet()
+            ed_pipeline = life3.data_prep.preprocess_efficientdet.EfficientDetPipeline()
+            # generate annotations for each dataset (train, val, test)
+            ed_pipeline.generate_annotations(logger)
 
         logging.info("Data preparation pipeline has completed.")
 
