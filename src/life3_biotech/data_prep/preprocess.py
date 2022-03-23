@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import shutil
+import skimage
 
 from pathlib import Path, PurePath
 from csv import DictWriter, writer
@@ -14,15 +15,27 @@ class Preprocessor:
         self.processed_annotations_df = None
     
     def preprocess_annotations(self):
-        self._convert_raw_annotations()
         self._copy_raw_images()
+        df_concat_list = self._convert_raw_annotations()
+        
+        concatenated_df = pd.concat(df_concat_list, ignore_index=True)
+        concatenated_df = self._engineer_features(concatenated_df)
+        concatenated_df = self._clean_data(concatenated_df)
+
+        annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
+        concatenated_df.to_csv(annot_processed_path)
+        self.logger.info(f'Annotations saved to {annot_processed_path}')
+        self.processed_annotations_df = concatenated_df.copy()
 
     def _get_raw_annotation_file_paths(self):
         annot_files = []
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             annot_path = Path(data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME)
-            if annot_path.exists():
+            img_path = Path(data_subdir, const.IMAGES_SUBDIR)
+            if annot_path.exists() and img_path.exists() and img_path.is_dir(): # check if both images & annotations subdirectories exist
                 annot_files.append(annot_path)
+            else:
+                self.logger.error(f"Invalid directory structure in {data_subdir}. One of these subdirectories are missing: /images, /annotations")
         return annot_files
 
     def _load_coco_annotations(self, path_to_coco_annot: PurePath) -> Dict:
@@ -37,7 +50,7 @@ class Preprocessor:
 
         return coco_annotation
 
-    def _convert_raw_annotations(self, save_csv=True) -> None:
+    def _convert_raw_annotations(self) -> List:
         """
         Combine & convert COCO annotation files into a dataframe
 
@@ -68,57 +81,101 @@ class Preprocessor:
             final_df = final_df.merge(df_cat, left_on='category_id', right_on='id')
             final_df.drop(labels=['id'], axis=1, inplace=True)
             df_concat_list.append(final_df)
+        return df_concat_list
 
-        concatenated_df = pd.concat(df_concat_list, ignore_index=True)
-        concatenated_df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(concatenated_df.bbox.tolist(), index=concatenated_df.index)
-        concatenated_df['bbox_x_max'] = concatenated_df['bbox_x_min'] + concatenated_df['bbox_width']
-        concatenated_df['bbox_y_max'] = concatenated_df['bbox_y_min'] + concatenated_df['bbox_height']
-        concatenated_df.drop('bbox', axis=1, inplace=True)
-    
-        if save_csv:
-            annot_processed_path = PurePath(const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
-            concatenated_df.to_csv(annot_processed_path)
-            self.logger.info(f'Annotations saved to {annot_processed_path}')
-        self.processed_annotations_df = concatenated_df.copy()
+    def _clean_data(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        df = concatenated_df.copy()
 
-        # class_mapping = self._generate_class_mapping(categories_mapping)
+        images_list = [f for f in os.listdir(const.RAW_DATA_PATH) if f.endswith(tuple(const.ACCEPTED_IMAGE_FORMATS))]
+        unique_images_list = df['file_name'].unique()
 
-    def _create_class_mapping_csv(self, annotation_dir_path: PurePath) -> None:
-        with open(
-                PurePath(annotation_dir_path, "class_mapping.csv"), "w", newline=""
-            ) as csv_file:
-                csv_writer = writer(csv_file, delimiter=",")
-                for data in data_value:
-                    csv_writer.writerow(data)
+        df = self._clean_annotations(df, images_list, unique_images_list) 
 
-    def _generate_class_mapping(self, categories_mapping: List[Dict], save_csv=False) -> Dict:
-        """
-        Create a class mapping csv file to be used for models such as EfficientDet.
-        The CSV file will be in this format:
+        df = self._clean_images(df, unique_images_list)
 
-        class_name,id
+        df = self._clean_class_labels(df)
 
-        Note that indexing starts at 0 for the id column
+        return df
 
-        Args:
-            categories_mapping (List[Dict]): List of all the classes in the dataset
-                                            and their meta info.
+    def _clean_annotations(self, concatenated_df: pd.DataFrame, images_list: List, unique_images_list: List) -> pd.DataFrame:
+        df = concatenated_df.copy()
 
-        Returns:
-            class_dict (Dict): Class mapping table for the dataset
-        """
-        data_value = []
-        class_dict = {}
+        self.logger.info(f"Removing annotations of predefined excluded images: {const.EXCLUDED_IMAGES}")
+        df = df[~df['file_name'].isin(const.EXCLUDED_IMAGES)]
 
-        for i, category in enumerate(categories_mapping):
-            data_value.append([category["name"].lower(), i])
-            class_dict[i + 1] = category[
-                "name"
-            ]  # Convert from 0 indexing to 1 indexing
+        annotations_no_images = list(set(unique_images_list) - set(images_list))
+        self.logger.warning(f'Number of annotations with no corresponding images: {len(annotations_no_images)}')
+        images_no_annotations = list(set(images_list) - set(unique_images_list))
+        # log as a warning; image file will be ignored
+        self.logger.warning(f'Number of images with no corresponding annotations: {len(images_no_annotations)}')
 
-        if save_csv:
-            self._create_class_mapping_csv()
-        return class_dict
+        if len(annotations_no_images) > 0:
+            self.logger.info("Removing annotations with no corresponding images")
+            df = df[~df['file_name'].isin(annotations_no_images)]
+
+        invalid_annot_idx = df[
+            (df['bbox_x_min'] > df['width']) | 
+            (df['bbox_x_min'] < 0) | 
+            (df['bbox_x_max'] > df['width']) | 
+            (df['bbox_x_max'] < 0) | 
+            (df['bbox_y_min'] > df['height']) | 
+            (df['bbox_y_min'] < 0) | 
+            (df['bbox_y_max'] > df['height']) | 
+            (df['bbox_y_max'] < 0)
+            ].index
+        if len(invalid_annot_idx) > 0:
+            self.logger.warning(f'Removing invalid annotations: {invalid_annot_idx}')
+            df.drop(labels=invalid_annot_idx, inplace=True)
+        else:
+            self.logger.info("All annotations are valid")
+
+        return df
+
+    def _clean_images(self, concatenated_df: pd.DataFrame, unique_images_list: List) -> pd.DataFrame:
+        df = concatenated_df.copy()
+        self.logger.info("Checking & cleaning image files")
+        invalid_image_filenames = []
+        for image_filename in unique_images_list:
+            image_filepath = Path(const.RAW_DATA_PATH, image_filename)
+            height, width = self._validate_image(image_filepath)
+            if width == 0 or height == 0:
+                self.logger.warning(f"Corrupted image found: {image_filepath}")
+                invalid_image_filenames.append(image_filename)
+            else:
+                row = df[df['file_name']==image_filename].iloc[0]
+                if row['width'] != width or row['height'] != height:
+                    self.logger.warning(f"Dimensions of actual image do not match metadata: {image_filepath}")
+        df = df[~df['file_name'].isin(invalid_image_filenames)]
+        return df
+
+    def _validate_image(self, image_filepath):
+        width = 0
+        height = 0
+        try:
+            img = skimage.io.imread(image_filepath)
+        except:
+            return height, width
+        height, width, _ = img.shape
+        return height, width
+
+    def _clean_class_labels(self, concatenated_df: pd.DataFrame):
+        df = concatenated_df.copy()
+        self.logger.info("Checking class labels")
+        unique_labels = df['category_name'].unique()
+        labels_to_remove = list(set(unique_labels) - set(const.CLASS_MAP.keys()))
+        if len(labels_to_remove) > 0:
+            self.logger.warning(f'Invalid class labels found: {labels_to_remove}')
+            # Remove annotations with invalid class labels
+            df = df[~df['category_name'].isin(labels_to_remove)]
+        return df
+
+    def _engineer_features(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        df = concatenated_df.copy()
+        df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(df.bbox.tolist(), index=df.index)
+        df['bbox_x_max'] = df['bbox_x_min'] + df['bbox_width']
+        df['bbox_y_max'] = df['bbox_y_min'] + df['bbox_height']
+        df.drop('bbox', axis=1, inplace=True)
+        return df
 
     def _copy_raw_images(self) -> None:
          for data_subdir in const.DATA_SUBDIRS_PATH_LIST:

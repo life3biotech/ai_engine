@@ -20,8 +20,6 @@ def main(args):
     pipeline_conf = life3.config.PipelineConfig(args, logger)
 
     if const.LOAD_DATA:
-        # to be implemented: data checker
-
         preprocessor = life3.data_prep.preprocess.Preprocessor(logger)
         preprocessor.preprocess_annotations()
         preprocessor.generate_image_tiles() # to be implemented

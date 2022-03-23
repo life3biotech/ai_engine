@@ -25,6 +25,7 @@ data_prep:
     }
   remap_class: {
     }
+  accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
 
 train:
   setup_mlflow: false
