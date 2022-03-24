@@ -100,8 +100,8 @@ class Preprocessor:
     def _clean_annotations(self, concatenated_df: pd.DataFrame, images_list: List, unique_images_list: List) -> pd.DataFrame:
         df = concatenated_df.copy()
 
-        self.logger.info(f"Removing annotations of predefined excluded images: {const.EXCLUDED_IMAGES}")
         df = df[~df['file_name'].isin(const.EXCLUDED_IMAGES)]
+        self.logger.info(f"Removing annotations of predefined excluded images: {const.EXCLUDED_IMAGES}")
 
         annotations_no_images = list(set(unique_images_list) - set(images_list))
         self.logger.warning(f'Number of annotations with no corresponding images: {len(annotations_no_images)}')
@@ -110,10 +110,10 @@ class Preprocessor:
         self.logger.warning(f'Number of images with no corresponding annotations: {len(images_no_annotations)}')
 
         if len(annotations_no_images) > 0:
-            self.logger.info("Removing annotations with no corresponding images")
             df = df[~df['file_name'].isin(annotations_no_images)]
+            self.logger.info("Removed annotations with no corresponding images")
 
-        invalid_annot_idx = df[
+        invalid_annot = df[
             (df['bbox_x_min'] > df['width']) | 
             (df['bbox_x_min'] < 0) | 
             (df['bbox_x_max'] > df['width']) | 
@@ -122,10 +122,10 @@ class Preprocessor:
             (df['bbox_y_min'] < 0) | 
             (df['bbox_y_max'] > df['height']) | 
             (df['bbox_y_max'] < 0)
-            ].index
-        if len(invalid_annot_idx) > 0:
-            self.logger.warning(f'Removing invalid annotations: {invalid_annot_idx}')
-            df.drop(labels=invalid_annot_idx, inplace=True)
+            ]
+        if len(invalid_annot) > 0:
+            df.drop(labels=invalid_annot.index, inplace=True)
+            self.logger.warning(f'Removed {len(invalid_annot)} invalid annotations')
         else:
             self.logger.info("All annotations are valid")
 
