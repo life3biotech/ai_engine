@@ -10,11 +10,20 @@ from pconst import const
 from json import load
 
 class Preprocessor:
+    """This class encapsulates the data preprocessing functionality that forms part of the data pipeline.
+
+    Attributes:
+        logger: Logger object used to log events to.
+        processed_annotations_df: pandas DataFrame containing the final processed data.
+    """
     def __init__(self, logger):
         self.logger = logger
         self.processed_annotations_df = None
     
-    def preprocess_annotations(self):
+    def preprocess_annotations(self) -> None:
+        """
+        Calls the data preprocessing functions in order and saves the final preprocessed data in CSV format.
+        """
         self._copy_raw_images()
         df_concat_list = self._convert_raw_annotations()
         
@@ -27,7 +36,13 @@ class Preprocessor:
         self.logger.info(f'Annotations saved to {annot_processed_path}')
         self.processed_annotations_df = concatenated_df.copy()
 
-    def _get_raw_annotation_file_paths(self):
+    def _get_raw_annotation_file_paths(self) -> List:
+        """
+        Traverses the list of data subdirectories specified in the config file and validates the directory structure of each one.
+
+        Returns:
+            A list of COCO annotation file paths.
+        """
         annot_files = []
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             annot_path = Path(data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME)
@@ -40,10 +55,13 @@ class Preprocessor:
 
     def _load_coco_annotations(self, path_to_coco_annot: PurePath) -> Dict:
         """
-        Load COCO annotations from the filepath provided
+        Loads COCO annotations from the file path provided.
 
         Args:
-            path_to_coco_annot (PurePath): File path to COCO annotations
+            path_to_coco_annot (PurePath): File path to COCO annotations file
+        
+        Returns:
+            A dictionary representation of the COCO annotations file. 
         """
         with open(path_to_coco_annot, "r") as f:
             coco_annotation = load(f)
@@ -52,10 +70,10 @@ class Preprocessor:
 
     def _convert_raw_annotations(self) -> List:
         """
-        Combine & convert COCO annotation files into a dataframe
+        Converts & combines COCO annotations into pandas DataFrames while removing unnecessary metadata.
 
-        Args:
-            save_csv (boolean): 
+        Returns:
+            A list of DataFrames, with each dataframe containing data from one COCO annotation file.
         """
         df_concat_list = []
         for annot_file_path in self._get_raw_annotation_file_paths():
@@ -84,6 +102,15 @@ class Preprocessor:
         return df_concat_list
 
     def _clean_data(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Calls the data cleaning functions in order.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+        
+        Returns:
+            A DataFrame containing the cleaned data.
+        """
         df = concatenated_df.copy()
 
         images_list = [f for f in os.listdir(const.RAW_DATA_PATH) if f.endswith(tuple(const.ACCEPTED_IMAGE_FORMATS))]
@@ -98,6 +125,17 @@ class Preprocessor:
         return df
 
     def _clean_annotations(self, concatenated_df: pd.DataFrame, images_list: List, unique_images_list: List) -> pd.DataFrame:
+        """
+        Cleans annotations in the provided DataFrame.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+            images_list (List): List containing image file names found in the raw data directory
+            unique_images_list (List): List containing unique image file names from the annotations data
+        
+        Returns:
+            A DataFrame containing the cleaned annotations data.
+        """
         df = concatenated_df.copy()
 
         df = df[~df['file_name'].isin(const.EXCLUDED_IMAGES)]
@@ -132,6 +170,16 @@ class Preprocessor:
         return df
 
     def _clean_images(self, concatenated_df: pd.DataFrame, unique_images_list: List) -> pd.DataFrame:
+        """
+        Checks validity of image files found in the provided DataFrame.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+            unique_images_list (List): List containing unique image file names from the annotations data
+        
+        Returns:
+            A DataFrame containing cleaned annotations data after removal of invalid images.
+        """
         df = concatenated_df.copy()
         self.logger.info("Checking & cleaning image files")
         invalid_image_filenames = []
@@ -148,7 +196,17 @@ class Preprocessor:
         df = df[~df['file_name'].isin(invalid_image_filenames)]
         return df
 
-    def _validate_image(self, image_filepath):
+    def _validate_image(self, image_filepath: Path) -> Tuple:
+        """
+        Checks validity of image file at the given file path by attempting to read in image data using the skimage library.
+
+        Args:
+            image_filepath (Path): Full path where the image file is located
+        
+        Returns:
+            A tuple containing the height & width of the image at the given file path if it is valid.
+            If it is an invalid image, a tuple of zeroes (0,0) is returned.
+        """
         width = 0
         height = 0
         try:
@@ -158,7 +216,16 @@ class Preprocessor:
         height, width, _ = img.shape
         return height, width
 
-    def _clean_class_labels(self, concatenated_df: pd.DataFrame):
+    def _clean_class_labels(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Checks validity of class labels found in the provided DataFrame against the class map defined in the config file.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+        
+        Returns:
+            A DataFrame containing cleaned annotations data after removal of annotations labelled with invalid classes, if any.
+        """
         df = concatenated_df.copy()
         self.logger.info("Checking class labels")
         unique_labels = df['category_name'].unique()
@@ -170,6 +237,15 @@ class Preprocessor:
         return df
 
     def _engineer_features(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Creates additional features based on existing features in the dataset.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+        
+        Returns:
+            A DataFrame containing annotations data with newly engineered features.
+        """
         df = concatenated_df.copy()
         df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(df.bbox.tolist(), index=df.index)
         df['bbox_x_max'] = df['bbox_x_min'] + df['bbox_width']
@@ -178,7 +254,10 @@ class Preprocessor:
         return df
 
     def _copy_raw_images(self) -> None:
-         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
+        """
+        Copies all image files from the data subdirectories into the raw data directory, except the excluded files specified in the config.
+        """
+        for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
             self.logger.debug(f"Copying images from {img_src_dir_path}")
             for filename in os.listdir(img_src_dir_path):
