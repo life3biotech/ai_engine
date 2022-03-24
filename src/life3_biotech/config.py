@@ -30,6 +30,9 @@ class PipelineConfig:
             const.COCO_ANNOTATION_FILENAME = data_prep_params["coco_annotations_filename"]
             const.CLASS_MAP = data_prep_params["class_map"]
             const.REMAP_CLASS = data_prep_params["remap_class"]
+            const.EXCLUDED_IMAGES = data_prep_params["excluded_images"]
+            const.COMBINED_ANNOTATIONS_FILENAME = data_prep_params["combined_annotations_filename"]
+            const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
 
         # Initialise constants for training all models
         if 'train' in params:

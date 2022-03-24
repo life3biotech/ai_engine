@@ -20,12 +20,15 @@ def main(args):
     pipeline_conf = life3.config.PipelineConfig(args, logger)
 
     if const.LOAD_DATA:
-        for raw_data_dir in const.DATA_SUBDIRS_PATH_LIST:
-            raw_data_dir = os.path.join(
-                hydra.utils.get_original_cwd(), raw_data_dir)
-        processed_data_path = os.path.join(
-            hydra.utils.get_original_cwd(), const.PROCESSED_DATA_PATH)
-        # call preprocessing functions for each model here
+        preprocessor = life3.data_prep.preprocess.Preprocessor(logger)
+        preprocessor.preprocess_annotations()
+        preprocessor.generate_image_tiles() # to be implemented
+        preprocessor.split_data() # to be implemented
+
+        if 'efficientdet' in const.MODELS:
+            ed_pipeline = life3.data_prep.preprocess_efficientdet.EfficientDetPipeline()
+            # generate annotations for each dataset (train, val, test)
+            ed_pipeline.generate_annotations(logger)
 
         logging.info("Data preparation pipeline has completed.")
 
