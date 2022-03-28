@@ -1,7 +1,7 @@
 import os
+import pandas as pd
 from pathlib import Path, PurePath
 from typing import Dict, List, Tuple
-import pandas as pd
 from json import load
 from collections import defaultdict
 from csv import DictWriter, writer
@@ -10,7 +10,7 @@ from pconst import const
 
 class EfficientDetPipeline:
 
-    def generate_annotations(self, logger, annotations: Dict = None) -> None:
+    def generate_annotations(self, logger, dataset_name, annotations: pd.DataFrame = None) -> None:
         """
         Convert annotations into a CSV format required by the EfficientDet model implementation, where CSV file should be in this format:
 
@@ -19,18 +19,17 @@ class EfficientDetPipeline:
         where x1 = xmin, y1 = ymin, x2 = x max, y2 = ymax
         Args:
             logger (): Logger instance to log to
-            annotations (dict): Dictionary containing dataset names as keys and DataFrames as values
+            annotations (DataFrame): 
         """
-        annot_filepath = Path(const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
+        annot_filepath = Path(const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
         if annotations is None:
             if annot_filepath.exists():
                 annotations = pd.read_csv(annot_filepath, index_col=0)
             else:
                 logger.error(f"Annotations file missing @ {annot_filepath}! No annotations to generate.")
                 return
-
+    
         data_value = []
-
         for _, annotation in annotations.iterrows():
             image_file_path = Path(const.RAW_DATA_PATH, annotation["file_name"])
             class_name = annotation["category_name"]
@@ -48,9 +47,8 @@ class EfficientDetPipeline:
                     class_name,
                 ]
             )
-
         with open(
-            PurePath(const.PROCESSED_DATA_PATH, "annotations_efficientdet.csv"), "w", newline=""
+            PurePath(const.PROCESSED_DATA_PATH, f"annotations_{dataset_name}_efficientdet.csv"), "w", newline=""
         ) as csv_file:
             csv_writer = writer(csv_file, delimiter=",")
             for data in data_value:
