@@ -10,6 +10,8 @@ import os
 # Libs #
 ########
 import cv2
+from matplotlib import colors
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
@@ -21,11 +23,6 @@ import seaborn as sns
 ##########
 # Custom #
 ##########
-
-###########
-# Configs #
-###########
-
 
 class DataExplorer:
     def __init__(self):
@@ -130,11 +127,25 @@ class DataExplorer:
     def subset_col_value(self, df, col_name, col_value):
         """Subsets dataframe based on the column value
         Args:
-            df:
-            col_name
-            col_value
+            df (pd.DataFrame): annotation dataframe
+            col_name (str): name of the column to subset
+            col_value (str/int): the value to subset
+
+        Returns:
+            subset df
         """
         return df[df[col_name] == col_value]
+
+    def get_keys_from_value(self, d, val):
+        """Gets the keys from dictionary based on the values
+        
+        Args:
+            d (dict): input dictionary
+            val (values): input values
+        Returns:
+            k (keys): output keys
+        """
+        return [k for k, v in d.items() if v == val]
 
     ##################
     # Core functions #
@@ -160,6 +171,10 @@ class DataExplorer:
         plt.title(title, fontsize=font_size)
         ax = sns.countplot(x=class_col, data=df)
         ax.set(xlabel="Class", ylabel="Count")
+        ax.xaxis.get_label().set_fontsize(20)
+        ax.yaxis.get_label().set_fontsize(20)
+        plt.tick_params(axis='x', labelsize=20)
+        plt.tick_params(axis='y', labelsize=20)
         plt.show()
 
     def plot_box_mid_pt(
@@ -198,10 +213,10 @@ class DataExplorer:
         This function plots the joint plot of the width and height of the bounding boxes
         Args:
             df (DataFrame): Pandas dataframe containing the bounding box data
-            x_col (str):
-            y_col (str):
-            group_by_col (str):
-            plot_dim (tuple):
+            x_col (str): dimension of the bounding box
+            y_col (str): dimension of the bounding box
+            group_by_col (str): group by category
+            plot_dim (tuple): dimension of the plot
         """
 
         # Joint Plot of b_w and b_h
@@ -220,44 +235,8 @@ class DataExplorer:
             group_by_col (str): grouping feature in the dataframe
         """
 
-        print(df[x_col].value_counts())
+        print(df[[x_col]].describe())
         sns.displot(df, x=x_col, hue=group_by_col, element=element)
-
-    def show_annotated_image(
-        self,
-        img_path,
-        annot_df,
-        box_colours=[(244, 223, 156), (164, 232, 241), (119, 118, 188)],
-        line_thickness=2,
-        plot_dim=(20, 10),
-    ):
-        """_summary_
-
-        Args:
-            img_path (str): _description_
-            annot_df (DataFrame): _description_
-            box_colours (list, optional): _description_. Defaults to [(244, 223, 156), (164, 232, 241), (119, 118, 188)].
-            line_thickness (int, optional): _description_. Defaults to 2.
-            plot_dim (tuple, optional): _description_. Defaults to (20, 10).
-        """
-        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        for index, row in annot_df.iterrows():
-            cat_id = row["category_id"]
-            colour = box_colours[cat_id - 1]
-            cv2.rectangle(
-                img,
-                (int(row["bbox_x"]), int(row["bbox_y"])),
-                (
-                    int(row["bbox_x"] + row["bbox_width"]),
-                    int(row["bbox_y"] + row["bbox_height"]),
-                ),
-                colour,
-                line_thickness,
-            )
-        fig = plt.figure(figsize=plot_dim)
-        plt.axis("off")
-        plt.imshow(img)
 
     def show_image(self, img_path):
         """_summary_
@@ -276,6 +255,102 @@ class DataExplorer:
         plt.imshow(img_cv2)
         plt.show()
         return img_cv2
+
+
+    def show_annotated_image(
+        self,
+        img_path,
+        annot_df,
+        box_colours_names=["red", "orange", "pink"],
+        line_thickness=2,
+        plot_dim=(20, 10),
+    ):
+        """Shows annotated images.
+
+        Args:
+            img_path (str): _description_
+            annot_df (DataFrame): _description_
+            box_colours (list, optional): _description_. Defaults to [(244, 223, 156), (164, 232, 241), (119, 118, 188)].
+            line_thickness (int, optional): _description_. Defaults to 2.
+            plot_dim (tuple, optional): _description_. Defaults to (20, 10).
+        
+        ######################
+        # Implemenation note #
+        ######################
+
+        OpenCV and Matplotlib have different colour codes. For instance, OpenCV uses actual
+        RGB values but Matplotlib uses its own values (within range 0 to 1). 
+        User to key in the color names and use mapping dictionary to convert to OpenCV standards
+        while use matplotlib's color to convert to its own values.
+
+        """
+        img = cv2.imread(img_path, cv2.IMREAD_COLOR)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+        # get opencv colour codes
+        opencv_rgb = {
+            "red" : (255, 0, 0),
+            "orange" : (255, 128, 0),
+            "pink" : (255, 153, 255)
+        }
+
+
+        box_colours = [opencv_rgb[x] for x in box_colours_names]
+
+        cat_names = []
+        colours = []
+        matplot_colours = []
+        for index, row in annot_df.iterrows():
+            cat_id = row["category_id"]
+            colour = box_colours[cat_id - 1]
+
+            # draw bboxes
+            cv2.rectangle(
+                img,
+                (int(row["bbox_x"]), int(row["bbox_y"])),
+                (
+                    int(row["bbox_x"] + row["bbox_width"]),
+                    int(row["bbox_y"] + row["bbox_height"]),
+                ),
+                colour,
+                line_thickness,
+            )
+            cat_name = row["category_name"]
+            cat_names.append(cat_name)
+            colours.append(colour)
+            
+            # convert color to matplot format
+            colour_key = self.get_keys_from_value(opencv_rgb, colour)
+            matplot_colour = colors.to_rgb(colour_key[0])
+            matplot_colours.append(matplot_colour)
+
+        # get unique combinations of cat and color
+        combinations = []
+        for cat, colour in zip(cat_names, matplot_colours):
+            if [cat, colour] not in combinations:
+                combinations.append([cat, colour])
+
+        # get cat and color with indexes separately
+        cats = []
+        colours = []
+        idxes = []
+        for idx, combination in enumerate(combinations): 
+            cat = combination[0] 
+            colour = combination[1]
+            cats.append(cat)
+            colours.append(colour)
+            idxes.append(idx)
+
+        # idx to cat; idx to colours mapping
+        cats_mapping = dict(zip(idxes, cats))
+        colours_mapping = dict(zip(idxes, colours))
+
+        patches =[mpatches.Patch(color=colours_mapping[i],label=cats_mapping[i]) for i in colours_mapping]
+        
+        fig = plt.figure(figsize=plot_dim)
+        plt.legend(handles=patches, loc=4, borderaxespad=0.)
+        plt.axis("off")
+        plt.imshow(img)
 
 
 def load_image(data_dir, img_name, lib):
