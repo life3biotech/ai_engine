@@ -31,3 +31,5 @@ dependencies:
     - progressbar2
     - tqdm==4.45.0
     - pconst==1.0.0
+    - scikit-image==0.19.2
+    - scikit-learn==1.0.2
