@@ -12,6 +12,7 @@ data_prep:
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 76-100 revised"
   raw_data_path: "/polyaxon-v1-data/workspaces/jannah/data/raw"
   processed_data_path: "/polyaxon-v1-data/workspaces/jannah/data/processed"
+  interim_data_path: "/polyaxon-v1-data/workspaces/jannah/data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -19,13 +20,23 @@ data_prep:
   excluded_images:
     - "3 c10L d10 20x undilut OD8.jpg"
   class_map: {
-        'Cells': 0,
-        'cell accumulation (small cells)': 1,
-        'cell accumulation (large cells)': 2
+        'cell': 0,
+        'cell accumulation': 1
     }
-  remap_class: {
+  remap_classes: True
+  class_remapping: {
+    'Cells': 'cell',
+    'cell accumulation (small cells)': 'cell accumulation',
+    'cell accumulation (large cells)': 'cell accumulation'
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
+  target_col: 'category_name'
+  save_data_splits: True
+  val_size: 0.1 # The proportion of data allocated to the validation set, based on the proportion of the overall data
+  test_size: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
+  train_base_filename: 'annotations_train.csv'
+  validation_base_filename: 'annotations_validation.csv'
+  test_base_filename: 'annotations_test.csv'
 
 train:
   setup_mlflow: false
@@ -34,8 +45,6 @@ train:
   mlflow_exp_name: "life3-biotech"
   mlflow_artifact_location: "gs://life3-biotech-artifacts/mlflow-tracking-server"
   data_path: "../life3-biotech-data/processed/subdir"
-  val_split: 0.2 # The proportion of data allocated to the validation set, based on the proportion of the overall data
-  test_split: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
   batch_size: 8
   seed: 4002
   epochs: 3
