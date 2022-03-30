@@ -22,8 +22,8 @@ test:pylint-pytest:
     - conda env create -f life3-biotech-conda-env.yml
     - source activate life3-biotech
   script:
-    # - pylint src --fail-under=7.0 --ignore=tests --disable=W1202
-    - pytest src/tests
+    - pylint src --fail-under=5.0 --ignore=tests --disable=W1202
+    # - pytest src/tests
   rules:
     - if: $CI_MERGE_REQUEST_IID
       changes:
