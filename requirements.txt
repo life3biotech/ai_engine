@@ -27,3 +27,4 @@ tensorflow-gpu==2.8.0
 progressbar2
 tqdm==4.45.0
 pconst==1.0.0
+shapely==1.8.0
