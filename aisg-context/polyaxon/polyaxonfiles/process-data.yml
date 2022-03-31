@@ -43,7 +43,7 @@ run:
     args: [
       "source ~/.bashrc &&
       yq e '.data_prep.raw_dirs_paths = {{ RAW_DATA_DIRS }}' -i conf/base/pipelines.yml &&
-      python src/clean_data.py
+      python src/load_data.py
       data_prep.processed_data_path={{ PROCESSED_DATA_DIR }}"
     ]
     resources:
