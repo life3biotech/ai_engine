@@ -16,6 +16,7 @@ class Preprocessor:
     Attributes:
         logger: Logger object used to log events to.
         processed_annotations_df: pandas DataFrame containing the final processed data.
+        seed: Seed to use for data splitting function
     """
     def __init__(self, logger):
         self.logger = logger
@@ -294,18 +295,16 @@ class Preprocessor:
 
     def split_data(self, concatenated_df: pd.DataFrame, test_size=0.2, val_size=0.1):
         """This function uses scikit-learn library to split the dataframe into train, test & validation sets
-        and optionally saves the split data to CSV files. If the value(s) of `test_size` and/or `val_size` are not provided,
-        the function splits the data according to the default values
+        and saves the split data to CSV files (dependent on configuration). If the value(s) of `test_size` and/or `val_size` are not provided,
+        the function splits the data according to the default values.
 
         Args:
             concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
             test_size: Proportion of the dataset to include in the test split. Defaults to 0.2 (20%)
             val_size: Proportion of the train dataset to include in the validation split. Defaults to 0.1 (10%)
-            save_csv: Boolean flag indicating whether split data are to be written to respective CSV files. Defaults to `False`
         Returns: 
             X_train, y_train, X_test, y_test, X_val, y_val: Tuple containing split datasets
         """
-        # Copy to ensure don't modify the original object reference
         df = concatenated_df.copy()
 
         # Calculate the proportion of validation size as of the (1 - test size) because in the codes, validation split occurs after test split
@@ -318,6 +317,7 @@ class Preprocessor:
         # Split train images further into train & validation
         train, val = train_test_split(train, test_size=val_actual_size, random_state=self.seed)
 
+        # Retrieve annotations belonging to images in each dataset
         X_train = df[df[split_var].isin(train)]
         images_train = X_train['file_name'].unique()
         y_train = X_train[const.TARGET_COL]
