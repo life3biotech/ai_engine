@@ -18,7 +18,7 @@ class EfficientDetPipeline:
 
         where x1 = xmin, y1 = ymin, x2 = x max, y2 = ymax
         Args:
-            logger (): Logger instance to log to
+            logger (logging.Logger): Logger object to log events to
             annotations (DataFrame): 
         """
         annot_filepath = Path(const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
