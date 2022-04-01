@@ -31,6 +31,9 @@ class Preprocessor:
         """
         Calls the data preprocessing functions in order and saves the final preprocessed data in CSV format.
         """
+        self._make_dir(const.PROCESSED_DATA_PATH)
+        self._make_dir(const.RAW_DATA_PATH)
+
         self._copy_raw_images()
         df_concat_list = self._convert_raw_annotations()
 
@@ -41,6 +44,7 @@ class Preprocessor:
         annot_processed_path = PurePath(
             const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME
         )
+
         concatenated_df.to_csv(annot_processed_path)
         self.logger.info(f"Annotations saved to {annot_processed_path}")
         self.processed_annotations_df = concatenated_df.copy()
@@ -177,12 +181,12 @@ class Preprocessor:
             A DataFrame containing the cleaned annotations data.
         """
         df = concatenated_df.copy()
-
+        self.logger.info(f"**** Length of df before excluding images: {df.shape}")
         df = df[~df["file_name"].isin(const.EXCLUDED_IMAGES)]
         self.logger.info(
             f"Removing annotations of predefined excluded images: {const.EXCLUDED_IMAGES}"
         )
-
+        self.logger.info(f"**** Length of df after excluding images: {df.shape}")
         annotations_no_images = list(set(unique_images_list) - set(images_list))
         self.logger.warning(
             f"Number of annotations with no corresponding images: {len(annotations_no_images)}"
@@ -333,6 +337,16 @@ class Preprocessor:
                         )
                     except OSError as e:
                         self.logger.error(f"Error occurred while copying file: {e}")
+
+    def _make_dir(self, dir_path: Path) -> None:
+        """
+        Create directory if it did not exist
+
+        Args:
+            dir_path (Path): Full path to create new directory
+        """
+        if not os.path.exists(dir_path):
+            os.makedirs(dir_path)
 
     def generate_image_tiles(self) -> None:
         """
