@@ -23,7 +23,7 @@ test:pylint-pytest:
     - source activate life3-biotech
   script:
     - pylint src --fail-under=5.0 --ignore=tests --disable=W1202
-    - pytest src/tests
+    # - pytest src/tests
   rules:
     - if: $CI_MERGE_REQUEST_IID
       changes:
