@@ -36,6 +36,7 @@ class Preprocessor:
         """
         self._make_dir(const.PROCESSED_DATA_PATH)
         self._make_dir(const.RAW_DATA_PATH)
+        self._make_dir(const.INTERIM_DATA_PATH)
 
         self._copy_raw_images()
         df_concat_list = self._convert_raw_annotations()
@@ -467,5 +468,3 @@ class Preprocessor:
 
         return X_train, y_train, X_test, y_test, X_val, y_val
 
-    def generate_image_tiles(self):
-        pass
