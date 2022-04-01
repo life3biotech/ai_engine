@@ -24,6 +24,7 @@ class PipelineConfig:
 
             const.DATA_SUBDIRS_PATH_LIST = data_prep_params["data_subdirs_paths"]
             const.PROCESSED_DATA_PATH = data_prep_params["processed_data_path"]
+            const.INTERIM_DATA_PATH = data_prep_params["interim_data_path"]
             const.RAW_DATA_PATH = data_prep_params["raw_data_path"]
             const.LOAD_DATA = data_prep_params["load_data"]
             const.MODELS = data_prep_params["models"]
@@ -33,7 +34,8 @@ class PipelineConfig:
                 "coco_annotations_filename"
             ]
             const.CLASS_MAP = data_prep_params["class_map"]
-            const.REMAP_CLASS = data_prep_params["remap_class"]
+            const.REMAP_CLASSES = data_prep_params["remap_classes"]
+            const.CLASS_REMAPPING = data_prep_params["class_remapping"]
             const.EXCLUDED_IMAGES = data_prep_params["excluded_images"]
             const.COMBINED_ANNOTATIONS_FILENAME = data_prep_params[
                 "combined_annotations_filename"
@@ -45,6 +47,14 @@ class PipelineConfig:
             const.TILE_SLICE_WIDTH = data_prep_params["tile_slice_width"]
             const.TILE_OVERLAP_HEIGHT_RATIO = data_prep_params["tile_overlap_height_ratio"]
             const.TILE_OVERLAP_WIDTH_RATIO = data_prep_params["tile_overlap_width_ratio"]
+
+            const.TARGET_COL = data_prep_params["target_col"]
+            const.SAVE_DATA_SPLITS = data_prep_params["save_data_splits"]
+            const.VAL_SIZE = data_prep_params["val_size"]
+            const.TEST_SIZE = data_prep_params["test_size"]
+            const.TRAIN_SET_FILENAME = data_prep_params["train_base_filename"]
+            const.VAL_SET_FILENAME = data_prep_params["validation_base_filename"]
+            const.TEST_SET_FILENAME = data_prep_params["test_base_filename"]
 
         # Initialise constants for training all models
         if "train" in params:

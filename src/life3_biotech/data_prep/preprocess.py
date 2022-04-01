@@ -8,6 +8,7 @@ from csv import DictWriter, writer
 from typing import Dict, List, Tuple
 from pconst import const
 from json import load
+from sklearn.model_selection import train_test_split
 
 from life3_biotech.data_prep.sahi.slicing import slice_coco
 from life3_biotech.data_prep.sahi.utils.coco import Coco
@@ -21,12 +22,14 @@ class Preprocessor:
     Attributes:
         logger: Logger object used to log events to.
         processed_annotations_df: pandas DataFrame containing the final processed data.
+        seed: Seed to use for data splitting function
     """
 
     def __init__(self, logger):
         self.logger = logger
         self.processed_annotations_df = None
-
+        self.seed = 33
+    
     def preprocess_annotations(self) -> None:
         """
         Calls the data preprocessing functions in order and saves the final preprocessed data in CSV format.
@@ -38,16 +41,15 @@ class Preprocessor:
         df_concat_list = self._convert_raw_annotations()
 
         concatenated_df = pd.concat(df_concat_list, ignore_index=True)
+        concatenated_df = self._encode_classes(concatenated_df)
         concatenated_df = self._engineer_features(concatenated_df)
         concatenated_df = self._clean_data(concatenated_df)
 
-        annot_processed_path = PurePath(
-            const.PROCESSED_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME
-        )
-
+        annot_processed_path = PurePath(const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
         concatenated_df.to_csv(annot_processed_path)
-        self.logger.info(f"Annotations saved to {annot_processed_path}")
-        self.processed_annotations_df = concatenated_df.copy()
+        self.logger.info(f'Annotations saved to {annot_processed_path}')
+        self.processed_annotations_df = concatenated_df
+        return concatenated_df
 
     def _get_raw_annotation_file_paths(self) -> List:
         """
@@ -138,6 +140,26 @@ class Preprocessor:
             final_df.drop(labels=["id"], axis=1, inplace=True)
             df_concat_list.append(final_df)
         return df_concat_list
+
+    def _encode_classes(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Encodes category/labels into integer values for each annotation in the provided DataFrame.
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+        
+        Returns:
+            A DataFrame containing the resulting annotations data.
+        """
+        df = concatenated_df.copy()
+        if const.REMAP_CLASSES:
+            self.logger.info(f'Remapping class labels: {const.CLASS_REMAPPING}')
+            df['category_name'] = df['category_name'].map(const.CLASS_REMAPPING)
+
+        self.logger.info('Encoding class labels to target column')
+        df['encoded_target'] = df['category_name'].map(const.CLASS_MAP)
+        df.drop(labels=['category_id'], axis=1, inplace=True)
+        return df
 
     def _clean_data(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
         """
@@ -301,12 +323,10 @@ class Preprocessor:
             A DataFrame containing annotations data with newly engineered features.
         """
         df = concatenated_df.copy()
-        df[["bbox_x_min", "bbox_y_min", "bbox_width", "bbox_height"]] = pd.DataFrame(
-            df.bbox.tolist(), index=df.index
-        )
-        df["bbox_x_max"] = df["bbox_x_min"] + df["bbox_width"]
-        df["bbox_y_max"] = df["bbox_y_min"] + df["bbox_height"]
-        df.drop("bbox", axis=1, inplace=True)
+        df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(df.bbox.tolist(), index=df.index)
+        df['bbox_x_max'] = round(df['bbox_x_min'] + df['bbox_width'],2)
+        df['bbox_y_max'] = round(df['bbox_y_min'] + df['bbox_height'],2)
+        df.drop('bbox', axis=1, inplace=True)
         return df
 
     def _copy_raw_images(self) -> None:
@@ -391,5 +411,61 @@ class Preprocessor:
 
         self.logger.info("Tile/Slice of images completed.")
 
-    def split_data(self, save_csv=False):
+    def split_data(self, concatenated_df: pd.DataFrame, test_size=0.2, val_size=0.1):
+        """This function uses scikit-learn library to split the dataframe into train, test & validation sets
+        and saves the split data to CSV files (dependent on configuration). If the value(s) of `test_size` and/or `val_size` are not provided,
+        the function splits the data according to the default values.
+
+        Args:
+            concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
+            test_size: Proportion of the dataset to include in the test split. Defaults to 0.2 (20%)
+            val_size: Proportion of the train dataset to include in the validation split. Defaults to 0.1 (10%)
+        Returns: 
+            X_train, y_train, X_test, y_test, X_val, y_val: Tuple containing split datasets
+        """
+        df = concatenated_df.copy()
+
+        # Calculate the proportion of validation size as of the (1 - test size) because in the codes, validation split occurs after test split
+        val_actual_size = val_size / (1 - test_size)
+
+        split_array = df['file_name'].unique()
+        split_var = 'file_name'
+        # Split images into train & test sets
+        train, test = train_test_split(split_array, test_size=test_size, random_state=self.seed)
+        # Split train images further into train & validation
+        train, val = train_test_split(train, test_size=val_actual_size, random_state=self.seed)
+
+        # Retrieve annotations belonging to images in each dataset
+        X_train = df[df[split_var].isin(train)]
+        images_train = X_train['file_name'].unique()
+        y_train = X_train[const.TARGET_COL]
+        train_defects_count = X_train[const.TARGET_COL].value_counts()
+
+        X_val = df[df[split_var].isin(val)]
+        images_val = X_val['file_name'].unique()
+        y_val = X_val[const.TARGET_COL]
+        val_defects_count = X_val[const.TARGET_COL].value_counts()
+
+        X_test = df[df[split_var].isin(test)]
+        images_test = X_test['file_name'].unique()
+        y_test = X_test[const.TARGET_COL]
+        test_defects_count = X_test[const.TARGET_COL].value_counts()
+
+        self.logger.info(f'Number of images in train: {len(images_train)}')
+        self.logger.info(f'Number of images in validation: {len(images_val)}')
+        self.logger.info(f'Number of images in test: {len(images_test)}')
+
+        self.logger.info(f'Number of annotations in train set: {X_train.shape[0]}')
+        self.logger.info(f'Number of annotations in validation set: {X_val.shape[0]}')
+        self.logger.info(f'Number of annotations in test set: {X_test.shape[0]}')
+
+        if const.SAVE_DATA_SPLITS:
+            X_train.to_csv(PurePath(const.INTERIM_DATA_PATH, const.TRAIN_SET_FILENAME), index=False)
+            X_val.to_csv(PurePath(const.INTERIM_DATA_PATH, const.VAL_SET_FILENAME), index=False)
+            X_test.to_csv(PurePath(const.INTERIM_DATA_PATH, const.TEST_SET_FILENAME), index=False)
+            self.logger.info('Saved train/val/test datasets to files')
+
+        return X_train, y_train, X_test, y_test, X_val, y_val
+
+    def generate_image_tiles(self):
         pass
