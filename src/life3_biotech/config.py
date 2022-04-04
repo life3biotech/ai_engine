@@ -2,11 +2,13 @@ import hydra
 from pconst import const
 from collections import OrderedDict
 
+
 class PipelineConfig:
     """
     This class initialises system-wide constant variables based on the key-value pairs provided in the pipelines.yml config file.
     These constants cannot be modified outside of this class.
     """
+
     def __init__(self, params, logger):
         """This method takes in parameters from the config file and initialises them as constants.
 
@@ -14,10 +16,10 @@ class PipelineConfig:
             params (dict): Parameters read from the config file
             logger (logging.Logger): Logger object used for logging
         """
-        logger.debug(f'Loading params into constants: {params}')
+        logger.debug(f"Loading params into constants: {params}")
 
         # Initialise data pipeline constants
-        if 'data_prep' in params:
+        if "data_prep" in params:
             data_prep_params = params["data_prep"]
 
             const.DATA_SUBDIRS_PATH_LIST = data_prep_params["data_subdirs_paths"]
@@ -28,13 +30,23 @@ class PipelineConfig:
             const.MODELS = data_prep_params["models"]
             const.ANNOTATIONS_SUBDIR = data_prep_params["annotations_subdir"]
             const.IMAGES_SUBDIR = data_prep_params["images_subdir"]
-            const.COCO_ANNOTATION_FILENAME = data_prep_params["coco_annotations_filename"]
+            const.COCO_ANNOTATION_FILENAME = data_prep_params[
+                "coco_annotations_filename"
+            ]
             const.CLASS_MAP = data_prep_params["class_map"]
             const.REMAP_CLASSES = data_prep_params["remap_classes"]
             const.CLASS_REMAPPING = data_prep_params["class_remapping"]
             const.EXCLUDED_IMAGES = data_prep_params["excluded_images"]
-            const.COMBINED_ANNOTATIONS_FILENAME = data_prep_params["combined_annotations_filename"]
+            const.COMBINED_ANNOTATIONS_FILENAME = data_prep_params[
+                "combined_annotations_filename"
+            ]
             const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
+            # Tile/slice processed images
+            const.TILE_DATA_DIR_PATHS = data_prep_params["tile_data_dir_paths"]
+            const.TILE_SLICE_HEIGHT = data_prep_params["tile_slice_height"]
+            const.TILE_SLICE_WIDTH = data_prep_params["tile_slice_width"]
+            const.TILE_OVERLAP_HEIGHT_RATIO = data_prep_params["tile_overlap_height_ratio"]
+            const.TILE_OVERLAP_WIDTH_RATIO = data_prep_params["tile_overlap_width_ratio"]
 
             const.TARGET_COL = data_prep_params["target_col"]
             const.SAVE_DATA_SPLITS = data_prep_params["save_data_splits"]
@@ -45,15 +57,15 @@ class PipelineConfig:
             const.TEST_SET_FILENAME = data_prep_params["test_base_filename"]
 
         # Initialise constants for training all models
-        if 'train' in params:
+        if "train" in params:
             train_params = params["train"]
 
         # Initialise constants for augmentation pipeline within training
-        if 'train_augmentation' in params:
-            train_augment_params = params['train_augmentation']
+        if "train_augmentation" in params:
+            train_augment_params = params["train_augmentation"]
 
         # Initialise constants for model inference
-        if 'inference' in params:
+        if "inference" in params:
             train_params = params["inference"]
 
             const.INFERENCE_MODEL_NAME = train_params["model_name"]

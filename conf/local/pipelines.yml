@@ -30,6 +30,13 @@ data_prep:
     'cell accumulation (large cells)': 'cell accumulation'
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
+  # Tile/slice processed images
+  tile_data_dir_paths: "/polyaxon-v1-data/workspaces/jannah/data/tile_processed"
+  tile_slice_height : 512
+  tile_slice_width : 512
+  tile_overlap_height_ratio : 0.2
+  tile_overlap_width_ratio : 0.2
+  # Data Split
   target_col: 'category_name'
   save_data_splits: True
   val_size: 0.1 # The proportion of data allocated to the validation set, based on the proportion of the overall data
