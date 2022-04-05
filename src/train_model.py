@@ -3,11 +3,11 @@ import logging
 import hydra
 import mlflow
 
+from datetime import datetime, timedelta, timezone
+from pconst import const
+from . import life3_biotech as life3
 
-import life3_biotech as life3
-
-
-@hydra.main(config_path="../conf/base", config_name="pipelines.yml")
+@hydra.main(config_path="../conf/local", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
     - load logging config
@@ -16,6 +16,10 @@ def main(args):
     - initialises model layers and compile
     - trains, evaluates, and then exports the model
     """
+    global current_datetime, model_args
+
+    tzinfo = timezone(timedelta(hours=8))
+    current_datetime = datetime.now(tzinfo).strftime('%Y%m%d_%H%M%S')
 
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
@@ -33,25 +37,21 @@ def main(args):
             mlflow_init_status, "log_params",
             params=args["train"])
 
-    datasets = life3.modeling.data_loaders.\
-        load_datasets(hydra.utils.get_original_cwd(), args)
+    logger.info(f'Current directory: {os.getcwd()}')
+    logger.info(f'Current datetime: {current_datetime}')
 
-    model = life3.modeling.models.seq_model(args)
+    pipeline_conf = life3.config.PipelineConfig(args, logger)
 
-    logger.info("Training the model...")
-    model.fit(
-        datasets["train"],
-        epochs=args["train"]["epochs"],
-        validation_data=datasets["val"])
+    logger.info(f'Training {const.TRAIN_MODEL_NAME} model')
 
-    logger.info("Evaluating the model...")
-    test_loss, test_acc = model.evaluate(datasets["test"])
+    if const.LOAD_DATA:
+        load_data.run_data_pipeline()
 
-    logger.info("Test Loss: {}, Test Accuracy: {}".\
-        format(test_loss, test_acc))
+    model_args = dict(args[const.TRAIN_MODEL_NAME])
+    logger.info(f'{const.TRAIN_MODEL_NAME} model parameters: {model_args}')
 
-    logger.info("Exporting the model...")
-    life3.modeling.utils.export_model(model)
+    if const.TRAIN_MODEL_NAME == 'efficientdet':
+        run_efficientdet(current_datetime, logger)
 
     if mlflow_init_status:
         artifact_uri = mlflow.get_artifact_uri()
@@ -66,6 +66,26 @@ def main(args):
     else:
         logger.info("Model training has completed.")
 
+def run_efficientdet(current_datetime: str, logger) -> None:
+    logger.info('Importing EfficientDet model')
+    # import here to avoid dependency issues if EfficientDet model is removed from pipeline
+    from src.life3_biotech.modeling.EfficientDet.train import main as train_efficientdet
+    from src.life3_biotech.modeling.EfficientDet.eval.common import main as eval_efficientdet
+    
+    logger.info('Parsing EfficientDet model parameters')
+    args = life3.modeling.utils.transform_args(model_args)  # returns a list of arguments
+    if args:
+        # logger.info(f'EfficientDet model hyperparameters: {args}')
+        if const.EVAL_ONLY:
+            model_path = f'{const.SAVED_MODEL_PATH}{const.BEST_MODEL}'
+        else:
+            model_path = None
+            logger.info('Calling EfficientDet model training...')
+            train_efficientdet(current_datetime, logger, args)
+        # logger.info('Calling EfficientDet model evaluation...')
+        # eval_metrics_dict = eval_efficientdet(current_datetime, logger, args, model_path)
+    else:
+        logger.warning(f'Unable to proceed with training {const.TRAIN_MODEL_NAME}')
 
 if __name__ == "__main__":
     main()
