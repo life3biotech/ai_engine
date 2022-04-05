@@ -3,3 +3,4 @@ training pipeline."""
 
 from . import data_loaders
 from . import utils
+from . import EfficientDet
