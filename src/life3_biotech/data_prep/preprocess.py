@@ -12,8 +12,6 @@ from sklearn.model_selection import train_test_split
 
 from life3_biotech.data_prep.sahi.slicing import slice_coco
 from life3_biotech.data_prep.sahi.utils.coco import Coco
-from life3_biotech.data_prep.sahi.utils.file import load_json
-from life3_biotech.data_prep.sahi.utils.file import save_json
 
 
 class Preprocessor:
@@ -29,7 +27,7 @@ class Preprocessor:
         self.logger = logger
         self.processed_annotations_df = None
         self.seed = 33
-    
+
     def preprocess_annotations(self) -> None:
         """
         Calls the data preprocessing functions in order and saves the final preprocessed data in CSV format.
@@ -46,9 +44,11 @@ class Preprocessor:
         concatenated_df = self._engineer_features(concatenated_df)
         concatenated_df = self._clean_data(concatenated_df)
 
-        annot_processed_path = PurePath(const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME)
+        annot_processed_path = PurePath(
+            const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME
+        )
         concatenated_df.to_csv(annot_processed_path)
-        self.logger.info(f'Annotations saved to {annot_processed_path}')
+        self.logger.info(f"Annotations saved to {annot_processed_path}")
         self.processed_annotations_df = concatenated_df
         return concatenated_df
 
@@ -148,18 +148,18 @@ class Preprocessor:
 
         Args:
             concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
-        
+
         Returns:
             A DataFrame containing the resulting annotations data.
         """
         df = concatenated_df.copy()
         if const.REMAP_CLASSES:
-            self.logger.info(f'Remapping class labels: {const.CLASS_REMAPPING}')
-            df['category_name'] = df['category_name'].map(const.CLASS_REMAPPING)
+            self.logger.info(f"Remapping class labels: {const.CLASS_REMAPPING}")
+            df["category_name"] = df["category_name"].map(const.CLASS_REMAPPING)
 
-        self.logger.info('Encoding class labels to target column')
-        df['encoded_target'] = df['category_name'].map(const.CLASS_MAP)
-        df.drop(labels=['category_id'], axis=1, inplace=True)
+        self.logger.info("Encoding class labels to target column")
+        df["encoded_target"] = df["category_name"].map(const.CLASS_MAP)
+        df.drop(labels=["category_id"], axis=1, inplace=True)
         return df
 
     def _clean_data(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
@@ -324,10 +324,12 @@ class Preprocessor:
             A DataFrame containing annotations data with newly engineered features.
         """
         df = concatenated_df.copy()
-        df[['bbox_x_min','bbox_y_min', 'bbox_width', 'bbox_height']] = pd.DataFrame(df.bbox.tolist(), index=df.index)
-        df['bbox_x_max'] = round(df['bbox_x_min'] + df['bbox_width'],2)
-        df['bbox_y_max'] = round(df['bbox_y_min'] + df['bbox_height'],2)
-        df.drop('bbox', axis=1, inplace=True)
+        df[["bbox_x_min", "bbox_y_min", "bbox_width", "bbox_height"]] = pd.DataFrame(
+            df.bbox.tolist(), index=df.index
+        )
+        df["bbox_x_max"] = round(df["bbox_x_min"] + df["bbox_width"], 2)
+        df["bbox_y_max"] = round(df["bbox_y_min"] + df["bbox_height"], 2)
+        df.drop("bbox", axis=1, inplace=True)
         return df
 
     def _copy_raw_images(self) -> None:
@@ -397,11 +399,17 @@ class Preprocessor:
                 const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
             )
 
-            coco_dict, coco_path = slice_coco(
+            # Display coco stats
+            coco = Coco.from_coco_dict_or_path(str(annot_path))
+            self.logger.info(f"Coco path: {annot_path}")
+            self.logger.info(f"Coco Stat: {coco.stats}")
+
+            # Tile/slice image
+            slice_coco(
                 coco_annotation_file_path=annot_path,
                 image_dir=img_path,
                 output_coco_annotation_file_name=tile_annot_path,
-                ignore_negative_samples=False,
+                ignore_negative_samples=const.TILE_IGNORE_NEGATIVE_SAMPLES,
                 output_dir=tile_img_path,
                 slice_height=const.TILE_SLICE_HEIGHT,
                 slice_width=const.TILE_SLICE_WIDTH,
@@ -421,7 +429,7 @@ class Preprocessor:
             concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
             test_size: Proportion of the dataset to include in the test split. Defaults to 0.2 (20%)
             val_size: Proportion of the train dataset to include in the validation split. Defaults to 0.1 (10%)
-        Returns: 
+        Returns:
             X_train, y_train, X_test, y_test, X_val, y_val: Tuple containing split datasets
         """
         df = concatenated_df.copy()
@@ -429,42 +437,51 @@ class Preprocessor:
         # Calculate the proportion of validation size as of the (1 - test size) because in the codes, validation split occurs after test split
         val_actual_size = val_size / (1 - test_size)
 
-        split_array = df['file_name'].unique()
-        split_var = 'file_name'
+        split_array = df["file_name"].unique()
+        split_var = "file_name"
         # Split images into train & test sets
-        train, test = train_test_split(split_array, test_size=test_size, random_state=self.seed)
+        train, test = train_test_split(
+            split_array, test_size=test_size, random_state=self.seed
+        )
         # Split train images further into train & validation
-        train, val = train_test_split(train, test_size=val_actual_size, random_state=self.seed)
+        train, val = train_test_split(
+            train, test_size=val_actual_size, random_state=self.seed
+        )
 
         # Retrieve annotations belonging to images in each dataset
         X_train = df[df[split_var].isin(train)]
-        images_train = X_train['file_name'].unique()
+        images_train = X_train["file_name"].unique()
         y_train = X_train[const.TARGET_COL]
         train_defects_count = X_train[const.TARGET_COL].value_counts()
 
         X_val = df[df[split_var].isin(val)]
-        images_val = X_val['file_name'].unique()
+        images_val = X_val["file_name"].unique()
         y_val = X_val[const.TARGET_COL]
         val_defects_count = X_val[const.TARGET_COL].value_counts()
 
         X_test = df[df[split_var].isin(test)]
-        images_test = X_test['file_name'].unique()
+        images_test = X_test["file_name"].unique()
         y_test = X_test[const.TARGET_COL]
         test_defects_count = X_test[const.TARGET_COL].value_counts()
 
-        self.logger.info(f'Number of images in train: {len(images_train)}')
-        self.logger.info(f'Number of images in validation: {len(images_val)}')
-        self.logger.info(f'Number of images in test: {len(images_test)}')
+        self.logger.info(f"Number of images in train: {len(images_train)}")
+        self.logger.info(f"Number of images in validation: {len(images_val)}")
+        self.logger.info(f"Number of images in test: {len(images_test)}")
 
-        self.logger.info(f'Number of annotations in train set: {X_train.shape[0]}')
-        self.logger.info(f'Number of annotations in validation set: {X_val.shape[0]}')
-        self.logger.info(f'Number of annotations in test set: {X_test.shape[0]}')
+        self.logger.info(f"Number of annotations in train set: {X_train.shape[0]}")
+        self.logger.info(f"Number of annotations in validation set: {X_val.shape[0]}")
+        self.logger.info(f"Number of annotations in test set: {X_test.shape[0]}")
 
         if const.SAVE_DATA_SPLITS:
-            X_train.to_csv(PurePath(const.INTERIM_DATA_PATH, const.TRAIN_SET_FILENAME), index=False)
-            X_val.to_csv(PurePath(const.INTERIM_DATA_PATH, const.VAL_SET_FILENAME), index=False)
-            X_test.to_csv(PurePath(const.INTERIM_DATA_PATH, const.TEST_SET_FILENAME), index=False)
-            self.logger.info('Saved train/val/test datasets to files')
+            X_train.to_csv(
+                PurePath(const.INTERIM_DATA_PATH, const.TRAIN_SET_FILENAME), index=False
+            )
+            X_val.to_csv(
+                PurePath(const.INTERIM_DATA_PATH, const.VAL_SET_FILENAME), index=False
+            )
+            X_test.to_csv(
+                PurePath(const.INTERIM_DATA_PATH, const.TEST_SET_FILENAME), index=False
+            )
+            self.logger.info("Saved train/val/test datasets to files")
 
         return X_train, y_train, X_test, y_test, X_val, y_val
-

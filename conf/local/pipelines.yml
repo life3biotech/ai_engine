@@ -1,18 +1,18 @@
 data_prep:
-  load_data: False
+  load_data: True
   models: [
     "efficientdet"
     ]
   data_subdirs_paths:
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 1-7 revised"
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 8-24 revised"
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 25-35 revised"
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 36-55 revised"
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 56-75 revised"
-    - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 76-100 revised"
-  raw_data_path: "/polyaxon-v1-data/workspaces/jannah/data/raw"
-  processed_data_path: "/polyaxon-v1-data/workspaces/jannah/data/processed"
-  interim_data_path: "/polyaxon-v1-data/workspaces/jannah/data/interim"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 1-7 revised"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 8-24 revised"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 25-35 revised"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 36-55 revised"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 56-75 revised"
+    - "/polyaxon-v1-data/workspaces/dylan/data/life3-aut0/20220224_1032621/images 76-100 revised"
+  raw_data_path: "/polyaxon-v1-data/workspaces/dylan/data/raw"
+  processed_data_path: "/polyaxon-v1-data/workspaces/dylan/data/processed"
+  interim_data_path: "/polyaxon-v1-data/workspaces/dylan/data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -31,11 +31,12 @@ data_prep:
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
   # Tile/slice processed images
-  tile_data_dir_paths: "/polyaxon-v1-data/workspaces/jannah/data/tile_processed"
+  tile_data_dir_paths: "/polyaxon-v1-data/workspaces/dylan/data/tile_processed"
   tile_slice_height : 512
   tile_slice_width : 512
   tile_overlap_height_ratio : 0.2
   tile_overlap_width_ratio : 0.2
+  tile_ignore_negative_samples : False # If True, images without annotations are ignored
   # Data Split
   target_col: 'category_name'
   save_data_splits: True
@@ -79,17 +80,17 @@ train_augmentation:
 
 inference:
   model_name: "efficientdet"
-  input_data_dir: "/polyaxon-v1-data/workspaces/jannah/data/inference"
+  input_data_dir: "/polyaxon-v1-data/workspaces/dylan/data/inference"
   save_output_image: True
   inference_output_path: ""
   inference_mode: "multiple"
 
 efficientdet:
-    train_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_train_efficientdet.csv'
-    val_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_val_efficientdet.csv'
-    test_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_test_efficientdet.csv'
+    train_annotations_path: '/polyaxon-v1-data/workspaces/dylan/data/processed/annotations_train_efficientdet.csv'
+    val_annotations_path: '/polyaxon-v1-data/workspaces/dylan/data/processed/annotations_val_efficientdet.csv'
+    test_annotations_path: '/polyaxon-v1-data/workspaces/dylan/data/processed/annotations_test_efficientdet.csv'
     saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
-    snapshot-path: '/polyaxon-v1-data/workspaces/jannah/models/'
+    snapshot-path: '/polyaxon-v1-data/workspaces/dylan/models/'
     gpu: -1
     train_backbone: 0
     snapshot: 'imagenet'
