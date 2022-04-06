@@ -11,7 +11,7 @@ cache:
 
 stages:
   - test
-  - build
+  # - build
   - deploy-docs
 
 test:pylint-pytest:
