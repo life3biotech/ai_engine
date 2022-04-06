@@ -106,9 +106,9 @@ class Evaluate(keras.callbacks.Callback):
         logs['mAP'] = self.mean_ap
 
         if self.verbose == 1:
-            print('mAP: {:.4f}'.format(self.mean_ap))
+            self.logger.info('mAP: {:.4f}'.format(self.mean_ap))
 
         # Housekeeping
-        self.logger.info('Clearing session...')
+        self.logger.info("Clearing session...")
         gc.collect()
         keras.backend.clear_session()
