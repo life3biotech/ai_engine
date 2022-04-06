@@ -5,9 +5,9 @@ import mlflow
 
 from datetime import datetime, timedelta, timezone
 from pconst import const
-from . import life3_biotech as life3
+import life3_biotech as life3
 
-@hydra.main(config_path="../conf/local", config_name="pipelines.yml")
+@hydra.main(config_path="../conf/base", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
     - load logging config
@@ -21,6 +21,8 @@ def main(args):
     tzinfo = timezone(timedelta(hours=8))
     current_datetime = datetime.now(tzinfo).strftime('%Y%m%d_%H%M%S')
 
+    os.chdir(hydra.utils.get_original_cwd())  # Default behavior of hydra changes the working directory, this line changes the working directory back to the root
+    
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
     logger_config_path = os.path.\
@@ -45,7 +47,7 @@ def main(args):
     logger.info(f'Training {const.TRAIN_MODEL_NAME} model')
 
     if const.LOAD_DATA:
-        load_data.run_data_pipeline()
+        life3.load_data.run_data_pipeline()
 
     model_args = dict(args[const.TRAIN_MODEL_NAME])
     logger.info(f'{const.TRAIN_MODEL_NAME} model parameters: {model_args}')

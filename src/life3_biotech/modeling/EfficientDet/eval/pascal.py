@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import gc
 # import keras
 from tensorflow import keras
 import tensorflow as tf
@@ -29,7 +29,8 @@ class Evaluate(keras.callbacks.Callback):
         self,
         generator,
         model,
-        iou_threshold=0.5,
+        logger,
+        iou_threshold=[0.5],
         score_threshold=0.01,
         max_detections=100,
         save_path=None,
@@ -59,6 +60,7 @@ class Evaluate(keras.callbacks.Callback):
         self.weighted_average = weighted_average
         self.verbose = verbose
         self.active_model = model
+        self.logger = logger
 
         super(Evaluate, self).__init__()
 
@@ -66,9 +68,10 @@ class Evaluate(keras.callbacks.Callback):
         logs = logs or {}
 
         # run evaluation
-        average_precisions = evaluate(
+        metrics_dict = evaluate(
             self.generator,
             self.active_model,
+            self.logger,
             iou_threshold=self.iou_threshold,
             score_threshold=self.score_threshold,
             max_detections=self.max_detections,
@@ -76,22 +79,23 @@ class Evaluate(keras.callbacks.Callback):
         )
 
         # compute per class average precision
-        total_instances = []
-        precisions = []
-        for label, (average_precision, num_annotations) in average_precisions.items():
-            if self.verbose == 1:
-                print('{:.0f} instances of class'.format(num_annotations),
-                      self.generator.label_to_name(label), 'with average precision: {:.4f}'.format(average_precision))
-            total_instances.append(num_annotations)
-            precisions.append(average_precision)
-        if self.weighted_average:
-            self.mean_ap = sum([a * b for a, b in zip(total_instances, precisions)]) / sum(total_instances)
-        else:
-            self.mean_ap = sum(precisions) / sum(x > 0 for x in total_instances)
+        # total_instances = []
+        # precisions = []
+        # for label, (average_precision, num_annotations) in average_precisions.items():
+        #     if self.verbose == 1:
+        #         print('{:.0f} instances of class'.format(num_annotations),
+        #               self.generator.label_to_name(label), 'with average precision: {:.4f}'.format(average_precision))
+        #     total_instances.append(num_annotations)
+        #     precisions.append(average_precision)
+        # if self.weighted_average:
+        #     self.mean_ap = sum([a * b for a, b in zip(total_instances, precisions)]) / sum(total_instances)
+        # else:
+        #     self.mean_ap = sum(precisions) / sum(x > 0 for x in total_instances)
+        self.mean_ap = metrics_dict['mAP']
 
         if self.tensorboard is not None:
             if tf.version.VERSION < '2.0.0' and self.tensorboard.writer is not None:
-                summary = tf.Summary()
+                summary = tf.compat.v1.Summary()
                 summary_value = summary.value.add()
                 summary_value.simple_value = self.mean_ap
                 summary_value.tag = "mAP"
@@ -102,4 +106,9 @@ class Evaluate(keras.callbacks.Callback):
         logs['mAP'] = self.mean_ap
 
         if self.verbose == 1:
-            print('mAP: {:.4f}'.format(self.mean_ap))
+            self.logger.info('mAP: {:.4f}'.format(self.mean_ap))
+
+        # Housekeeping
+        self.logger.info("Clearing session...")
+        gc.collect()
+        keras.backend.clear_session()

@@ -92,7 +92,7 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
 
     if args.evaluation and validation_generator:
         from eval.pascal import Evaluate
-        evaluation = Evaluate(validation_generator, prediction_model, tensorboard=tensorboard_callback)
+        evaluation = Evaluate(validation_generator, prediction_model, logger, tensorboard=tensorboard_callback)
         callbacks.append(evaluation)
 
     # save the model
@@ -157,7 +157,6 @@ def create_generators(args):
     from generators.csv_ import CSVGenerator
     train_generator = CSVGenerator(
         const.TRAIN_ANNOTATIONS_PATH,
-        args.classes_path,
         misc_effect=misc_effect,
         visual_effect=visual_effect,
         **common_args
@@ -166,7 +165,6 @@ def create_generators(args):
     if const.VAL_ANNOTATIONS_PATH:
         validation_generator = CSVGenerator(
             const.VAL_ANNOTATIONS_PATH,
-            args.classes_path,
             shuffle_groups=False,
             **common_args
         )
@@ -318,10 +316,10 @@ def main(current_datetime, logger, args=None):
         raise ValueError('When you have no validation data, you should not specify --compute-val-loss.')
 
     # start training
-    return model.fit_generator(
-        generator=train_generator,
+    return model.fit(
+        x=train_generator,
         # steps_per_epoch=args.steps,
-        initial_epoch=1,
+        initial_epoch=0,
         epochs=args.epochs,
         verbose=2,
         callbacks=callbacks,
