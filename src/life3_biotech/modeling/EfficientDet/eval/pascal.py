@@ -13,7 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import gc
 # import keras
 from tensorflow import keras
 import tensorflow as tf
@@ -107,3 +107,8 @@ class Evaluate(keras.callbacks.Callback):
 
         if self.verbose == 1:
             print('mAP: {:.4f}'.format(self.mean_ap))
+
+        # Housekeeping
+        self.logger.info('Clearing session...')
+        gc.collect()
+        keras.backend.clear_session()

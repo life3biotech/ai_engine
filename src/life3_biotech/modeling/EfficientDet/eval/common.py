@@ -13,14 +13,12 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
 import numpy as np
-import cv2
 import time
-
+# import pyximport
+# pyximport.install(build_dir='.', language_level=3)
 from generators.common import Generator
 from utils.compute_overlap import compute_overlap
-from utils.visualization import draw_detections, draw_annotations
 from tqdm import trange
 
 
@@ -82,10 +80,7 @@ def _get_detections(generator: Generator, model, score_threshold=0.05, max_detec
 
     for i in trange(generator.size(), mininterval=3.0, miniters=20, desc='Running network: '):
         image = generator.load_image(i)
-        src_image = image.copy()
         h, w = image.shape[:2]
-
-        anchors = generator.anchors
         image, scale = generator.preprocess_image(image)
 
         start = time.time()
@@ -96,16 +91,13 @@ def _get_detections(generator: Generator, model, score_threshold=0.05, max_detec
         boxes[:, :, 1] = np.clip(boxes[:, :, 1], 0, h - 1)
         boxes[:, :, 2] = np.clip(boxes[:, :, 2], 0, w - 1)
         boxes[:, :, 3] = np.clip(boxes[:, :, 3], 0, h - 1)
-
         # select indices which have a score above the threshold
         indices = np.where(scores[0, :] > score_threshold)[0]
 
         # select those scores
         scores = scores[0][indices]
-
         # find the order with which to sort the scores
         scores_sort = np.argsort(-scores)[:max_detections]
-
         # select detections
         # (n, 4)
         image_boxes = boxes[0, indices[scores_sort], :]
@@ -116,7 +108,6 @@ def _get_detections(generator: Generator, model, score_threshold=0.05, max_detec
         # (n, 6)
         detections = np.concatenate(
             [image_boxes, np.expand_dims(image_scores, axis=1), np.expand_dims(image_labels, axis=1)], axis=1)
-        
         seconds = time.time() - start
         total_time += seconds
 
@@ -145,6 +136,7 @@ def _get_annotations(generator):
         A list of lists containing the annotations for each image in the generator.
 
     """
+    # pylint: disable=no-member
     all_annotations = [[None for i in range(generator.num_classes())] for j in range(generator.size())]
 
     for i in trange(generator.size(), miniters=int(generator.size() / 100), desc='Parsing annotations: '):
@@ -162,14 +154,14 @@ def _get_annotations(generator):
 
 
 def evaluate(
-        generator,
-        model,
-        logger,
-        iou_threshold=[0.5],
-        score_threshold=0.01,
-        max_detections=100,
-        visualize=False,
-        test_set=False
+    generator,
+    model,
+    logger,
+    iou_threshold=[0.5],
+    score_threshold=0.01,
+    max_detections=100,
+    visualize=False,
+    test_set=False
 ):
     """
     Evaluate a given dataset using a given model.
@@ -285,7 +277,6 @@ def evaluate(
         average_precisions[label] = average_precision_class, num_annotations
         total_annot += num_annotations
     logger.info(f'Total # of annotations: {total_annot}')
-
     # compute per class average precision
     total_instances = []
     precisions = []
@@ -297,7 +288,8 @@ def evaluate(
         precisions.append(average_precision)
         proportion = num_annotations / total_annot
         weighted_ap += average_precision * proportion
-        wap5[label] = map5[label] * proportion
+        if len(map5) > 0:
+            wap5[label] = map5[label] * proportion
         metrics_dict['AP_' + label_name] = round(average_precision, 4)
     # compute mean AP & weighted AP
     mean_ap = sum(precisions) / sum(x > 0 for x in total_instances)
