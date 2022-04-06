@@ -43,6 +43,9 @@ class PipelineConfig:
             ]
             const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
             # Tile/slice processed images
+            const.TILE_COCO_FILTER_CATEGORIES = data_prep_params[
+                "tile_coco_filter_categories"
+            ]
             const.TILE_DATA_DIR_PATHS = data_prep_params["tile_data_dir_paths"]
             const.TILE_SLICE_HEIGHT = data_prep_params["tile_slice_height"]
             const.TILE_SLICE_WIDTH = data_prep_params["tile_slice_width"]

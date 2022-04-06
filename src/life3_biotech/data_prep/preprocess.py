@@ -10,6 +10,7 @@ from pconst import const
 from json import load
 from sklearn.model_selection import train_test_split
 
+import life3_biotech.data_prep.coco_filter as coco_filter
 from life3_biotech.data_prep.sahi.slicing import slice_coco
 from life3_biotech.data_prep.sahi.utils.coco import Coco
 
@@ -378,6 +379,8 @@ class Preprocessor:
         """
         self.logger.info("Tile/Slice of images processing...")
 
+        cocofilter = coco_filter.CocoFilter(self.logger)
+
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             # Original data path
             annot_path = Path(
@@ -389,6 +392,17 @@ class Preprocessor:
 
             # Tile data path
             orig_folder = os.path.basename(os.path.normpath(data_subdir))
+            before_tile_filter_annot_path = Path(
+                const.TILE_DATA_DIR_PATHS,
+                orig_folder,
+                const.ANNOTATIONS_SUBDIR,
+            )
+            before_tile_filter_annot_filepath = Path(
+                const.TILE_DATA_DIR_PATHS,
+                orig_folder,
+                const.ANNOTATIONS_SUBDIR,
+                "before_tile_filter_annot.json",
+            )
             tile_annot_path = Path(
                 const.TILE_DATA_DIR_PATHS,
                 orig_folder,
@@ -399,14 +413,21 @@ class Preprocessor:
                 const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
             )
 
-            # Display coco stats
-            coco = Coco.from_coco_dict_or_path(str(annot_path))
-            self.logger.info(f"Coco path: {annot_path}")
+            # Filter, treatment, exclude images of coco json file
+            self._make_dir(before_tile_filter_annot_path)
+            cocofilter.filter_coco(
+                annot_path,
+                before_tile_filter_annot_filepath,
+            )
+
+            # Display coco stats before image tile
+            coco = Coco.from_coco_dict_or_path(str(before_tile_filter_annot_filepath))
+            self.logger.info(f"Coco path: {before_tile_filter_annot_filepath}")
             self.logger.info(f"Coco Stat: {coco.stats}")
 
             # Tile/slice image
             slice_coco(
-                coco_annotation_file_path=annot_path,
+                coco_annotation_file_path=before_tile_filter_annot_filepath,
                 image_dir=img_path,
                 output_coco_annotation_file_name=tile_annot_path,
                 ignore_negative_samples=const.TILE_IGNORE_NEGATIVE_SAMPLES,
@@ -428,7 +449,7 @@ class Preprocessor:
         Args:
             concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
             test_size: Proportion of the dataset to include in the test split. Defaults to 0.2 (20%)
-            val_size: Proportion of the train dataset to include in the validation split. Defaults to 0.1 (10%)
+            val_size: Proportion of the train dataset tols - include in the validation split. Defaults to 0.1 (10%)
         Returns:
             X_train, y_train, X_test, y_test, X_val, y_val: Tuple containing split datasets
         """
