@@ -10,9 +10,9 @@ from pconst import const
 from json import load
 from sklearn.model_selection import train_test_split
 
-import life3_biotech.data_prep.coco_filter as coco_filter
-from life3_biotech.data_prep.sahi.slicing import slice_coco
-from life3_biotech.data_prep.sahi.utils.coco import Coco
+from . import coco_filter
+from .sahi.slicing import slice_coco
+from .sahi.utils.coco import Coco
 
 
 class Preprocessor:
@@ -68,7 +68,7 @@ class Preprocessor:
                 const.TILE_DATA_DIR_PATHS,
                 orig_folder,
                 const.ANNOTATIONS_SUBDIR,
-                const.COCO_ANNOTATION_FILENAME,
+                "before_tile_filter_annot.json",
             )
             tile_img_path = Path(
                 const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
@@ -82,7 +82,7 @@ class Preprocessor:
                 annot_files.append(tile_annot_path)
             else:
                 self.logger.error(
-                    f"Invalid directory structure in {data_subdir}. One of these subdirectories are missing: /images, /annotations"
+                    f"Invalid directory structure in {Path(const.TILE_DATA_DIR_PATHS,orig_folder)}. One of these subdirectories are missing: /images, /annotations"
                 )
         return annot_files
 
@@ -205,12 +205,12 @@ class Preprocessor:
             A DataFrame containing the cleaned annotations data.
         """
         df = concatenated_df.copy()
-        self.logger.info(f"**** Length of df before excluding images: {df.shape}")
+        self.logger.debug(f"**** Length of df before excluding images: {df.shape}")
         df = df[~df["file_name"].isin(const.EXCLUDED_IMAGES)]
         self.logger.info(
             f"Removing annotations of predefined excluded images: {const.EXCLUDED_IMAGES}"
         )
-        self.logger.info(f"**** Length of df after excluding images: {df.shape}")
+        self.logger.debug(f"**** Length of df after excluding images: {df.shape}")
         annotations_no_images = list(set(unique_images_list) - set(images_list))
         self.logger.warning(
             f"Number of annotations with no corresponding images: {len(annotations_no_images)}"
@@ -346,7 +346,7 @@ class Preprocessor:
                 const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
             )
 
-            self.logger.debug(f"Copying images from {img_src_dir_path}")
+            self.logger.info(f"Copying images from {img_src_dir_path}")
             for filename in os.listdir(img_src_dir_path):
                 self.logger.debug(
                     f"Destination file path: {Path(const.RAW_DATA_PATH, filename)}"
@@ -354,6 +354,7 @@ class Preprocessor:
                 if (
                     filename not in const.EXCLUDED_IMAGES
                     and not Path(const.RAW_DATA_PATH, filename).exists()
+                    and Path(img_src_dir_path, filename).is_file()
                 ):
                     try:
                         shutil.copy(
