@@ -30,7 +30,8 @@ data_prep:
     'cell accumulation (large cells)': 'cell accumulation'
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
-  # Tile/slice processed images  "./data/tile_processed"
+  # Tile/slice processed images
+  run_tiling: False
   tile_coco_filter_categories:
     - "Cells"
     - "cell accumulation (small cells)"
