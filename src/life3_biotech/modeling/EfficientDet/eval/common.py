@@ -322,16 +322,16 @@ def main(current_datetime, logger, args=None, model_path=None):
     os.environ['CUDA_VISIBLE_DEVICES'] = args.gpu
     common_args = {
         'batch_size': const.EVAL_BATCH_SIZE,
-        'phi': args.phi,
+        'phi': const.ED_TRAIN_BACKBONE,
     }
     test_generator = CSVGenerator(
         const.TEST_ANNOTATIONS_PATH,
         **common_args
     )
     if model_path is None:
-        model_path = f'{const.SAVED_MODEL_PATH}efficientdet_b{args.phi}_{current_datetime}.h5'
+        model_path = f'{const.SAVED_MODEL_PATH}efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}.h5'
     num_classes = test_generator.num_classes()
-    model, prediction_model = efficientdet(phi=args.phi, num_classes=num_classes, weighted_bifpn=args.weighted_bifpn)
+    model, prediction_model = efficientdet(phi=const.ED_TRAIN_BACKBONE, num_classes=num_classes, weighted_bifpn=args.weighted_bifpn)
     logger.info(f'Loading weights from {model_path}')
     prediction_model.load_weights(model_path, by_name=True)
     logger.info('Starting evaluation...')
