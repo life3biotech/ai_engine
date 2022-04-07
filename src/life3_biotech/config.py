@@ -19,7 +19,7 @@ class PipelineConfig:
         logger.debug(f"Loading params into constants: {params}")
 
         # Initialise data pipeline constants
-        if 'data_prep' in params:
+        if "data_prep" in params:
             logger.info("Initialising data pipeline constants")
             data_prep_params = params["data_prep"]
 
@@ -43,11 +43,21 @@ class PipelineConfig:
             ]
             const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
             # Tile/slice processed images
+            const.TILE_COCO_FILTER_CATEGORIES = data_prep_params[
+                "tile_coco_filter_categories"
+            ]
             const.TILE_DATA_DIR_PATHS = data_prep_params["tile_data_dir_paths"]
             const.TILE_SLICE_HEIGHT = data_prep_params["tile_slice_height"]
             const.TILE_SLICE_WIDTH = data_prep_params["tile_slice_width"]
-            const.TILE_OVERLAP_HEIGHT_RATIO = data_prep_params["tile_overlap_height_ratio"]
-            const.TILE_OVERLAP_WIDTH_RATIO = data_prep_params["tile_overlap_width_ratio"]
+            const.TILE_OVERLAP_HEIGHT_RATIO = data_prep_params[
+                "tile_overlap_height_ratio"
+            ]
+            const.TILE_OVERLAP_WIDTH_RATIO = data_prep_params[
+                "tile_overlap_width_ratio"
+            ]
+            const.TILE_IGNORE_NEGATIVE_SAMPLES = data_prep_params[
+                "tile_ignore_negative_samples"
+            ]
 
             const.TARGET_COL = data_prep_params["target_col"]
             const.SAVE_DATA_SPLITS = data_prep_params["save_data_splits"]
@@ -61,26 +71,26 @@ class PipelineConfig:
         if "train" in params:
             train_params = params["train"]
             logger.info("Initialising training constants")
-            const.TRAIN_MODEL_NAME = train_params['model_name']
-            const.TRAIN_EARLY_STOPPING = train_params['early_stopping']
-            const.TRAIN_EARLY_STOP_PATIENCE = train_params['patience']
-            const.EVAL_ONLY = train_params['eval_only']
-            const.LR_SCHEDULER = train_params['lr_scheduler']
-            const.INITIAL_LR = train_params['initial_lr']
+            const.TRAIN_MODEL_NAME = train_params["model_name"]
+            const.TRAIN_EARLY_STOPPING = train_params["early_stopping"]
+            const.TRAIN_EARLY_STOP_PATIENCE = train_params["patience"]
+            const.EVAL_ONLY = train_params["eval_only"]
+            const.LR_SCHEDULER = train_params["lr_scheduler"]
+            const.INITIAL_LR = train_params["initial_lr"]
             # LR parameters for 'reduce_on_plateau'
-            if 'lr_reduce_factor' in train_params:
-                const.TRAIN_LR_REDUCE_FACTOR = train_params['lr_reduce_factor']
-            if 'lr_reduce_patience' in train_params:
-                const.TRAIN_LR_REDUCE_PATIENCE = train_params['lr_reduce_patience']
-            if 'lr_min_delta' in train_params:
-                const.TRAIN_LR_MIN_DELTA = train_params['lr_min_delta']
+            if "lr_reduce_factor" in train_params:
+                const.TRAIN_LR_REDUCE_FACTOR = train_params["lr_reduce_factor"]
+            if "lr_reduce_patience" in train_params:
+                const.TRAIN_LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
+            if "lr_min_delta" in train_params:
+                const.TRAIN_LR_MIN_DELTA = train_params["lr_min_delta"]
             # Non-maximum suppression
-            if 'run_nms' in train_params:
-                const.RUN_TRAIN_NMS = train_params['run_nms']
-            if 'nms_threshold' in train_params:
-                const.TRAIN_NMS_THRESHOLD = train_params['nms_threshold']
-            if 'score_threshold' in train_params:
-                const.TRAIN_SCORE_THRESHOLD = train_params['score_threshold']
+            if "run_nms" in train_params:
+                const.RUN_TRAIN_NMS = train_params["run_nms"]
+            if "nms_threshold" in train_params:
+                const.TRAIN_NMS_THRESHOLD = train_params["nms_threshold"]
+            if "score_threshold" in train_params:
+                const.TRAIN_SCORE_THRESHOLD = train_params["score_threshold"]
 
         # Initialise constants for augmentation pipeline within training
         if "train_augmentation" in params:
@@ -96,29 +106,29 @@ class PipelineConfig:
             const.INFERENCE_OUTPUT_PATH = train_params["inference_output_path"]
             const.INFERENCE_MODE = train_params["inference_mode"]
 
-        if 'efficientdet' in params:
+        if "efficientdet" in params:
             ed_params = params["efficientdet"]
             logger.info("Initialising EfficientDet constants")
-            if 'train_annotations_path' in ed_params:
-                const.TRAIN_ANNOTATIONS_PATH = ed_params['train_annotations_path']
-            if 'val_annotations_path' in ed_params:
-                const.VAL_ANNOTATIONS_PATH = ed_params['val_annotations_path']
-            if 'test_annotations_path' in ed_params:
-                const.TEST_ANNOTATIONS_PATH = ed_params['test_annotations_path']
-            if 'snapshot-path' in ed_params:
-                const.SAVED_MODEL_PATH = ed_params['snapshot-path']
-            if 'saved_best_model' in ed_params:
-                const.BEST_MODEL = ed_params['saved_best_model']
+            if "train_annotations_path" in ed_params:
+                const.TRAIN_ANNOTATIONS_PATH = ed_params["train_annotations_path"]
+            if "val_annotations_path" in ed_params:
+                const.VAL_ANNOTATIONS_PATH = ed_params["val_annotations_path"]
+            if "test_annotations_path" in ed_params:
+                const.TEST_ANNOTATIONS_PATH = ed_params["test_annotations_path"]
+            if "snapshot-path" in ed_params:
+                const.SAVED_MODEL_PATH = ed_params["snapshot-path"]
+            if "saved_best_model" in ed_params:
+                const.BEST_MODEL = ed_params["saved_best_model"]
             # Parameters for anchor boxes
-            if 'anchor_box_scales' in ed_params:
-                const.ANCHOR_BOX_SCALES = ed_params['anchor_box_scales']
+            if "anchor_box_scales" in ed_params:
+                const.ANCHOR_BOX_SCALES = ed_params["anchor_box_scales"]
             else:
                 const.ANCHOR_BOX_SCALES = None
-            if 'anchor_box_ratios' in ed_params:
-                const.ANCHOR_BOX_RATIOS = ed_params['anchor_box_ratios']
-            if 'train_backbone' in ed_params:
-                const.ED_TRAIN_BACKBONE = ed_params['train_backbone']
-            if 'image_sizes' in ed_params:
-                const.ED_IMAGE_SIZES = tuple(ed_params['image_sizes'])
-            if 'inference_backbone' in ed_params:
-                const.ED_INFERENCE_BACKBONE = ed_params['inference_backbone']
+            if "anchor_box_ratios" in ed_params:
+                const.ANCHOR_BOX_RATIOS = ed_params["anchor_box_ratios"]
+            if "train_backbone" in ed_params:
+                const.ED_TRAIN_BACKBONE = ed_params["train_backbone"]
+            if "image_sizes" in ed_params:
+                const.ED_IMAGE_SIZES = tuple(ed_params["image_sizes"])
+            if "inference_backbone" in ed_params:
+                const.ED_INFERENCE_BACKBONE = ed_params["inference_backbone"]
