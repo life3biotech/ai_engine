@@ -79,11 +79,11 @@ class PipelineConfig:
             const.INITIAL_LR = train_params["initial_lr"]
             # LR parameters for 'reduce_on_plateau'
             if "lr_reduce_factor" in train_params:
-                const.TRAIN_LR_REDUCE_FACTOR = train_params["lr_reduce_factor"]
+                const.LR_REDUCE_FACTOR = train_params["lr_reduce_factor"]
             if "lr_reduce_patience" in train_params:
-                const.TRAIN_LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
+                const.LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
             if "lr_min_delta" in train_params:
-                const.TRAIN_LR_MIN_DELTA = train_params["lr_min_delta"]
+                const.LR_MIN_DELTA = train_params["lr_min_delta"]
             # Non-maximum suppression
             if "run_nms" in train_params:
                 const.RUN_TRAIN_NMS = train_params["run_nms"]
