@@ -11,7 +11,7 @@ cache:
 
 stages:
   - test
-  - build
+  # - build
   - deploy-docs
 
 test:pylint-pytest:
@@ -22,7 +22,7 @@ test:pylint-pytest:
     - conda env create -f life3-biotech-conda-env.yml
     - source activate life3-biotech
   script:
-    - pylint src --fail-under=5.0 --ignore=tests --disable=W1202
+    - pylint src --ignore=tests --disable=W1202
     # - pytest src/tests
   rules:
     - if: $CI_MERGE_REQUEST_IID

@@ -1,5 +1,5 @@
 data_prep:
-  load_data: True
+  load_data: False
   models: [
     "efficientdet"
     ]
@@ -10,8 +10,9 @@ data_prep:
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 36-55 revised"
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 56-75 revised"
     - "/polyaxon-v1-data/workspaces/jannah/data/life3-aut0/20220224_1032621/images 76-100 revised"
-  raw_data_path: "/polyaxon-v1-data/workspaces/jannah/data/raw"
-  processed_data_path: "/polyaxon-v1-data/workspaces/jannah/data/processed"
+  raw_data_path: "./data/raw"
+  processed_data_path: "./data/processed"
+  interim_data_path: "./data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -19,34 +20,59 @@ data_prep:
   excluded_images:
     - "3 c10L d10 20x undilut OD8.jpg"
   class_map: {
-        'Cells': 0,
-        'cell accumulation (small cells)': 1,
-        'cell accumulation (large cells)': 2
+        'cell': 0,
+        'cell accumulation': 1
     }
-  remap_class: {
+  remap_classes: True
+  class_remapping: {
+    'Cells': 'cell',
+    'cell accumulation (small cells)': 'cell accumulation',
+    'cell accumulation (large cells)': 'cell accumulation'
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
+  # Tile/slice processed images
+  run_tiling: False
+  tile_data_dir_paths: "./data/tile_processed"
+  tile_slice_height : 512
+  tile_slice_width : 512
+  tile_overlap_height_ratio : 0.2
+  tile_overlap_width_ratio : 0.2
+  # Data Split
+  target_col: 'category_name'
+  save_data_splits: True
+  val_size: 0.1 # The proportion of data allocated to the validation set, based on the proportion of the overall data
+  test_size: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
+  train_base_filename: 'annotations_train.csv'
+  validation_base_filename: 'annotations_validation.csv'
+  test_base_filename: 'annotations_test.csv'
 
 train:
+  model_name: "efficientdet"
   setup_mlflow: false
   mlflow_autolog: false
   mlflow_tracking_uri: "mlflow-nginx-server-svc.polyaxon-v1.svc.local"
   mlflow_exp_name: "life3-biotech"
   mlflow_artifact_location: "gs://life3-biotech-artifacts/mlflow-tracking-server"
   data_path: "../life3-biotech-data/processed/subdir"
-  val_split: 0.2 # The proportion of data allocated to the validation set, based on the proportion of the overall data
-  test_split: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
-  batch_size: 8
   seed: 4002
-  epochs: 3
   optimiser: "adam"
   metric: "accuracy"
+  lr_scheduler: "reduce_on_plateau"
+  initial_lr: 0.001
+  # LR parameters for reduce on plateau
+  lr_reduce_factor: 0.1
+  lr_reduce_patience: 2
+  lr_min_delta: 0.01
   # Augmentation
   run_data_augmentation: False
   save_augmented_images: False
-  run_tiling: False
   early_stopping: True
+  eval_only: False
   patience: 20
+  # Non-maximum suppression params
+  run_nms: True
+  nms_threshold: 0.5
+  score_threshold: 0.05
 
 train_augmentation:
   aug_seed: 42
@@ -57,3 +83,28 @@ inference:
   save_output_image: True
   inference_output_path: ""
   inference_mode: "multiple"
+
+efficientdet:
+    train_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_train_efficientdet.csv'
+    val_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_val_efficientdet.csv'
+    test_annotations_path: '/polyaxon-v1-data/workspaces/jannah/data/processed/annotations_test_efficientdet.csv'
+    saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
+    snapshot-path: '/polyaxon-v1-data/workspaces/jannah/models/'
+    gpu: -1
+    train_backbone: 0
+    snapshot: 'imagenet'
+    weighted-bifpn: True
+    freeze-bn: False
+    freeze-backbone: False
+    random-transform: False
+    batch_size: 8
+    epochs: 5
+    steps: 100
+    inference_backbone: 0
+    inference_model_path: ''
+    inference_confidence_cutoff: 0.3
+    # parameters for anchor boxes
+    anchor_box_ratios: [1, 0.5, 2]
+    anchor_box_scales: [0.5, 1.0, 2.0]
+    image_sizes: [512, 640, 768, 896, 1024, 1280, 1408]
+  
