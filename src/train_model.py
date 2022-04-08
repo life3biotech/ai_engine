@@ -79,7 +79,6 @@ def run_efficientdet(current_datetime: str, logger) -> None:
     logger.info('Parsing EfficientDet model parameters')
     args = life3.modeling.utils.transform_args(model_args)  # returns a list of arguments
     if args:
-        # logger.info(f'EfficientDet model hyperparameters: {args}')
         if const.EVAL_ONLY:
             model_path = f'{const.SAVED_MODEL_PATH}{const.BEST_MODEL}'
         else:
@@ -88,6 +87,7 @@ def run_efficientdet(current_datetime: str, logger) -> None:
             train_efficientdet(current_datetime, logger, args)
         logger.info('Calling EfficientDet model evaluation...')
         eval_metrics_dict = eval_efficientdet(current_datetime, logger, args, model_path)
+        logger.info(f'Metrics: {eval_metrics_dict}')
     else:
         logger.warning(f'Unable to proceed with training {const.TRAIN_MODEL_NAME}')
 

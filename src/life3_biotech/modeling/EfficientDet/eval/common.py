@@ -15,8 +15,6 @@ limitations under the License.
 """
 import numpy as np
 import time
-# import pyximport
-# pyximport.install(build_dir='.', language_level=3)
 from generators.common import Generator
 from utils.compute_overlap import compute_overlap
 from tqdm import trange
