@@ -12,7 +12,7 @@ import numpy as np
 import requests
 from PIL import Image
 
-from life3_biotech.data_prep.sahi.utils.file import Path
+from .file import Path
 
 
 class Colors:

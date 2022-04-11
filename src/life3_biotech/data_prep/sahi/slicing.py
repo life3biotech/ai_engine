@@ -13,14 +13,14 @@ from PIL import Image
 from shapely.errors import TopologicalError
 from tqdm import tqdm
 
-from life3_biotech.data_prep.sahi.utils.coco import (
+from .utils.coco import (
     Coco,
     CocoAnnotation,
     CocoImage,
     create_coco_dict,
 )
-from life3_biotech.data_prep.sahi.utils.cv import read_image_as_pil
-from life3_biotech.data_prep.sahi.utils.file import load_json, save_json
+from .utils.cv import read_image_as_pil
+from .utils.file import load_json, save_json
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

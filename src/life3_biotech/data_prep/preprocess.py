@@ -1,7 +1,7 @@
 import pandas as pd
 import os
 import shutil
-import skimage
+import skimage.io
 
 from pathlib import Path, PurePath
 from csv import DictWriter, writer
@@ -10,9 +10,13 @@ from pconst import const
 from json import load
 from sklearn.model_selection import train_test_split
 
-import life3_biotech.data_prep.coco_filter as coco_filter
-from life3_biotech.data_prep.sahi.slicing import slice_coco
-from life3_biotech.data_prep.sahi.utils.coco import Coco
+# import life3_biotech.data_prep.coco_filter as coco_filter
+# from life3_biotech.data_prep.sahi.slicing import slice_coco
+# from life3_biotech.data_prep.sahi.utils.coco import Coco
+
+from . import coco_filter as coco_filter
+from .sahi.slicing import slice_coco
+from .sahi.utils.coco import Coco
 
 
 class Preprocessor:
@@ -384,18 +388,14 @@ class Preprocessor:
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             # Original data path
             annot_path = Path(
-                data_subdir,
-                const.ANNOTATIONS_SUBDIR,
-                const.COCO_ANNOTATION_FILENAME,
+                data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME,
             )
             img_path = Path(data_subdir, const.IMAGES_SUBDIR)
 
             # Tile data path
             orig_folder = os.path.basename(os.path.normpath(data_subdir))
             before_tile_filter_annot_path = Path(
-                const.TILE_DATA_DIR_PATHS,
-                orig_folder,
-                const.ANNOTATIONS_SUBDIR,
+                const.TILE_DATA_DIR_PATHS, orig_folder, const.ANNOTATIONS_SUBDIR,
             )
             before_tile_filter_annot_filepath = Path(
                 const.TILE_DATA_DIR_PATHS,
@@ -416,8 +416,7 @@ class Preprocessor:
             # Filter, treatment, exclude images of coco json file
             self._make_dir(before_tile_filter_annot_path)
             cocofilter.filter_coco(
-                annot_path,
-                before_tile_filter_annot_filepath,
+                annot_path, before_tile_filter_annot_filepath,
             )
 
             # Display coco stats before image tile
