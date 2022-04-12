@@ -75,15 +75,18 @@ class PipelineConfig:
             const.TRAIN_EARLY_STOPPING = train_params["early_stopping"]
             const.TRAIN_EARLY_STOP_PATIENCE = train_params["patience"]
             const.EVAL_ONLY = train_params["eval_only"]
+            const.EVAL_BATCH_SIZE = train_params["eval_batch_size"]
+            const.EVAL_IOU_THRESHOLD = train_params["eval_iou_threshold"]
+            const.EVAL_SCORE_THRESHOLD = train_params["eval_score_threshold"]
             const.LR_SCHEDULER = train_params["lr_scheduler"]
             const.INITIAL_LR = train_params["initial_lr"]
             # LR parameters for 'reduce_on_plateau'
             if "lr_reduce_factor" in train_params:
-                const.TRAIN_LR_REDUCE_FACTOR = train_params["lr_reduce_factor"]
+                const.LR_REDUCE_FACTOR = train_params["lr_reduce_factor"]
             if "lr_reduce_patience" in train_params:
-                const.TRAIN_LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
+                const.LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
             if "lr_min_delta" in train_params:
-                const.TRAIN_LR_MIN_DELTA = train_params["lr_min_delta"]
+                const.LR_MIN_DELTA = train_params["lr_min_delta"]
             # Non-maximum suppression
             if "run_nms" in train_params:
                 const.RUN_TRAIN_NMS = train_params["run_nms"]

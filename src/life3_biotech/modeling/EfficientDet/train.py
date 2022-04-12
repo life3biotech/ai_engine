@@ -115,11 +115,11 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
     if const.LR_SCHEDULER == 'reduce_on_plateau':
         callbacks.append(keras.callbacks.ReduceLROnPlateau(
             monitor='val_loss',
-            factor=const.TRAIN_LR_REDUCE_FACTOR,
-            patience=const.TRAIN_LR_REDUCE_PATIENCE,
+            factor=const.LR_REDUCE_FACTOR,
+            patience=const.LR_REDUCE_PATIENCE,
             verbose=1,
             mode='auto',
-            min_delta=const.TRAIN_LR_MIN_DELTA,
+            min_delta=const.LR_MIN_DELTA,
             cooldown=0,
             min_lr=0
         ))
