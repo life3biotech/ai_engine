@@ -14,8 +14,8 @@ from typing import Dict, List, Optional, Set, Union
 import numpy as np
 from tqdm import tqdm
 
-from life3_biotech.data_prep.sahi.utils.file import load_json, save_json
-from life3_biotech.data_prep.sahi.utils.shapely import ShapelyAnnotation, box, get_shapely_multipolygon
+from .file import load_json, save_json
+from .shapely import ShapelyAnnotation, box, get_shapely_multipolygon
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

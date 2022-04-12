@@ -27,7 +27,6 @@ class PipelineConfig:
             const.PROCESSED_DATA_PATH = data_prep_params["processed_data_path"]
             const.INTERIM_DATA_PATH = data_prep_params["interim_data_path"]
             const.RAW_DATA_PATH = data_prep_params["raw_data_path"]
-            const.LOAD_DATA = data_prep_params["load_data"]
             const.MODELS = data_prep_params["models"]
             const.ANNOTATIONS_SUBDIR = data_prep_params["annotations_subdir"]
             const.IMAGES_SUBDIR = data_prep_params["images_subdir"]
@@ -43,6 +42,7 @@ class PipelineConfig:
             ]
             const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
             # Tile/slice processed images
+            const.RUN_TILING = data_prep_params["run_tiling"]            
             const.TILE_COCO_FILTER_CATEGORIES = data_prep_params[
                 "tile_coco_filter_categories"
             ]
@@ -71,6 +71,7 @@ class PipelineConfig:
         if "train" in params:
             train_params = params["train"]
             logger.info("Initialising training constants")
+            const.LOAD_DATA = train_params["load_data"]
             const.TRAIN_MODEL_NAME = train_params["model_name"]
             const.TRAIN_EARLY_STOPPING = train_params["early_stopping"]
             const.TRAIN_EARLY_STOP_PATIENCE = train_params["patience"]

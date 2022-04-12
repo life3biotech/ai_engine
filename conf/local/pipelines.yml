@@ -1,5 +1,4 @@
 data_prep:
-  load_data: False
   models: [
     "efficientdet"
     ]
@@ -10,9 +9,9 @@ data_prep:
     - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 36-55 revised"
     - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 56-75 revised"
     - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 76-100 revised"
-  raw_data_path: "./data/raw"
-  processed_data_path: "./data/processed"
-  interim_data_path: "./data/interim"
+  raw_data_path: "/Users/snjannah/Documents/workspace/life3/data/raw"
+  processed_data_path: "/Users/snjannah/Documents/workspace/life3/data/processed"
+  interim_data_path: "/Users/snjannah/Documents/workspace/life3/data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -37,9 +36,9 @@ data_prep:
     - "Cells"
     - "cell accumulation (small cells)"
     - "cell accumulation (large cells)"
-  tile_data_dir_paths: "./data/tile_processed"
-  tile_slice_height : 512
-  tile_slice_width : 512
+  tile_data_dir_paths: "/Users/snjannah/Documents/workspace/life3/data/tile_processed"
+  tile_slice_height : 640
+  tile_slice_width : 640
   tile_overlap_height_ratio : 0.2
   tile_overlap_width_ratio : 0.2
   tile_ignore_negative_samples : False # If True, images without annotations are ignored
@@ -53,6 +52,7 @@ data_prep:
   test_base_filename: 'annotations_test.csv'
 
 train:
+  load_data: True
   model_name: "efficientdet"
   setup_mlflow: false
   mlflow_autolog: false
@@ -72,7 +72,7 @@ train:
   # Augmentation
   run_data_augmentation: False
   save_augmented_images: False
-  early_stopping: True
+  early_stopping: False
   eval_only: False
   patience: 20
   # Non-maximum suppression params
@@ -101,15 +101,15 @@ efficientdet:
     saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
     snapshot-path: './models/'
     gpu: -1
-    train_backbone: 0
+    train_backbone: 1
     snapshot: 'imagenet'
     weighted-bifpn: True
     freeze-bn: False
     freeze-backbone: False
     random-transform: False
     batch_size: 8
-    epochs: 5
-    steps: 100
+    epochs: 10
+    steps: 12
     inference_backbone: 0
     inference_model_path: ''
     inference_confidence_cutoff: 0.3

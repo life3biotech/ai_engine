@@ -4,7 +4,6 @@ import pathlib
 import hydra
 from pconst import const
 
-# from . import life3_biotech as life3
 import life3_biotech as life3
 
 
@@ -28,16 +27,18 @@ def run_data_pipeline(logger):
     preprocessor.generate_image_tiles()
     df = preprocessor.preprocess_annotations()
     X_train, y_train, X_test, y_test, X_val, y_val = preprocessor.split_data(
-        df, test_size=const.TEST_SIZE, val_size=const.VAL_SIZE)
+        df, test_size=const.TEST_SIZE, val_size=const.VAL_SIZE
+    )
 
-    if 'efficientdet' in const.MODELS:
+    if "efficientdet" in const.MODELS:
         ed_pipeline = life3.data_prep.preprocess_efficientdet.EfficientDetPipeline()
         # generate annotations for each dataset (train, val, test)
-        ed_pipeline.generate_annotations(logger,"train", X_train)
-        ed_pipeline.generate_annotations(logger,"val", X_val)
-        ed_pipeline.generate_annotations(logger,"test", X_test)
+        ed_pipeline.generate_annotations(logger, "train", X_train)
+        ed_pipeline.generate_annotations(logger, "val", X_val)
+        ed_pipeline.generate_annotations(logger, "test", X_test)
 
     logger.info("Data preparation pipeline has completed.")
+
 
 if __name__ == "__main__":
     main()
