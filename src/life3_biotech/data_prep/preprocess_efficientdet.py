@@ -48,7 +48,7 @@ class EfficientDetPipeline:
                 ]
             )
         with open(
-            PurePath(const.PROCESSED_DATA_PATH, f"annotations_{dataset_name}_efficientdet.csv"), "w", newline=""
+            PurePath(const.PROCESSED_DATA_PATH, f"annotations_{dataset_name}_efficientdet_b{const.ED_TRAIN_BACKBONE}.csv"), "w", newline=""
         ) as csv_file:
             csv_writer = writer(csv_file, delimiter=",")
             for data in data_value:
