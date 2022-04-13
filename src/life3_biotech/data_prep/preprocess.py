@@ -10,10 +10,6 @@ from pconst import const
 from json import load
 from sklearn.model_selection import train_test_split
 
-# import life3_biotech.data_prep.coco_filter as coco_filter
-# from life3_biotech.data_prep.sahi.slicing import slice_coco
-# from life3_biotech.data_prep.sahi.utils.coco import Coco
-
 from . import coco_filter as coco_filter
 from .sahi.slicing import slice_coco
 from .sahi.utils.coco import Coco
@@ -72,7 +68,7 @@ class Preprocessor:
                 const.TILE_DATA_DIR_PATHS,
                 orig_folder,
                 const.ANNOTATIONS_SUBDIR,
-                "before_tile_filter_annot.json",
+                const.COCO_ANNOTATION_FILENAME,
             )
             tile_img_path = Path(
                 const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
