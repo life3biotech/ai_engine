@@ -4,7 +4,8 @@ import pathlib
 import hydra
 from pconst import const
 
-import life3_biotech as life3
+# import life3_biotech as life3
+from . import life3_biotech as life3
 
 
 @hydra.main(config_path="../conf/base", config_name="pipelines.yml")
@@ -22,9 +23,11 @@ def main(args):
 
     run_data_pipeline(logger)
 
+
 def run_data_pipeline(logger):
     preprocessor = life3.data_prep.preprocess.Preprocessor(logger)
-    preprocessor.generate_image_tiles()
+    if const.RUN_TILING:
+        preprocessor.generate_image_tiles()
     df = preprocessor.preprocess_annotations()
     X_train, y_train, X_test, y_test, X_val, y_val = preprocessor.split_data(
         df, test_size=const.TEST_SIZE, val_size=const.VAL_SIZE

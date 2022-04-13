@@ -37,8 +37,8 @@ class Preprocessor:
         self._make_dir(const.RAW_DATA_PATH)
         self._make_dir(const.INTERIM_DATA_PATH)
 
-        self._copy_raw_images()
-        df_concat_list = self._convert_raw_annotations()
+        self._copy_raw_images(const.RUN_TILING)
+        df_concat_list = self._convert_raw_annotations(const.RUN_TILING)
 
         concatenated_df = pd.concat(df_concat_list, ignore_index=True)
         concatenated_df = self._encode_classes(concatenated_df)
@@ -53,37 +53,58 @@ class Preprocessor:
         self.processed_annotations_df = concatenated_df
         return concatenated_df
 
-    def _get_raw_annotation_file_paths(self) -> List:
         """
-        Traverses the list of data subdirectories specified in the config file and validates the directory structure of each one.
-
+ 
         Returns:
             A list of COCO annotation file paths.
         """
+
+    def _get_raw_annotation_file_paths(self, tile_ok: bool) -> List:
+        """
+        Traverses the list of data subdirectories specified in the config file and validates the directory structure of each one.
+
+        Args:
+            tile_ok (bool): True = Enable image tile function
+
+        Returns:
+            List: A list of COCO annotation file paths.
+        """
         annot_files = []
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
-            # Tile data path
-            orig_folder = os.path.basename(os.path.normpath(data_subdir))
-            tile_annot_path = Path(
-                const.TILE_DATA_DIR_PATHS,
-                orig_folder,
-                const.ANNOTATIONS_SUBDIR,
-                const.COCO_ANNOTATION_FILENAME,
-            )
-            tile_img_path = Path(
-                const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
-            )
+
+            if tile_ok:
+                # Tile data path
+                orig_folder = os.path.basename(os.path.normpath(data_subdir))
+                annot_path = Path(
+                    const.TILE_DATA_DIR_PATHS,
+                    orig_folder,
+                    const.ANNOTATIONS_SUBDIR,
+                    const.COCO_ANNOTATION_FILENAME,
+                )
+                img_path = Path(
+                    const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
+                )
+            else:
+                annot_path = Path(
+                    data_subdir,
+                    const.ANNOTATIONS_SUBDIR,
+                    const.COCO_ANNOTATION_FILENAME,
+                )
+                img_path = Path(data_subdir, const.IMAGES_SUBDIR)
 
             if (
-                tile_annot_path.exists()
-                and tile_img_path.exists()
-                and tile_img_path.is_dir()
+                annot_path.exists() and img_path.exists() and img_path.is_dir()
             ):  # check if both images & annotations subdirectories exist
-                annot_files.append(tile_annot_path)
+                annot_files.append(annot_path)
             else:
-                self.logger.error(
-                    f"Invalid directory structure in {Path(const.TILE_DATA_DIR_PATHS,orig_folder)}. One of these subdirectories are missing: /images, /annotations"
-                )
+                if tile_ok:
+                    self.logger.error(
+                        f"Invalid directory structure in {Path(const.TILE_DATA_DIR_PATHS,orig_folder)}. One of these subdirectories are missing: /images, /annotations"
+                    )
+                else:
+                    self.logger.error(
+                        f"Invalid directory structure in {data_subdir}. One of these subdirectories are missing: /images, /annotations"
+                    )
         return annot_files
 
     def _load_coco_annotations(self, path_to_coco_annot: PurePath) -> Dict:
@@ -101,7 +122,7 @@ class Preprocessor:
 
         return coco_annotation
 
-    def _convert_raw_annotations(self) -> List:
+    def _convert_raw_annotations(self, tile_ok: bool) -> List:
         """
         Converts & combines COCO annotations into pandas DataFrames while removing unnecessary metadata.
 
@@ -109,17 +130,18 @@ class Preprocessor:
             A list of DataFrames, with each dataframe containing data from one COCO annotation file.
         """
         df_concat_list = []
-        for annot_file_path in self._get_raw_annotation_file_paths():
+        for annot_file_path in self._get_raw_annotation_file_paths(tile_ok):
             coco_annotations = self._load_coco_annotations(annot_file_path)
 
             image_info = coco_annotations["images"]
             df_images = pd.DataFrame(image_info)
             df_images.set_index("id", inplace=True)
-            # df_images.drop(
-            #     labels=["license", "flickr_url", "coco_url", "date_captured"],
-            #     axis=1,
-            #     inplace=True,
-            # )
+            if not const.RUN_TILING:
+                df_images.drop(
+                    labels=["license", "flickr_url", "coco_url", "date_captured"],
+                    axis=1,
+                    inplace=True,
+                )
 
             categories_mapping = coco_annotations["categories"]
             df_cat = pd.DataFrame(categories_mapping)
@@ -130,12 +152,16 @@ class Preprocessor:
             self.logger.debug(f"Number of annotations: {len(annotations)}")
             df_annot = pd.DataFrame(annotations)
             df_annot.set_index("id", inplace=True)
-            df_annot.drop(
-                # labels=["segmentation", "iscrowd", "attributes"], axis=1, inplace=True
-                labels=["segmentation", "iscrowd"],
-                axis=1,
-                inplace=True,
-            )
+            if not const.RUN_TILING:
+                df_annot.drop(
+                    labels=["segmentation", "iscrowd", "attributes"],
+                    axis=1,
+                    inplace=True,
+                )
+            else:
+                df_annot.drop(
+                    labels=["segmentation", "iscrowd"], axis=1, inplace=True,
+                )
 
             final_df = df_annot.merge(df_images, left_on="image_id", right_on="id")
             final_df = final_df.merge(df_cat, left_on="category_id", right_on="id")
@@ -333,18 +359,22 @@ class Preprocessor:
         df.drop("bbox", axis=1, inplace=True)
         return df
 
-    def _copy_raw_images(self) -> None:
+    def _copy_raw_images(self, tile_ok: bool) -> None:
         """
         Copies all image files from the data subdirectories into the raw data directory, except the excluded files specified in the config.
+
+        Args:
+            tile_ok (bool): True = Enable image tile function
         """
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
-            # img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
-
-            # Tile data path
-            orig_folder = os.path.basename(os.path.normpath(data_subdir))
-            img_src_dir_path = Path(
-                const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
-            )
+            if tile_ok:
+                # Tile data path
+                orig_folder = os.path.basename(os.path.normpath(data_subdir))
+                img_src_dir_path = Path(
+                    const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
+                )
+            else:
+                img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
 
             self.logger.info(f"Copying images from {img_src_dir_path}")
             for filename in os.listdir(img_src_dir_path):
@@ -375,12 +405,25 @@ class Preprocessor:
 
     def generate_image_tiles(self) -> None:
         """
+        Create orig_allimagename.csv containing all original image filename with annotation and save to const.TILE_DATA_DIR_PATHS path.
+
         Slice/Tile COCO annotation and image files and save to tile processed directory,
         keeping the same list of data subdirectories specified in the config file.
         """
         self.logger.info("Tile/Slice of images processing...")
 
         cocofilter = coco_filter.CocoFilter(self.logger)
+
+        # Extract all valid original image filename with annotations for metadata logging purpose.
+        df_concat_list = self._convert_raw_annotations(False)
+        concatenated_df = pd.concat(df_concat_list, ignore_index=True)
+        self._make_dir(const.TILE_DATA_DIR_PATHS)
+        orig_allimagename_csv = Path(
+            const.TILE_DATA_DIR_PATHS, "orig_allimagename.csv",
+        )
+        pd.DataFrame(concatenated_df.file_name.unique()).to_csv(
+            orig_allimagename_csv, header=None, index=None
+        )
 
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             # Original data path
