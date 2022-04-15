@@ -47,8 +47,6 @@ class Preprocessor:
         concatenated_df = self._clean_data(concatenated_df)
         concatenated_df = self._add_metadata(concatenated_df)
 
-        print("concatenated_df: ", concatenated_df.head())
-
         annot_processed_path = PurePath(
             const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME
         )
@@ -408,99 +406,91 @@ class Preprocessor:
             os.makedirs(dir_path)
 
     def _add_metadata(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Add metadata 'incubation_day', 'dilution_factor' and 'optical_density' for stratification
 
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+
+        Returns:
+            pd.DataFrame: Appended metadata to annotations dataframe.
+        """
         df = concatenated_df.copy()
         self.logger.info("Add metadata to treated dataframe")
 
-        unique_images_list = df["file_name"].unique()
+        df_metadata = pd.read_excel(const.META_DATA_FILENAME, engine="openpyxl")
+        df_metadata["Filename"] = df_metadata["Filename"].astype(str)
+        df_metadata.replace({"undiluted": 0, np.nan: 0}, inplace=True)
+        df_metadata.rename(
+            columns={
+                "Incubation day": "incubation_day",
+                "Dilution Factor (unit)": "dilution_factor",
+                "Optical Density": "optical_density",
+            },
+            inplace=True,
+        )
+        selected_col = [
+            "Filename",
+            "incubation_day",
+            "dilution_factor",
+            "optical_density",
+        ]
 
         if const.RUN_TILING:
-            pass
+            df["file_name_split"] = df.file_name.str.rsplit("_", n=4, expand=True)[0]
         else:
-            df_metadata = pd.read_excel(const.META_DATA_FILENAME, engine="openpyxl")
-            df_metadata["Filename"] = df_metadata["Filename"].astype(str)
-            df_metadata.replace({"undiluted": 0, np.nan: 0}, inplace=True)
-            df_metadata.rename(
-                columns={
-                    "Incubation day": "incubation_day",
-                    "Dilution Factor (unit)": "dilution_factor",
-                    "Optical Density": "optical_density",
-                },
-                inplace=True,
-            )
-            selected_col = [
-                "Filename",
-                "incubation_day",
-                "dilution_factor",
-                "optical_density",
-            ]
+            df["file_name_split"] = df.file_name.str.rsplit(".", n=1, expand=True)[0]
 
-            concatenated_df["file_name_split"] = concatenated_df.file_name.str.rsplit(
-                ".", n=1, expand=True
-            )[0]
-            merged_df = pd.merge(
-                left=concatenated_df,
-                right=df_metadata[selected_col],
-                how="left",
-                left_on="file_name_split",
-                right_on="Filename",
-            )
+        merged_df = pd.merge(
+            left=df,
+            right=df_metadata[selected_col],
+            how="left",
+            left_on="file_name_split",
+            right_on="Filename",
+        )
 
-            # TODO Bin optical_density numerical value according to quartile value (KIV)
-            # q1, q2, q3, q4 = (
-            #     merged_df["optical_density"].quantile(0),
-            #     merged_df["optical_density"].quantile(0.25),
-            #     merged_df["optical_density"].quantile(0.5),
-            #     merged_df["optical_density"].quantile(0.75),
-            # )
-            # merged_df["optical_density_bin"] = (
-            #     pd.cut(
-            #         merged_df.optical_density,
-            #         bins=[q1, q2, q3, q4, np.inf],
-            #         labels=False,
-            #         right=False,
-            #     )
-            #     + 1
-            # )
+        # TODO Bin optical_density numerical value according to quartile value (KIV)
+        # q1, q2, q3, q4 = (
+        #     merged_df["optical_density"].quantile(0),
+        #     merged_df["optical_density"].quantile(0.25),
+        #     merged_df["optical_density"].quantile(0.5),
+        #     merged_df["optical_density"].quantile(0.75),
+        # )
+        # merged_df["optical_density_bin"] = (
+        #     pd.cut(
+        #         merged_df.optical_density,
+        #         bins=[q1, q2, q3, q4, np.inf],
+        #         labels=False,
+        #         right=False,
+        #     )
+        #     + 1
+        # )
 
-            # Create multi-col for stratification
-            # incubation_day + dilution_factor
-            merged_df["incub_day_dilu_fact"] = (
-                merged_df["incubation_day"].astype(str)
-                + "_"
-                + merged_df["dilution_factor"].astype(str)
-            )
-            # # TODO incubation_day + dilution_factor + optical_density_bin
-            # merged_df["incub_day_dilu_fact_optical_bin"] = (
-            #     merged_df["incubation_day"].astype(str)
-            #     + "_"
-            #     + merged_df["dilution_factor"].astype(str)
-            #     + "_"
-            #     + merged_df["optical_density_bin"].astype(str)
-            # )
+        # Create multi-column for stratification
+        # incubation_day + dilution_factor
+        merged_df["incub_day_dilu_fact"] = (
+            merged_df["incubation_day"].astype(str)
+            + "_"
+            + merged_df["dilution_factor"].astype(str)
+        )
+        # # TODO incubation_day + dilution_factor + optical_density_bin
+        # merged_df["incub_day_dilu_fact_optical_bin"] = (
+        #     merged_df["incubation_day"].astype(str)
+        #     + "_"
+        #     + merged_df["dilution_factor"].astype(str)
+        #     + "_"
+        #     + merged_df["optical_density_bin"].astype(str)
+        # )
         return merged_df
 
     def generate_image_tiles(self) -> None:
         """
-        Create orig_allimagename.csv containing all original image filename with annotation and save to const.TILE_DATA_DIR_PATHS path.
-
         Slice/Tile COCO annotation and image files and save to tile processed directory,
         keeping the same list of data subdirectories specified in the config file.
         """
         self.logger.info("Tile/Slice of images processing...")
 
         cocofilter = coco_filter.CocoFilter(self.logger)
-
-        # Extract all valid original image filename with annotations for metadata logging purpose.
-        df_concat_list = self._convert_raw_annotations(False)
-        concatenated_df = pd.concat(df_concat_list, ignore_index=True)
-        self._make_dir(const.TILE_DATA_DIR_PATHS)
-        orig_allimagename_csv = Path(
-            const.TILE_DATA_DIR_PATHS, "orig_allimagename.csv",
-        )
-        pd.DataFrame(concatenated_df.file_name.unique()).to_csv(
-            orig_allimagename_csv, header=None, index=None
-        )
 
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             # Original data path
@@ -561,6 +551,8 @@ class Preprocessor:
         """This function uses scikit-learn library to split the dataframe into train, test & validation sets
         and saves the split data to CSV files (dependent on configuration). If the value(s) of `test_size` and/or `val_size` are not provided,
         the function splits the data according to the default values.
+        If column name is specify for stratify parameter in pipelines.yml, data will be split in a stratified fashion.
+        Column name options are derived from metadata - 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact'
 
         Args:
             concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
@@ -577,7 +569,6 @@ class Preprocessor:
         # split_array = df["file_name"].unique()
         split_array = df[["file_name", const.STRATIFY_COLUMN]]
         split_array = split_array.drop_duplicates()
-        print(split_array.shape)
         split_var = "file_name"
         # Split images into train & test sets
         train, test = train_test_split(
@@ -586,15 +577,11 @@ class Preprocessor:
             random_state=self.seed,
             stratify=split_array[const.STRATIFY_COLUMN],
         )
-        print(train.shape)
-        print(
-            "**** train: \n",
-            train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
+        self.logger.info(
+            f"1st Train stratify: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
         )
-        print(test.shape)
-        print(
-            "**** test: \n",
-            test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
+        self.logger.info(
+            f"1st Test stratify: {test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
         )
         # Split train images further into train & validation
         train, val = train_test_split(
@@ -603,43 +590,27 @@ class Preprocessor:
             random_state=self.seed,
             stratify=train[const.STRATIFY_COLUMN],
         )
-        print(train.shape)
-        print(
-            "**** train: \n",
-            train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
+        self.logger.info(
+            f" 2nd train: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
         )
-        print(val.shape)
-        print(
-            "**** val: \n",
-            val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
+        self.logger.info(
+            f"2nd val: {val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} ",
         )
         # Retrieve annotations belonging to images in each dataset
         X_train = df[df[split_var].isin(train[split_var])]
         images_train = X_train["file_name"].unique()
         y_train = X_train[const.TARGET_COL]
         train_defects_count = X_train[const.TARGET_COL].value_counts()
-        print(
-            "**** X_train:",
-            X_train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
-        )
 
         X_val = df[df[split_var].isin(val[split_var])]
         images_val = X_val["file_name"].unique()
         y_val = X_val[const.TARGET_COL]
         val_defects_count = X_val[const.TARGET_COL].value_counts()
-        print(
-            "**** X_val:",
-            X_val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
-        )
 
         X_test = df[df[split_var].isin(test[split_var])]
         images_test = X_test["file_name"].unique()
         y_test = X_test[const.TARGET_COL]
         test_defects_count = X_test[const.TARGET_COL].value_counts()
-        print(
-            "**** X_test:",
-            X_test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100,
-        )
 
         self.logger.info(f"Number of images in train: {len(images_train)}")
         self.logger.info(f"Number of images in validation: {len(images_val)}")

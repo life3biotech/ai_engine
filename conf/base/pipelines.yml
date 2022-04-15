@@ -31,7 +31,7 @@ data_prep:
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
   # Tile/slice processed images
-  run_tiling: False
+  run_tiling: True
   tile_coco_filter_categories:
     - "Cells"
     - "cell accumulation (small cells)"
@@ -45,13 +45,13 @@ data_prep:
   # Data Split
   target_col: 'category_name'
   save_data_splits: True
-  val_size: 0.1 # The proportion of data allocated to the validation set, based on the proportion of the overall data
+  val_size: 0.1 # The proportion of data allocated to the validation set, based ongit  the proportion of the overall data
   test_size: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
   train_base_filename: 'annotations_train.csv'
   validation_base_filename: 'annotations_validation.csv'
   test_base_filename: 'annotations_test.csv'
   meta_data_filename: '/Users/dylanpoh/Documents/AIsingapore/GitHub/data/Metadata list for AI Singapore final.xlsx'
-  stratify_column: 'incubation_day'  # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None
+  stratify_column: 'incubation_day'  # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
 
 train:
   load_data: True
