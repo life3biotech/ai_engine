@@ -30,3 +30,4 @@ pconst==1.0.0
 cython==0.29.23
 shapely==1.8.0
 keras-retinanet==0.5.1
+openpyxl==3.0.9
