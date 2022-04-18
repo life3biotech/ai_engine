@@ -46,10 +46,6 @@ inputs:
     type: str
     value: /var/secret/cloud.google.com/gcp-service-account.json
     toEnv: GOOGLE_APPLICATION_CREDENTIALS
-  - name: INPUT_DATA_DIR
-    description: The directory where input data is located at.
-    type: str
-    isOptional: false
 run:
   kind: job
   connections: [fstore-pvc]
@@ -75,8 +71,7 @@ run:
       train.setup_mlflow={{ SETUP_MLFLOW }}
       train.mlflow_autolog={{ MLFLOW_AUTOLOG }}
       train.mlflow_tracking_uri={{ MLFLOW_TRACKING_URI }}
-      train.mlflow_exp_name={{ MLFLOW_EXP_NAME }}
-      train.data_path={{ INPUT_DATA_DIR }}"
+      train.mlflow_exp_name={{ MLFLOW_EXP_NAME }}"
     ]
     resources:
       requests:

@@ -42,7 +42,7 @@ run:
     command: ["/bin/bash", "-c"]
     args: [
       "source ~/.bashrc &&
-      yq e '.data_prep.raw_dirs_paths = {{ RAW_DATA_DIRS }}' -i conf/base/pipelines.yml &&
+      yq e '.data_prep.data_subdirs_paths = {{ RAW_DATA_DIRS }}' -i conf/base/pipelines.yml &&
       python src/load_data.py
       data_prep.processed_data_path={{ PROCESSED_DATA_DIR }}"
     ]
