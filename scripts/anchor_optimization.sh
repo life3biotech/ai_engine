@@ -2,7 +2,7 @@ IMAGE_MIN_SIDE=640
 IMAGE_MAX_SIDE=640
 SCALES=5
 RATIOS=5
-ANNOTATION_PATH='./data/processed/annotations_train_efficientdet.csv'
+ANNOTATION_PATH='./data/processed/annotations_train_efficientdet_b1.csv'
 
 # Build package
 build_package() 

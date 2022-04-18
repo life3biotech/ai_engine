@@ -36,7 +36,7 @@ data_prep:
     - "Cells"
     - "cell accumulation (small cells)"
     - "cell accumulation (large cells)"
-  tile_data_dir_paths: "/users/dylanpoh/documents/aisingapore/github/data/tile_processed"
+  tile_data_dir_paths: "/Users/snjannah/Documents/workspace/life3/data/processed/tiled_512"
   tile_slice_height : 512
   tile_slice_width : 512
   tile_overlap_height_ratio : 0.2

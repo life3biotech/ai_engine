@@ -34,11 +34,19 @@ RUN apt-get update && \
 RUN wget https://github.com/mikefarah/yq/releases/download/v4.16.1/yq_linux_amd64.tar.gz -O - |\
     tar xz && mv yq_linux_amd64 /usr/bin/yq
 
+RUN apt-get update && \
+    apt-get install -y \
+    libsm6 \
+    libxext6 \
+    libxrender-dev
+
 RUN wget "https://github.com/iterative/dvc/releases/download/$DVC_VERSION/$DVC_BINARY_NAME" && \
     apt install -y "./$DVC_BINARY_NAME" && \
     rm "./$DVC_BINARY_NAME"
 
 COPY $REPO_DIR life3-biotech
+
+ENV PIP_NO_CACHE_DIR=1
 
 RUN $CONDA_BIN env create -f life3-biotech/$CONDA_ENV_FILE && \
     $CONDA_BIN init bash && \
