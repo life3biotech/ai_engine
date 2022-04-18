@@ -35,10 +35,7 @@ RUN wget https://github.com/mikefarah/yq/releases/download/v4.16.1/yq_linux_amd6
     tar xz && mv yq_linux_amd64 /usr/bin/yq
 
 RUN apt-get update && \
-    apt-get install -y \
-    libsm6 \
-    libxext6 \
-    libxrender-dev
+    apt-get install -y libsm6 libxext6 libxrender-dev libglib2.0-0
 
 RUN wget "https://github.com/iterative/dvc/releases/download/$DVC_VERSION/$DVC_BINARY_NAME" && \
     apt install -y "./$DVC_BINARY_NAME" && \
@@ -56,7 +53,8 @@ RUN $CONDA_BIN env create -f life3-biotech/$CONDA_ENV_FILE && \
 RUN chown -R 2222:2222 $HOME_DIR && \
     rm /bin/sh && ln -s /bin/bash /bin/sh
 
-ENV PATH $CONDA_HOME/bin:$HOME_DIR/.local/bin:$PATH
+ENV PYTHONPATH $HOME_DIR/life3-biotech/src/life3_biotech/modeling/EfficientDet
+ENV PATH $CONDA_HOME/bin:$HOME_DIR/.local/bin:$PATH:$PYTHONPATH
 ENV PYTHONIOENCODING utf8
 ENV LANG "C.UTF-8"
 ENV LC_ALL "C.UTF-8"
