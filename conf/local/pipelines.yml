@@ -84,10 +84,20 @@ train_augmentation:
 
 inference:
   model_name: "efficientdet"
-  input_data_dir: "/Users/snjannah/Documents/workspace/life3/data/inference"
+  input_data_dir: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/life3/data/inference"
   save_output_image: True
   inference_output_path: ""
   inference_mode: "multiple"
+  data_dir: "/Users/snjannah/Documents/workspace/life3/data/inference"
+  efficientdet_config: {
+      "model_type": 0,
+      "score_threshold": 0.5,
+      "detect_ids": [0],
+  }
+  draw_bbox_config: {
+    "show_labels":True
+  }
+  output_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/life3/data/output/output.csv"
 
 efficientdet:
     train_annotations_path: './data/processed/annotations_train_efficientdet.csv'
