@@ -81,8 +81,8 @@ def main(args):
 def run_efficientdet(current_datetime: str, logger) -> None:
     logger.info("Importing EfficientDet model")
     # import here to avoid dependency issues if EfficientDet model is removed from pipeline
-    from src.life3_biotech.modeling.EfficientDet.train import main as train_efficientdet
-    from src.life3_biotech.modeling.EfficientDet.eval.common import (
+    from life3_biotech.modeling.EfficientDet.train import main as train_efficientdet
+    from life3_biotech.modeling.EfficientDet.eval.common import (
         main as eval_efficientdet,
     )
 
