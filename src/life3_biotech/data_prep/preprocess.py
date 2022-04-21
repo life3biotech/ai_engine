@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import os
 import shutil
 import skimage.io
@@ -37,13 +38,14 @@ class Preprocessor:
         self._make_dir(const.RAW_DATA_PATH)
         self._make_dir(const.INTERIM_DATA_PATH)
 
-        self._copy_raw_images()
-        df_concat_list = self._convert_raw_annotations()
+        self._copy_raw_images(const.RUN_TILING)
+        df_concat_list = self._convert_raw_annotations(const.RUN_TILING)
 
         concatenated_df = pd.concat(df_concat_list, ignore_index=True)
         concatenated_df = self._encode_classes(concatenated_df)
         concatenated_df = self._engineer_features(concatenated_df)
         concatenated_df = self._clean_data(concatenated_df)
+        concatenated_df = self._add_metadata(concatenated_df)
 
         annot_processed_path = PurePath(
             const.INTERIM_DATA_PATH, const.COMBINED_ANNOTATIONS_FILENAME
@@ -53,37 +55,58 @@ class Preprocessor:
         self.processed_annotations_df = concatenated_df
         return concatenated_df
 
-    def _get_raw_annotation_file_paths(self) -> List:
         """
-        Traverses the list of data subdirectories specified in the config file and validates the directory structure of each one.
-
+ 
         Returns:
             A list of COCO annotation file paths.
         """
+
+    def _get_raw_annotation_file_paths(self, tile_ok: bool) -> List:
+        """
+        Traverses the list of data subdirectories specified in the config file and validates the directory structure of each one.
+
+        Args:
+            tile_ok (bool): True = Enable image tile function
+
+        Returns:
+            List: A list of COCO annotation file paths.
+        """
         annot_files = []
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
-            # Tile data path
-            orig_folder = os.path.basename(os.path.normpath(data_subdir))
-            tile_annot_path = Path(
-                const.TILE_DATA_DIR_PATHS,
-                orig_folder,
-                const.ANNOTATIONS_SUBDIR,
-                const.COCO_ANNOTATION_FILENAME,
-            )
-            tile_img_path = Path(
-                const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
-            )
+
+            if tile_ok:
+                # Tile data path
+                orig_folder = os.path.basename(os.path.normpath(data_subdir))
+                annot_path = Path(
+                    const.TILE_DATA_DIR_PATHS,
+                    orig_folder,
+                    const.ANNOTATIONS_SUBDIR,
+                    const.COCO_ANNOTATION_FILENAME,
+                )
+                img_path = Path(
+                    const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
+                )
+            else:
+                annot_path = Path(
+                    data_subdir,
+                    const.ANNOTATIONS_SUBDIR,
+                    const.COCO_ANNOTATION_FILENAME,
+                )
+                img_path = Path(data_subdir, const.IMAGES_SUBDIR)
 
             if (
-                tile_annot_path.exists()
-                and tile_img_path.exists()
-                and tile_img_path.is_dir()
+                annot_path.exists() and img_path.exists() and img_path.is_dir()
             ):  # check if both images & annotations subdirectories exist
-                annot_files.append(tile_annot_path)
+                annot_files.append(annot_path)
             else:
-                self.logger.error(
-                    f"Invalid directory structure in {Path(const.TILE_DATA_DIR_PATHS,orig_folder)}. One of these subdirectories are missing: /images, /annotations"
-                )
+                if tile_ok:
+                    self.logger.error(
+                        f"Invalid directory structure in {Path(const.TILE_DATA_DIR_PATHS,orig_folder)}. One of these subdirectories are missing: /images, /annotations"
+                    )
+                else:
+                    self.logger.error(
+                        f"Invalid directory structure in {data_subdir}. One of these subdirectories are missing: /images, /annotations"
+                    )
         return annot_files
 
     def _load_coco_annotations(self, path_to_coco_annot: PurePath) -> Dict:
@@ -101,7 +124,7 @@ class Preprocessor:
 
         return coco_annotation
 
-    def _convert_raw_annotations(self) -> List:
+    def _convert_raw_annotations(self, tile_ok: bool) -> List:
         """
         Converts & combines COCO annotations into pandas DataFrames while removing unnecessary metadata.
 
@@ -109,17 +132,18 @@ class Preprocessor:
             A list of DataFrames, with each dataframe containing data from one COCO annotation file.
         """
         df_concat_list = []
-        for annot_file_path in self._get_raw_annotation_file_paths():
+        for annot_file_path in self._get_raw_annotation_file_paths(tile_ok):
             coco_annotations = self._load_coco_annotations(annot_file_path)
 
             image_info = coco_annotations["images"]
             df_images = pd.DataFrame(image_info)
             df_images.set_index("id", inplace=True)
-            # df_images.drop(
-            #     labels=["license", "flickr_url", "coco_url", "date_captured"],
-            #     axis=1,
-            #     inplace=True,
-            # )
+            if not const.RUN_TILING:
+                df_images.drop(
+                    labels=["license", "flickr_url", "coco_url", "date_captured"],
+                    axis=1,
+                    inplace=True,
+                )
 
             categories_mapping = coco_annotations["categories"]
             df_cat = pd.DataFrame(categories_mapping)
@@ -130,12 +154,16 @@ class Preprocessor:
             self.logger.debug(f"Number of annotations: {len(annotations)}")
             df_annot = pd.DataFrame(annotations)
             df_annot.set_index("id", inplace=True)
-            df_annot.drop(
-                # labels=["segmentation", "iscrowd", "attributes"], axis=1, inplace=True
-                labels=["segmentation", "iscrowd"],
-                axis=1,
-                inplace=True,
-            )
+            if not const.RUN_TILING:
+                df_annot.drop(
+                    labels=["segmentation", "iscrowd", "attributes"],
+                    axis=1,
+                    inplace=True,
+                )
+            else:
+                df_annot.drop(
+                    labels=["segmentation", "iscrowd"], axis=1, inplace=True,
+                )
 
             final_df = df_annot.merge(df_images, left_on="image_id", right_on="id")
             final_df = final_df.merge(df_cat, left_on="category_id", right_on="id")
@@ -333,18 +361,22 @@ class Preprocessor:
         df.drop("bbox", axis=1, inplace=True)
         return df
 
-    def _copy_raw_images(self) -> None:
+    def _copy_raw_images(self, tile_ok: bool) -> None:
         """
         Copies all image files from the data subdirectories into the raw data directory, except the excluded files specified in the config.
+
+        Args:
+            tile_ok (bool): True = Enable image tile function
         """
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
-            # img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
-
-            # Tile data path
-            orig_folder = os.path.basename(os.path.normpath(data_subdir))
-            img_src_dir_path = Path(
-                const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
-            )
+            if tile_ok:
+                # Tile data path
+                orig_folder = os.path.basename(os.path.normpath(data_subdir))
+                img_src_dir_path = Path(
+                    const.TILE_DATA_DIR_PATHS, orig_folder, const.IMAGES_SUBDIR
+                )
+            else:
+                img_src_dir_path = PurePath(data_subdir, const.IMAGES_SUBDIR)
 
             self.logger.info(f"Copying images from {img_src_dir_path}")
             for filename in os.listdir(img_src_dir_path):
@@ -372,6 +404,84 @@ class Preprocessor:
         """
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
+
+    def _add_metadata(self, concatenated_df: pd.DataFrame) -> pd.DataFrame:
+        """
+        Add metadata 'incubation_day', 'dilution_factor' and 'optical_density' for stratification
+
+        Args:
+            concatenated_df (pd.DataFrame): DataFrame containing all annotations in the dataset
+
+        Returns:
+            pd.DataFrame: Appended metadata to annotations dataframe.
+        """
+        df = concatenated_df.copy()
+        self.logger.info("Add metadata to treated dataframe")
+
+        df_metadata = pd.read_excel(const.META_DATA_FILENAME, engine="openpyxl")
+        df_metadata["Filename"] = df_metadata["Filename"].astype(str)
+        df_metadata.replace({"undiluted": 0, np.nan: 0}, inplace=True)
+        df_metadata.rename(
+            columns={
+                "Incubation day": "incubation_day",
+                "Dilution Factor (unit)": "dilution_factor",
+                "Optical Density": "optical_density",
+            },
+            inplace=True,
+        )
+        selected_col = [
+            "Filename",
+            "incubation_day",
+            "dilution_factor",
+            "optical_density",
+        ]
+
+        if const.RUN_TILING:
+            df["file_name_split"] = df.file_name.str.rsplit("_", n=4, expand=True)[0]
+        else:
+            df["file_name_split"] = df.file_name.str.rsplit(".", n=1, expand=True)[0]
+
+        merged_df = pd.merge(
+            left=df,
+            right=df_metadata[selected_col],
+            how="left",
+            left_on="file_name_split",
+            right_on="Filename",
+        )
+
+        # TODO Bin optical_density numerical value according to quartile value (KIV)
+        # q1, q2, q3, q4 = (
+        #     merged_df["optical_density"].quantile(0),
+        #     merged_df["optical_density"].quantile(0.25),
+        #     merged_df["optical_density"].quantile(0.5),
+        #     merged_df["optical_density"].quantile(0.75),
+        # )
+        # merged_df["optical_density_bin"] = (
+        #     pd.cut(
+        #         merged_df.optical_density,
+        #         bins=[q1, q2, q3, q4, np.inf],
+        #         labels=False,
+        #         right=False,
+        #     )
+        #     + 1
+        # )
+
+        # Create multi-column for stratification
+        # incubation_day + dilution_factor
+        merged_df["incub_day_dilu_fact"] = (
+            merged_df["incubation_day"].astype(str)
+            + "_"
+            + merged_df["dilution_factor"].astype(str)
+        )
+        # # TODO incubation_day + dilution_factor + optical_density_bin
+        # merged_df["incub_day_dilu_fact_optical_bin"] = (
+        #     merged_df["incubation_day"].astype(str)
+        #     + "_"
+        #     + merged_df["dilution_factor"].astype(str)
+        #     + "_"
+        #     + merged_df["optical_density_bin"].astype(str)
+        # )
+        return merged_df
 
     def generate_image_tiles(self) -> None:
         """
@@ -441,6 +551,8 @@ class Preprocessor:
         """This function uses scikit-learn library to split the dataframe into train, test & validation sets
         and saves the split data to CSV files (dependent on configuration). If the value(s) of `test_size` and/or `val_size` are not provided,
         the function splits the data according to the default values.
+        If column name is specify for stratify parameter in pipelines.yml, data will be split in a stratified fashion.
+        Column name options are derived from metadata - 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact'
 
         Args:
             concatenated_df (DataFrame): Pandas DataFrame containing cleaned and processed data
@@ -454,29 +566,48 @@ class Preprocessor:
         # Calculate the proportion of validation size as of the (1 - test size) because in the codes, validation split occurs after test split
         val_actual_size = val_size / (1 - test_size)
 
-        split_array = df["file_name"].unique()
+        # split_array = df["file_name"].unique()
+        split_array = df[["file_name", const.STRATIFY_COLUMN]]
+        split_array = split_array.drop_duplicates()
         split_var = "file_name"
         # Split images into train & test sets
         train, test = train_test_split(
-            split_array, test_size=test_size, random_state=self.seed
+            split_array,
+            test_size=test_size,
+            random_state=self.seed,
+            stratify=split_array[const.STRATIFY_COLUMN],
+        )
+        self.logger.info(
+            f"1st Train stratify: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
+        )
+        self.logger.info(
+            f"1st Test stratify: {test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
         )
         # Split train images further into train & validation
         train, val = train_test_split(
-            train, test_size=val_actual_size, random_state=self.seed
+            train,
+            test_size=val_actual_size,
+            random_state=self.seed,
+            stratify=train[const.STRATIFY_COLUMN],
         )
-
+        self.logger.info(
+            f" 2nd train: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
+        )
+        self.logger.info(
+            f"2nd val: {val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} ",
+        )
         # Retrieve annotations belonging to images in each dataset
-        X_train = df[df[split_var].isin(train)]
+        X_train = df[df[split_var].isin(train[split_var])]
         images_train = X_train["file_name"].unique()
         y_train = X_train[const.TARGET_COL]
         train_defects_count = X_train[const.TARGET_COL].value_counts()
 
-        X_val = df[df[split_var].isin(val)]
+        X_val = df[df[split_var].isin(val[split_var])]
         images_val = X_val["file_name"].unique()
         y_val = X_val[const.TARGET_COL]
         val_defects_count = X_val[const.TARGET_COL].value_counts()
 
-        X_test = df[df[split_var].isin(test)]
+        X_test = df[df[split_var].isin(test[split_var])]
         images_test = X_test["file_name"].unique()
         y_test = X_test[const.TARGET_COL]
         test_defects_count = X_test[const.TARGET_COL].value_counts()

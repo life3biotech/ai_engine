@@ -43,7 +43,7 @@ class PipelineConfig:
             ]
             const.ACCEPTED_IMAGE_FORMATS = data_prep_params["accepted_image_formats"]
             # Tile/slice processed images
-            const.RUN_TILING = data_prep_params["run_tiling"]            
+            const.RUN_TILING = data_prep_params["run_tiling"]
             const.TILE_COCO_FILTER_CATEGORIES = data_prep_params[
                 "tile_coco_filter_categories"
             ]
@@ -67,6 +67,8 @@ class PipelineConfig:
             const.TRAIN_SET_FILENAME = data_prep_params["train_base_filename"]
             const.VAL_SET_FILENAME = data_prep_params["validation_base_filename"]
             const.TEST_SET_FILENAME = data_prep_params["test_base_filename"]
+            const.META_DATA_FILENAME = data_prep_params["meta_data_filename"]
+            const.STRATIFY_COLUMN = data_prep_params["stratify_column"]
 
         # Initialise constants for training all models
         if "train" in params:

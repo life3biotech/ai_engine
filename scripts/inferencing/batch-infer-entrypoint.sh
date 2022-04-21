@@ -11,4 +11,4 @@ fi
 
 python src/batch_inferencing.py \
     inference.model_path=$PRED_MODEL_PATH \
-    inference.input_data_dir=$INPUT_DATA_DIR
+    inference.input_path=$INPUT_DATA_DIR

@@ -3,15 +3,15 @@ data_prep:
     "efficientdet"
     ]
   data_subdirs_paths:
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 1-7 revised"
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 8-24 revised"
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 25-35 revised"
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 36-55 revised"
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 56-75 revised"
-    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 76-100 revised"
-  raw_data_path: "/Users/snjannah/Documents/workspace/life3/data/raw"
-  processed_data_path: "/Users/snjannah/Documents/workspace/life3/data/processed"
-  interim_data_path: "/Users/snjannah/Documents/workspace/life3/data/interim"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 1-7 revised"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 8-24 revised"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 25-35 revised"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 36-55 revised"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 56-75 revised"
+    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 76-100 revised"
+  raw_data_path: "/users/dylanpoh/documents/aisingapore/github/data/raw"
+  processed_data_path: "/users/dylanpoh/documents/aisingapore/github/data/processed"
+  interim_data_path: "/users/dylanpoh/documents/aisingapore/github/data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -31,7 +31,7 @@ data_prep:
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
   # Tile/slice processed images
-  run_tiling: False
+  run_tiling: True
   tile_coco_filter_categories:
     - "Cells"
     - "cell accumulation (small cells)"
@@ -45,11 +45,13 @@ data_prep:
   # Data Split
   target_col: 'category_name'
   save_data_splits: True
-  val_size: 0.1 # The proportion of data allocated to the validation set, based on the proportion of the overall data
+  val_size: 0.1 # The proportion of data allocated to the validation set, based ongit  the proportion of the overall data
   test_size: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
   train_base_filename: 'annotations_train.csv'
   validation_base_filename: 'annotations_validation.csv'
   test_base_filename: 'annotations_test.csv'
+  meta_data_filename: '/Users/dylanpoh/Documents/AIsingapore/GitHub/data/Metadata list for AI Singapore final.xlsx'
+  stratify_column: 'incubation_day'  # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
 
 train:
   load_data: True
@@ -73,7 +75,7 @@ train:
   # Augmentation
   run_data_augmentation: False
   save_augmented_images: False
-  early_stopping: False
+  early_stopping: True
   eval_only: False
   patience: 20
   # Non-maximum suppression params
@@ -94,6 +96,14 @@ inference:
   save_output_image: True
   output_path: "/Users/snjannah/Documents/workspace/life3/data/inference/output"
   confidence_threshold: 0.3
+  efficientdet_config: {
+      "model_type": 0,
+      "score_threshold": 0.5,
+      "detect_ids": [0],
+  }
+  draw_bbox_config: {
+    "show_labels":True
+  }
 
 efficientdet:
     train_annotations_path: './data/processed/annotations_train_efficientdet_b0.csv'
@@ -109,8 +119,8 @@ efficientdet:
     freeze-backbone: False
     random-transform: False
     batch_size: 8
-    epochs: 10
-    steps: 12
+    epochs: 5
+    steps: 100
     inference_backbone: 0
     inference_model_path: ''
     inference_confidence_cutoff: 0.3
