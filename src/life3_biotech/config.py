@@ -34,6 +34,7 @@ class PipelineConfig:
                 "coco_annotations_filename"
             ]
             const.CLASS_MAP = data_prep_params["class_map"]
+            const.CLASS_MAP_REVERSE = {v: k for k, v in const.CLASS_MAP.items()}
             const.REMAP_CLASSES = data_prep_params["remap_classes"]
             const.CLASS_REMAPPING = data_prep_params["class_remapping"]
             const.EXCLUDED_IMAGES = data_prep_params["excluded_images"]
@@ -75,6 +76,7 @@ class PipelineConfig:
             const.TRAIN_MODEL_NAME = train_params["model_name"]
             const.TRAIN_EARLY_STOPPING = train_params["early_stopping"]
             const.TRAIN_EARLY_STOP_PATIENCE = train_params["patience"]
+            const.TRAIN_SAVE_WEIGHTS_ONLY = train_params["save_weights_only"]
             const.EVAL_ONLY = train_params["eval_only"]
             const.EVAL_BATCH_SIZE = train_params["eval_batch_size"]
             const.EVAL_IOU_THRESHOLD = train_params["eval_iou_threshold"]
@@ -102,13 +104,13 @@ class PipelineConfig:
 
         # Initialise constants for model inference
         if "inference" in params:
-            train_params = params["inference"]
+            inf_params = params["inference"]
 
-            const.INFERENCE_MODEL_NAME = train_params["model_name"]
-            const.INFERENCE_INPUT_DIR = train_params["input_data_dir"]
-            const.INFERENCE_SAVE_OUTPUT = train_params["save_output_image"]
-            const.INFERENCE_OUTPUT_PATH = train_params["inference_output_path"]
-            const.INFERENCE_MODE = train_params["inference_mode"]
+            const.INFERENCE_MODEL_PATH = inf_params["model_path"]
+            const.INFERENCE_SAVE_OUTPUT = inf_params["save_output_image"]
+            const.INFERENCE_INPUT_PATH = inf_params["input_path"]
+            const.INFERENCE_OUTPUT_PATH = inf_params["output_path"]
+            const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
 
         if "efficientdet" in params:
             ed_params = params["efficientdet"]
