@@ -109,6 +109,7 @@ class Evaluate(keras.callbacks.Callback):
             self.logger.info('mAP: {:.4f}'.format(self.mean_ap))
 
         # Housekeeping
-        self.logger.info("Clearing session...")
-        gc.collect()
-        keras.backend.clear_session()
+        if tf.version.VERSION > '2.0.0':
+            self.logger.info("Clearing session...")
+            gc.collect()
+            keras.backend.clear_session()
