@@ -40,6 +40,8 @@ RUN wget "https://github.com/iterative/dvc/releases/download/$DVC_VERSION/$DVC_B
 
 COPY $REPO_DIR life3-biotech
 
+ENV PIP_NO_CACHE_DIR=1
+
 RUN $CONDA_BIN env create -f life3-biotech/$CONDA_ENV_FILE && \
     $CONDA_BIN init bash && \
     $CONDA_BIN clean -a -y && \

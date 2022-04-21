@@ -105,7 +105,7 @@ def create_callbacks(training_model, prediction_model, validation_generator, arg
                 model_checkpoint_name
             ),
             verbose=1,
-            save_weights_only=True,
+            save_weights_only=const.TRAIN_SAVE_WEIGHTS_ONLY,
             save_best_only=True,
             monitor="val_loss",
             mode='auto'
@@ -241,6 +241,7 @@ def parse_args(args):
 
 def get_model_path(current_datetime, args):
     return args.snapshot_path, f'efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}.h5'
+    # return args.snapshot_path, f'efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}'
 
 def main(current_datetime, logger, args=None):
     # parse arguments

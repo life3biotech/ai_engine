@@ -1,7 +1,7 @@
-FROM nvidia/cuda:11.3.0-cudnn8-devel-ubuntu18.04
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
 
 ARG REPO_DIR="."
-ARG CONDA_ENV_FILE="life3-biotech-conda-env.yml"
+ARG CONDA_ENV_FILE="life3-biotech-conda-env-gpu.yml"
 ARG CONDA_ENV_NAME="life3-biotech"
 ARG PROJECT_USER="aisg"
 ARG HOME_DIR="/home/$PROJECT_USER"
@@ -35,10 +35,7 @@ RUN wget https://github.com/mikefarah/yq/releases/download/v4.16.1/yq_linux_amd6
     tar xz && mv yq_linux_amd64 /usr/bin/yq
 
 RUN apt-get update && \
-    apt-get install -y \
-    libsm6 \
-    libxext6 \
-    libxrender-dev
+    apt-get install -y libsm6 libxext6 libxrender-dev libglib2.0-0
 
 RUN wget "https://github.com/iterative/dvc/releases/download/$DVC_VERSION/$DVC_BINARY_NAME" && \
     apt install -y "./$DVC_BINARY_NAME" && \
@@ -56,12 +53,13 @@ RUN $CONDA_BIN env create -f life3-biotech/$CONDA_ENV_FILE && \
 RUN chown -R 2222:2222 $HOME_DIR && \
     rm /bin/sh && ln -s /bin/bash /bin/sh
 
-ENV PATH $CONDA_HOME/bin:$HOME_DIR/.local/bin:$PATH
+ENV PYTHONPATH $HOME_DIR/life3-biotech/src/life3_biotech/modeling/EfficientDet
+ENV PATH $CONDA_HOME/bin:$HOME_DIR/.local/bin:$PATH:$PYTHONPATH
 ENV PYTHONIOENCODING utf8
 ENV LANG "C.UTF-8"
 ENV LC_ALL "C.UTF-8"
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 USER 2222

@@ -61,6 +61,7 @@ atlassian-ide-plugin.xml
 
 # C extensions
 *.so
+!compute_overlap.cpython-36m-x86_64-linux-gnu.so
 
 # Python template
 # Byte-compiled / optimized / DLL files

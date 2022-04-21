@@ -63,6 +63,7 @@ train:
   seed: 4002
   optimiser: "adam"
   metric: "accuracy"
+  save_weights_only: True
   lr_scheduler: "reduce_on_plateau"
   initial_lr: 0.001
   # LR parameters for reduce on plateau
@@ -88,20 +89,20 @@ train_augmentation:
   aug_seed: 42
 
 inference:
-  model_name: "efficientdet"
-  input_data_dir: "/Users/snjannah/Documents/workspace/life3/data/inference"
+  model_path: "./models/efficientdet_b0_20220414_110244.h5"
+  input_path: "/Users/snjannah/Documents/workspace/life3/data/inference/input"
   save_output_image: True
-  inference_output_path: ""
-  inference_mode: "multiple"
+  output_path: "/Users/snjannah/Documents/workspace/life3/data/inference/output"
+  confidence_threshold: 0.3
 
 efficientdet:
-    train_annotations_path: './data/processed/annotations_train_efficientdet.csv'
-    val_annotations_path: './data/processed/annotations_val_efficientdet.csv'
-    test_annotations_path: './data/processed/annotations_test_efficientdet.csv'
+    train_annotations_path: './data/processed/annotations_train_efficientdet_b0.csv'
+    val_annotations_path: './data/processed/annotations_val_efficientdet_b0.csv'
+    test_annotations_path: './data/processed/annotations_test_efficientdet_b0.csv'
     saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
     snapshot-path: './models/'
     gpu: -1
-    train_backbone: 1
+    train_backbone: 0
     snapshot: 'imagenet'
     weighted-bifpn: True
     freeze-bn: False
