@@ -420,6 +420,13 @@ class Preprocessor:
 
         df_metadata = pd.read_excel(const.META_DATA_FILENAME, engine="openpyxl")
         df_metadata["Filename"] = df_metadata["Filename"].astype(str)
+        df_metadata["file_type"] = df_metadata.Filename.str.rsplit(
+            ".", n=1, expand=True
+        )[1]
+        # Remove extension from filename
+        df_metadata["Filename"] = df_metadata.Filename.str.rsplit(
+            ".", n=1, expand=True
+        )[0]
         df_metadata.replace({"undiluted": 0, np.nan: 0}, inplace=True)
         df_metadata.rename(
             columns={
@@ -481,6 +488,10 @@ class Preprocessor:
         #     + "_"
         #     + merged_df["optical_density_bin"].astype(str)
         # )
+
+        # Drop unneccessary column
+        merged_df = merged_df.drop(columns=["file_name_split", "Filename"])
+
         return merged_df
 
     def generate_image_tiles(self) -> None:
