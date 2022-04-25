@@ -18,6 +18,7 @@ import time
 from generators.common import Generator
 from utils.compute_overlap import compute_overlap
 from tqdm import trange
+from pathlib import Path
 
 
 def _compute_ap(recall, precision):
@@ -330,18 +331,22 @@ def main(current_datetime, logger, args=None, model_path=None):
         model_path = f'{const.SAVED_MODEL_PATH}efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}.h5'
     num_classes = test_generator.num_classes()
     model, prediction_model = efficientdet(phi=const.ED_TRAIN_BACKBONE, num_classes=num_classes, weighted_bifpn=args.weighted_bifpn)
-    logger.info(f'Loading weights from {model_path}')
-    prediction_model.load_weights(model_path, by_name=True)
-    logger.info('Starting evaluation...')
-    metrics_dict = evaluate(
-        test_generator,
-        prediction_model,
-        logger,
-        iou_threshold=const.EVAL_IOU_THRESHOLD,
-        score_threshold=const.EVAL_SCORE_THRESHOLD,
-        visualize=False,
-        test_set=True)
-    return metrics_dict
+    if Path(model_path).exists():
+        logger.info(f'Loading weights from {model_path}')
+        prediction_model.load_weights(model_path, by_name=True)
+        logger.info('Starting evaluation...')
+        metrics_dict = evaluate(
+            test_generator,
+            prediction_model,
+            logger,
+            iou_threshold=const.EVAL_IOU_THRESHOLD,
+            score_threshold=const.EVAL_SCORE_THRESHOLD,
+            visualize=False,
+            test_set=True)
+        return metrics_dict
+    else:
+        logger.warning(f'Unable to load model weights from {model_path}. Skipping model evaluation...')
+        return None
 
 
 if __name__ == '__main__':
