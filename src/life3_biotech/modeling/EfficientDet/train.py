@@ -241,7 +241,6 @@ def parse_args(args):
 
 def get_model_path(current_datetime, args):
     return args.snapshot_path, f'efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}.h5'
-    # return args.snapshot_path, f'efficientdet_b{const.ED_TRAIN_BACKBONE}_{current_datetime}'
 
 def main(current_datetime, logger, args=None):
     # parse arguments

@@ -61,10 +61,6 @@ train:
   mlflow_tracking_uri: "mlflow-nginx-server-svc.polyaxon-v1.svc.local"
   mlflow_exp_name: "life3-biotech"
   mlflow_artifact_location: "gs://life3-biotech-artifacts/mlflow-tracking-server"
-  data_path: "../life3-biotech-data/processed/subdir"
-  seed: 4002
-  optimiser: "adam"
-  metric: "accuracy"
   save_weights_only: True
   lr_scheduler: "reduce_on_plateau"
   initial_lr: 0.001

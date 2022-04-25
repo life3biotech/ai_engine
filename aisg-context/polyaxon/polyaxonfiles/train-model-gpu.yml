@@ -40,6 +40,67 @@ inputs:
     description: The working directory for the job to run in.
     isOptional: false
     type: str
+  - name: LOAD_DATA
+    description: Whether to run the data pipeline to initialise new training data.
+    isOptional: true
+    type: bool
+    value: false
+  - name: INITIAL_LR
+    description: Learning rate to start from.
+    isOptional: true
+    type: float
+    value: 0.00001
+  - name: EARLY_STOPPING
+    description: Determines whether the early stopping mechanism is activated during training.
+    isOptional: true
+    type: bool
+    value: true
+  - name: EARLY_STOP_PATIENCE
+    description: Number of epochs to wait before early stopping is activated if there is no improvement in the metrics.
+    isOptional: true
+    type: int
+    value: 10
+  - name: LR_REDUCE_FACTOR
+    description: Factor by which the learning rate will be reduced.
+    isOptional: true
+    type: float
+    value: 0.1
+  - name: LR_REDUCE_PATIENCE
+    description: Number of epochs with no improvement after which learning rate will be reduced.
+    isOptional: true
+    type: int
+    value: 2
+  - name: LR_MIN_DELTA
+    description: Threshold for measuring the new optimum.
+    isOptional: true
+    type: float
+    value: 0.01
+  - name: TRAIN_ANNOT_PATH
+    description: Absolute or relative path pointing to the training data set to be used.
+    isOptional: false
+    type: str
+  - name: VAL_ANNOT_PATH
+    description: Absolute or relative path pointing to the validation data set to be used.
+    isOptional: false
+    type: str
+  - name: TEST_ANNOT_PATH
+    description: Absolute or relative path pointing to the test data set to be used.
+    isOptional: false
+    type: str
+  - name: TRAIN_BACKBONE
+    description: Compound coefficient used to scale EfficientNet, the backbone network.
+    isOptional: false
+    type: int
+  - name: EPOCHS
+    description: Number of epochs to train.
+    isOptional: true
+    type: int
+    value: 50
+  - name: BATCH_SIZE
+    description: Number of images included in each batch during training.
+    isOptional: true
+    type: int
+    value: 8
   - name: SA_CRED_PATH
     description: Path to credential file for GCP service account.
     isOptional: true
@@ -71,7 +132,20 @@ run:
       train.setup_mlflow={{ SETUP_MLFLOW }}
       train.mlflow_autolog={{ MLFLOW_AUTOLOG }}
       train.mlflow_tracking_uri={{ MLFLOW_TRACKING_URI }}
-      train.mlflow_exp_name={{ MLFLOW_EXP_NAME }}"
+      train.mlflow_exp_name={{ MLFLOW_EXP_NAME }}
+      train.load_data={{ LOAD_DATA }}
+      train.initial_lr={{ INITIAL_LR }}
+      train.early_stopping={{ EARLY_STOPPING }}
+      train.patience={{ EARLY_STOP_PATIENCE }}
+      train.lr_reduce_factor={{ LR_REDUCE_FACTOR }}
+      train.lr_reduce_patience={{ LR_REDUCE_PATIENCE }}
+      train.lr_min_delta={{ LR_MIN_DELTA }}
+      efficientdet.train_annotations_path={{ TRAIN_ANNOT_PATH }}
+      efficientdet.val_annotations_path={{ VAL_ANNOT_PATH }}
+      efficientdet.test_annotations_path={{ TEST_ANNOT_PATH }}
+      efficientdet.train_backbone={{ TRAIN_BACKBONE }}
+      efficientdet.epochs={{ EPOCHS }}
+      efficientdet.batch_size={{ BATCH_SIZE }}"
     ]
     resources:
       requests:
