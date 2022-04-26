@@ -91,7 +91,7 @@ inference:
   input_path: "/Users/snjannah/Documents/workspace/life3/data/inference/input"
   save_output_image: True
   output_path: "/Users/snjannah/Documents/workspace/life3/data/inference/output"
-  confidence_threshold: 0.3
+  confidence_threshold: 0.75
   efficientdet_config: {
       "model_type": 0,
       "score_threshold": 0.5,
@@ -116,7 +116,7 @@ efficientdet:
     random-transform: False
     batch_size: 8
     epochs: 5
-    steps: 100
+    steps: 128
     inference_backbone: 0
     inference_model_path: ''
     inference_confidence_cutoff: 0.3

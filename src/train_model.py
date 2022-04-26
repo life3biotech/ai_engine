@@ -8,6 +8,7 @@ from pconst import const
 
 import load_data
 import life3_biotech as life3
+# from . import load_data
 # from . import life3_biotech as life3
 
 
@@ -57,7 +58,9 @@ def main(args):
         load_data.run_data_pipeline(logger)
 
     model_args = dict(args[const.TRAIN_MODEL_NAME])
+    train_args = dict(args["train"])
     logger.info(f"{const.TRAIN_MODEL_NAME} model parameters: {model_args}")
+    logger.info(f"Training parameters: {train_args}")
 
     if const.TRAIN_MODEL_NAME == "efficientdet":
         run_efficientdet(current_datetime, logger)
