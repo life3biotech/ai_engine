@@ -12,8 +12,8 @@ from json import load
 from sklearn.model_selection import train_test_split
 
 from . import coco_filter as coco_filter
-from .sahi.slicing import slice_coco
-from .sahi.utils.coco import Coco
+from src.sahi.slicing import slice_coco
+from src.sahi.utils.coco import Coco
 
 
 class Preprocessor:

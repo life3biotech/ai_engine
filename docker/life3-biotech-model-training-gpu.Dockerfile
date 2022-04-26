@@ -1,4 +1,6 @@
-FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu18.04
+FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
+# default: 
+# FROM nvidia/cuda:11.3.0-cudnn8-devel-ubuntu18.04
 
 ARG REPO_DIR="."
 ARG CONDA_ENV_FILE="life3-biotech-conda-env-gpu.yml"
@@ -60,6 +62,6 @@ ENV LANG "C.UTF-8"
 ENV LC_ALL "C.UTF-8"
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
-ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+ENV LD_LIBRARY_PATH /usr/local/cuda/lib64:/usr/local/cuda-10.1/lib64:/usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 USER 2222

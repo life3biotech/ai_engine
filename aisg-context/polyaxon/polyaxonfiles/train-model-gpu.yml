@@ -96,6 +96,11 @@ inputs:
     isOptional: true
     type: int
     value: 50
+  - name: STEPS
+    description: Number of steps per epoch.
+    isOptional: true
+    type: int
+    value: 128
   - name: BATCH_SIZE
     description: Number of images included in each batch during training.
     isOptional: true
@@ -145,6 +150,7 @@ run:
       efficientdet.test_annotations_path={{ TEST_ANNOT_PATH }}
       efficientdet.train_backbone={{ TRAIN_BACKBONE }}
       efficientdet.epochs={{ EPOCHS }}
+      efficientdet.steps={{ STEPS }}
       efficientdet.batch_size={{ BATCH_SIZE }}"
     ]
     resources:
