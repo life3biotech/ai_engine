@@ -79,13 +79,13 @@ def load_model(logger):
     _, model = efficientdet(phi=const.ED_INFERENCE_BACKBONE,
                             weighted_bifpn=weighted_bifpn,
                             num_classes=num_classes,
-                            score_threshold=const.INFERENCE_CONFIDENCE_CUTOFF)
+                            score_threshold=const.INFERENCE_CONFIDENCE_THRESH)
     model.load_weights(const.INFERENCE_MODEL_PATH, by_name=True)
     logger.info(f'Inferencing on backbone B{const.ED_INFERENCE_BACKBONE} with saved model weights: {const.INFERENCE_MODEL_PATH}')
     return model
 
 
-@hydra.main(config_path="../../conf/local", config_name="pipelines.yml")
+@hydra.main(config_path="../../../../conf/local", config_name="pipelines.yml")
 def main(args):
     """This function iterates through the list of images, preprocesses each image, calls the prediction function on it and preprocesses the results.
 
@@ -146,8 +146,9 @@ def predict(model, image_file, logger):
     output = None
 
     preprocess_time = time.time()
-    filename = image_file.split('/')[-1]
-    src_image, image = load_image_from_path(image_file)
+    filename = image_file.name
+    logger.info(f'Loading image from {image_file}')
+    src_image, image = load_image_from_path(str(image_file))
     h, w = image.shape[:2]
     image, scale = preprocess_image(image, image_size=image_size)
 
@@ -174,7 +175,9 @@ def predict(model, image_file, logger):
         if const.INFERENCE_SAVE_OUTPUT:
             if not os.path.exists(const.INFERENCE_OUTPUT_PATH):
                 os.makedirs(const.INFERENCE_OUTPUT_PATH)
-            saved = cv2.imwrite(Path(const.INFERENCE_OUTPUT_PATH, filename), output_image)
+            output_filepath = str(Path(const.INFERENCE_OUTPUT_PATH, filename))
+            logger.info(f'Writing output to: {output_filepath}')
+            saved = cv2.imwrite(output_filepath, output_image)
             if saved:
                 logger.info(f'Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}')
 

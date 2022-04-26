@@ -91,7 +91,7 @@ inference:
   input_path: "/polyaxon-v1-data/workspaces/jannah/data/inference/input"
   save_output_image: True
   output_path: "/polyaxon-v1-data/workspaces/jannah/data/inference/output"
-  confidence_threshold: 0.3
+  confidence_threshold: 0.75
   efficientdet_config: {
       "model_type": 0,
       "score_threshold": 0.5,
@@ -116,10 +116,10 @@ efficientdet:
     random-transform: False
     batch_size: 8
     epochs: 50
-    steps: 12
+    steps: 128
     inference_backbone: 0
     inference_model_path: ''
-    inference_confidence_cutoff: 0.3
+    inference_confidence_cutoff: 0.75
     # parameters for anchor boxes
     anchor_box_ratios: [1, 0.5, 2] # [0.403, 1.0, 2.479]
     anchor_box_scales: [0.5, 1.0, 2.0] # [0.4, 0.496, 0.625]
