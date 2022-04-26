@@ -1,4 +1,4 @@
-name: life3-biotech-training
+name: life3-biotech-train
 channels:
   - defaults
   - conda-forge
@@ -6,4 +6,4 @@ dependencies:
   - python=3.6.8
   - pip=20.2.2
   - pip:
-    - -r requirements_training.txt
+    - -r requirements_train_gpu.txt
