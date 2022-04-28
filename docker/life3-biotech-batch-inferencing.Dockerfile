@@ -4,7 +4,7 @@ SHELL ["/bin/bash", "-c"]
 
 ARG REPO_DIR="."
 ARG CONDA_ENV_FILE="life3-biotech-conda-env.yml"
-ARG CONDA_ENV_NAME="life3-biotech"
+ARG CONDA_ENV_NAME="life3-biotech-infer"
 ARG PROJECT_USER="aisg"
 ARG HOME_DIR="/home/$PROJECT_USER"
 
