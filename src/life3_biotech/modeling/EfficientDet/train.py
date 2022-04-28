@@ -210,11 +210,11 @@ def parse_args(args):
     parser.add_argument('--detect-text', help='If is text detection task.', action='store_true', default=False)
 
     parser.add_argument('--snapshot', help='Resume training from a snapshot.')
-    parser.add_argument('--freeze-backbone', help='Freeze training of backbone layers.', action='store_true', default=False)
-    parser.add_argument('--freeze-bn', help='Freeze training of BatchNormalization layers.', action='store_true', default=True)
-    parser.add_argument('--weighted-bifpn', help='Use weighted BiFPN', action='store_true', default=True)
+    parser.add_argument('--freeze_backbone', help='Freeze training of backbone layers.', action='store_true', default=False)
+    parser.add_argument('--freeze_bn', help='Freeze training of BatchNormalization layers.', action='store_true', default=True)
+    parser.add_argument('--weighted_bifpn', help='Use weighted BiFPN', action='store_true', default=True)
 
-    parser.add_argument('--batch-size', help='Size of the batches.', default=1, type=int)
+    parser.add_argument('--batch_size', help='Size of the batches.', default=1, type=int)
     # parser.add_argument('--phi', help='Hyper parameter phi', default=0, type=int, choices=(0, 1, 2, 3, 4, 5, 6))
     parser.add_argument('--gpu', help='Id of the GPU to use (as reported by nvidia-smi).', default=0)
     parser.add_argument('--epochs', help='Number of epochs to train.', type=int, default=50)
@@ -318,7 +318,7 @@ def main(current_datetime, logger, args=None):
     # start training
     return model.fit(
         x=train_generator,
-        # steps_per_epoch=args.steps,
+        steps_per_epoch=args.steps,
         initial_epoch=0,
         epochs=args.epochs,
         verbose=2,
