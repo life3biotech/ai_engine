@@ -2,12 +2,18 @@
 Node template for creating custom nodes.
 """
 
-from typing import Any, Dict
+from pconst import const
+import logging
+import os
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 from peekingduck.pipeline.nodes.node import AbstractNode
 from src.inference.custom_nodes.model.life3_efficientdet_model import (
     Life3EfficientDetModel,
 )
+from src.life3_biotech.config import PipelineConfig
+from src.life3_biotech import general_utils
 
 
 class Node(AbstractNode):
@@ -17,25 +23,31 @@ class Node(AbstractNode):
         config (:obj:`Dict[str, Any]` | :obj:`None`): Node configuration.
     """
 
-    def __init__(self, config: Dict[str, Any] = None, **kwargs: Any) -> None:
-        super().__init__(config, node_path=__name__, **kwargs)
+    def __init__(
+        self,
+        config: Dict[str, Any] = None,
+        pkd_base_dir: Optional[Path] = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(
+            config,
+            pkd_base_dir=Path(const.PKD_BASE_DIR).resolve(),
+            node_path=__name__,
+            **kwargs,
+        )
+
         self.model = Life3EfficientDetModel(self.config)
 
-        # initialize/load any configs and models here
-        # configs can be called by self.<config_name> e.g. self.filepath
-        # self.logger.info(f"model loaded with configs: config")
-
     def run(self, inputs: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore
-        """This node does ___.
-
-        Args:
-            inputs (dict): Dictionary with keys "__", "__".
-
-        Returns:
-            outputs (dict): Dictionary with keys "__".
+        """This node does prediction using the
+        fine-tuned life3 efficientdet model.
         """
 
-        outputs = self.model.main(image=inputs["img"])
-        # result = do_something(inputs["in1"], inputs["in2"])
-        # outputs = {"out1": result}
+        # load model
+        model = self.model.load_model()
+
+        # make predictions
+        outputs = self.model.predict(
+            model=model, image=inputs["img"], filename=inputs["filename"]
+        )
         return outputs

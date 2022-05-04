@@ -8,7 +8,7 @@ input: ["img"]
 # Example:
 # Output `obj_attrs` for visualization with `draw.tag` node and `custom_key` for
 # use with other custom nodes. Replace as required.
-output: ["obj_attrs", "custom_key"]
+# output: ["obj_attrs", "custom_key"]
 
 # Optional configs depending on node
-threshold: 0.5 # example
+# threshold: 0.5 # example

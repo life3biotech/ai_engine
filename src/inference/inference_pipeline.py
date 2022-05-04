@@ -1,4 +1,5 @@
 import cv2
+import hydra
 import json
 import logging
 import matplotlib.pyplot as plt
@@ -12,29 +13,11 @@ import sys
 import tensorflow as tf
 
 from peekingduck.pipeline.nodes.draw import bbox
-
 from peekingduck.pipeline.nodes.model import efficientdet
+
 from src.inference.custom_nodes.model import life3_efficientdet
-
-
-###########
-# Configs #
-###########
-SRC_DIR = Path.cwd().parent
-DATA_DIR = os.path.join(SRC_DIR, "data", "inference")
-logger = logging.getLogger(__name__)
-
-EFFICIENTDET_CONFIG = {
-    "model_type": 0,
-    "score_threshold": 0.5,
-    "detect_ids": [0],
-}
-
-DRAW_BBOX_CONFIG = {"show_labels": True}
-
-OUTPUT_PATH = os.path.join(SRC_DIR, "data", "output", "output.csv")
-
-INFERENCE_INPUT_PATH = "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/inference/class_1"
+from src.life3_biotech.config import PipelineConfig
+from src.life3_biotech import general_utils
 
 
 def get_image_list(logger):
@@ -45,10 +28,10 @@ def get_image_list(logger):
         list: List of image file paths or URLs
     """
     image_list = []
-    for filename in os.listdir(INFERENCE_INPUT_PATH):
-        img_file = Path(INFERENCE_INPUT_PATH, filename)
+    for filename in os.listdir(const.INFERENCE_INPUT_PATH):
+        img_file = Path(const.INFERENCE_INPUT_PATH, filename).resolve()
         if img_file.exists() and img_file.is_file():
-            image_list.append(img_file)
+            image_list.append(str(img_file))
         else:
             logger.error(f"Invalid image file path: {img_file}")
     return image_list
@@ -176,54 +159,7 @@ class PeekingDuckPipeline:
     #################
     # Core function #
     #################
-    def predict(self, dataset, save_output_option=False, output_path=None):
-        """Gets prediction based on the dataset in Keras format
-
-        Args:
-            dataset (Keras Object):
-            save_output_option (str): 'True' to save output as json; 'False' to not save output as json
-
-        Returns:
-            bbox_outputs (List): predicted outputs
-        """
-
-        # inference pipeline
-        pred_outputs = []
-        for i, (element, path) in enumerate(zip(dataset, dataset.file_paths)):
-
-            # load the original image
-            # image_orig = cv2.imread(path)
-            # image_orig = cv2.cvtColor(image_orig, cv2.COLOR_BGR2RGB)
-
-            # load the image as numpy array
-            image = cv2.cvtColor(
-                element[0].numpy().astype("uint8")[0], cv2.COLOR_RGB2BGR
-            )
-
-            # run inference
-            eff_det_input = {"img": image}
-            eff_det_output = self.model_node.run(eff_det_input)
-
-            # format the predicted bbox
-            pred_output = {
-                "bboxes": eff_det_output["bboxes"],
-                "bbox_labels": eff_det_output["bbox_labels"],
-                "img_path": path,
-            }
-
-            pred_outputs.append(pred_output)
-
-            pred_outputs_df = pd.DataFrame(pred_outputs)
-            # save output into csv
-            if save_output_option:
-                # save to csv
-                self.save_predict_output(
-                    output_df=pred_outputs_df, output_path=output_path
-                )
-
-        return pred_outputs_df
-
-    def predict_custom(self, image_list, save_output_option=False, output_path=None):
+    def predict(self, image_list, save_output_option=False, output_path=None):
         """Gets prediction based on the dataset in Keras format
 
         Args:
@@ -237,9 +173,10 @@ class PeekingDuckPipeline:
         # inference pipeline
         pred_outputs = []
         for path in image_list:
+            # for patch in path:
 
             # for i, (element, path) in enumerate(zip(dataset, dataset.file_paths)):
-
+            # print(f"my path: {path}")
             # load the original image
             image_orig = cv2.imread(path)
             image_orig = cv2.cvtColor(image_orig, cv2.COLOR_BGR2RGB)
@@ -248,21 +185,26 @@ class PeekingDuckPipeline:
             # image = cv2.cvtColor(
             #     element[0].numpy().astype("uint8")[0], cv2.COLOR_RGB2BGR
             # )
+            filename = Path(path).name
+            self.logger.info(f"ingesting image: {filename}")
 
             # run inference
-            eff_det_input = {"img": image_orig}
-            eff_det_output = self.model_node.run(eff_det_input)
+            eff_det_input = {"img": image_orig, "filename": filename}
+            eff_det_output = self.model_node.run(inputs=eff_det_input)
 
-            # format the predicted bbox
-            pred_output = {
-                "bboxes": eff_det_output["bboxes"],
-                "bbox_labels": eff_det_output["bbox_labels"],
-                "img_path": path,
-            }
+            # prediction is None
+            if not eff_det_output:
+                eff_det_output = {
+                    "bboxes": None,
+                    "bbox_labels": None,
+                    "bbox_scores": None,
+                    "img_path": path,
+                }
 
-            pred_outputs.append(pred_output)
+            pred_outputs.append(eff_det_output)
 
             pred_outputs_df = pd.DataFrame(pred_outputs)
+
             # save output into csv
             if save_output_option:
                 # save to csv
@@ -273,22 +215,89 @@ class PeekingDuckPipeline:
         return pred_outputs_df
 
 
-if __name__ == "__main__":
+@hydra.main(config_path="../../conf/local", config_name="pipelines.yml")
+def get_hydra_config(args):
 
-    # dataset = tf.keras.utils.image_dataset_from_directory(
-    #     DATA_DIR, batch_size=1, shuffle=False
-    # )
-
-    image_list = get_image_list(logger=logger)
-
-    pkd = PeekingDuckPipeline(
-        logger=logger,
-        model_node_type="life3_effdet",
-        model_config=EFFICIENTDET_CONFIG,
-        draw_node_type="draw_bbox",
-        draw_config=DRAW_BBOX_CONFIG,
+    os.chdir(hydra.utils.get_original_cwd())
+    logger = logging.getLogger(__name__)
+    logger.info("Setting up logging configuration.")
+    logger_config_path = os.path.join(
+        hydra.utils.get_original_cwd(), "conf/base/logging.yml"
     )
+    general_utils.setup_logging(logger_config_path)
+    pipeline_conf = PipelineConfig(args, logger)
+    return pipeline_conf
 
-    pred_outputs = pkd.predict_custom(
-        image_list=image_list, save_output_option=True, output_path=OUTPUT_PATH
-    )
+
+# if __name__ == "__main__":
+#     logger = logging.getLogger(__name__)
+#     logger.info("setting config variables in the env via hydra")
+#     get_hydra_config()
+
+#     # getting images
+#     image_list = get_image_list(logger=logger)
+#     logger.info(f"image list:{image_list}")
+
+#     pkd = PeekingDuckPipeline(
+#         logger=logger,
+#         model_node_type="life3_effdet",
+#         model_config=const.EFFICIENTDET_CONFIG,
+#         draw_node_type="draw_bbox",
+#         draw_config=const.DRAW_BBOX_CONFIG,
+#     )
+#     pred_outputs = pkd.predict(
+#         image_list=image_list,
+#         save_output_option=True,
+#         output_path=const.INFERENCE_OUTPUT_PATH,
+#     )
+
+#     logger.info(f"prediction: {pred_outputs}")
+
+# prediction for pretrained model using PKD
+# def predict(self, dataset, save_output_option=False, output_path=None):
+#     """Gets prediction based on the dataset in Keras format
+
+#     Args:
+#         dataset (Keras Object):
+#         save_output_option (str): 'True' to save output as json; 'False' to not save output as json
+
+#     Returns:
+#         bbox_outputs (List): predicted outputs
+#     """
+
+#     # inference pipeline
+#     pred_outputs = []
+#     for i, (element, path) in enumerate(zip(dataset, dataset.file_paths)):
+
+#         # load the original image
+#         # image_orig = cv2.imread(path)
+#         # image_orig = cv2.cvtColor(image_orig, cv2.COLOR_BGR2RGB)
+
+#         # load the image as numpy array
+#         image = cv2.cvtColor(
+#             element[0].numpy().astype("uint8")[0], cv2.COLOR_RGB2BGR
+#         )
+
+#         # run inference
+#         eff_det_input = {"img": image}
+#         eff_det_output = self.model_node.run(eff_det_input)
+
+#         # format the predicted bbox
+#         pred_output = {
+#             "bboxes": eff_det_output["bboxes"],
+#             "bbox_labels": eff_det_output["bbox_labels"],
+#             "img_path": path,
+#         }
+
+#         pred_outputs.append(pred_output)
+
+#         pred_outputs_df = pd.DataFrame(pred_outputs)
+#         print(f"pred_outputs_df: {pred_outputs_df}")
+#         # save output into csv
+#         if save_output_option:
+#             # save to csv
+#             self.save_predict_output(
+#                 output_df=pred_outputs_df, output_path=output_path
+#             )
+
+#     return pred_outputs_df

@@ -21,12 +21,6 @@ from src.life3_biotech.modeling.EfficientDet.utils import (
 )
 from src.life3_biotech.modeling.EfficientDet.utils.draw_boxes import draw_boxes
 
-# EFFICIENTDET_CONFIG = {
-#     "model_type": 0,
-#     "score_threshold": 0.5,
-#     "detect_ids": [0],
-# }
-
 
 class Life3EfficientDetModel:
     """Life3 EfficientDet model"""
@@ -59,23 +53,7 @@ class Life3EfficientDetModel:
         )
         return model
 
-    def get_image_list(self):
-        """This function initialises the list of images for EfficientDet to perform inference on.
-        In `single` or `rest_api` inference mode, the list will contain a single image file path/URL.
-
-        Returns:
-            list: List of image file paths or URLs
-        """
-        image_list = []
-        for filename in os.listdir(const.INFERENCE_INPUT_PATH):
-            img_file = Path(const.INFERENCE_INPUT_PATH, filename)
-            if img_file.exists() and img_file.is_file():
-                image_list.append(img_file)
-            else:
-                self.logger.error(f"Invalid image file path: {img_file}")
-        return image_list
-
-    def predict(self, model, image_file):
+    def predict(self, model, image, filename):
         """This function preprocesses the given image and performs inference on it using the given model weights.
 
         Args:
@@ -90,12 +68,9 @@ class Life3EfficientDetModel:
         colors = [(244, 223, 156), (164, 232, 241), (119, 118, 188)]
         image_size = const.ED_IMAGE_SIZES[const.ED_INFERENCE_BACKBONE]
 
-        # output = None
-
         preprocess_time = time.time()
-        filename = image_file.name
-        self.logger.info(f"Loading image from {image_file}")
-        src_image, image = load_image_from_path(str(image_file))
+
+        src_image = image.copy()
         h, w = image.shape[:2]
         image, scale = preprocess_image(image, image_size=image_size)
 
@@ -118,8 +93,9 @@ class Life3EfficientDetModel:
         # select those detections
         boxes = boxes[indices]
         labels = labels[indices]
+        scores = scores[indices]
         if len(boxes) == 0:
-            self.logger.info(f"No inference results for image: {filename}")
+            self.logger.info(f"No inference results for image")
         else:
             self.logger.info(f"Drawing {len(boxes)} boxes...")
             output_image = draw_boxes(
@@ -136,56 +112,11 @@ class Life3EfficientDetModel:
                         f"Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}"
                     )
 
-        pred_output = {
-            "bboxes": boxes,
-            "bbox_labels": labels,
-            "img_path": output_filepath,
-        }
+            pred_output = {
+                "bboxes": boxes,
+                "bbox_labels": labels,
+                "bbox_scores": scores,
+                "img_path": output_filepath,
+            }
 
-        return pred_output, preprocess_time, inf_time
-
-    @hydra.main(config_path="../../../../conf/local", config_name="pipelines.yml")
-    def main(self, image, args):
-        """This function iterates through the list of images, preprocesses each image, calls the prediction function on it and preprocesses the results.
-
-        Returns:
-            dict: Output dictionary to be formatted to JSON if inference mode is `rest_api`. Otherwise, None is returned.
-        """
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-
-        os.chdir(hydra.utils.get_original_cwd())
-
-        # logger = logging.getLogger(__name__)
-        self.logger.info("Setting up logging configuration.")
-        logger_config_path = os.path.join(
-            hydra.utils.get_original_cwd(), "conf/base/logging.yml"
-        )
-        general_utils.setup_logging(logger_config_path)
-
-        pipeline_conf = PipelineConfig(args, logger)
-
-        # images = get_image_list(logger)
-        self.logger.info(f"Number of images: {len(images)}")
-
-        total_inf_time = 0
-        total_preprocess_time = 0
-
-        model = self.load_model()
-
-        # for i in images:
-        pred_output, preprocess_time, inf_time = self.predict(model, image)
-        # total_preprocess_time += preprocess_time
-        # total_inf_time += inf_time
-
-        # if total_inf_time > 0:
-        #     self.logger.info(f"Time taken: {round(total_inf_time,2)} seconds")
-        #     self.logger.info(f"FPS: {round(len(images) / total_inf_time,2)}")
-        #     self.logger.info(
-        #         f"Avg preprocessing time: {round(total_preprocess_time/len(images),2)} seconds"
-        #     )
-
-        return pred_output
-
-
-# if __name__ == "__main__":
-#     print(EfficientDetModel(config=EFFICIENTDET_CONFIG))
+            return pred_output
