@@ -87,10 +87,10 @@ train_augmentation:
   aug_seed: 42
 
 inference:
-  model_path: "./models/efficientdet_b0_20220414_110244.h5"
-  input_path: "/Users/snjannah/Documents/workspace/life3/data/inference/input"
+  model_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/models/efficientdet_b0_20220414_110244.h5"
+  input_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/inference/class_1"
   save_output_image: True
-  output_path: "/Users/snjannah/Documents/workspace/life3/data/inference/output"
+  output_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/output/output.csv"
   confidence_threshold: 0.75
   efficientdet_config: {
       "model_type": 0,
@@ -100,6 +100,7 @@ inference:
   draw_bbox_config: {
     "show_labels":True
   }
+  pkd_base_dir: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/src/inference/custom_nodes/"
 
 efficientdet:
     train_annotations_path: './data/processed/annotations_train_efficientdet_b0.csv'
