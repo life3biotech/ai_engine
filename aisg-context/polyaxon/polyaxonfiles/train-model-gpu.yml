@@ -121,6 +121,11 @@ inputs:
     isOptional: true
     type: bool
     value: false
+  - name: SNAPSHOT
+    description: Base model weights to start training from.
+    isOptional: true
+    type: str
+    value: imagenet
   - name: SA_CRED_PATH
     description: Path to credential file for GCP service account.
     isOptional: true
@@ -167,17 +172,18 @@ run:
       efficientdet.epochs={{ EPOCHS }}
       efficientdet.steps={{ STEPS }}
       efficientdet.batch_size={{ BATCH_SIZE }}
+      efficientdet.snapshot={{ SNAPSHOT }}
       efficientdet.weighted_bifpn={{ WEIGHTED_BIFPN }}
       efficientdet.freeze_bn={{ FREEZE_BN }}
       efficientdet.freeze_backbone={{ FREEZE_BACKBONE }}"
     ]
     resources:
       requests:
-        memory: "25Gi"
+        memory: "8Gi"
         cpu: 3
         nvidia.com/gpu: 1
       limits:
-        memory: "25Gi"
+        memory: "8Gi"
         cpu: 3
         nvidia.com/gpu: 1
     volumeMounts:

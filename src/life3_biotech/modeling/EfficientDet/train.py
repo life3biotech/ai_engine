@@ -279,7 +279,7 @@ def main(current_datetime, logger, args=None):
                                                 file_hash=file_hash)
             model.load_weights(weights_path, by_name=True)
         else:
-            print('Loading model, this may take a second...')
+            logger.info('Loading model, this may take a second...')
             model.load_weights(args.snapshot_path + args.snapshot, by_name=True)
 
     # freeze backbone layers
