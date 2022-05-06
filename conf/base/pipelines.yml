@@ -117,9 +117,6 @@ efficientdet:
     batch_size: 8
     epochs: 50
     steps: 1000
-    inference_backbone: 0
-    inference_model_path: ''
-    inference_confidence_cutoff: 0.75
     # parameters for anchor boxes
     # anchor_box_ratios: [0.403, 1.0, 2.479]
     # anchor_box_scales: [0.4, 0.496, 0.625]

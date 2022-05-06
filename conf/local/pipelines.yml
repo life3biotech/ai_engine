@@ -3,15 +3,15 @@ data_prep:
     "efficientdet"
     ]
   data_subdirs_paths:
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 1-7 revised"
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 8-24 revised"
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 25-35 revised"
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 36-55 revised"
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 56-75 revised"
-    - "/Users/dylanpoh/Documents/AIsingapore/GitHub/data/life3-aut0/20220224_1032621/images 76-100 revised"
-  raw_data_path: "/users/dylanpoh/documents/aisingapore/github/data/raw"
-  processed_data_path: "/users/dylanpoh/documents/aisingapore/github/data/processed"
-  interim_data_path: "/users/dylanpoh/documents/aisingapore/github/data/interim"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 1-7 revised"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 8-24 revised"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 25-35 revised"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 36-55 revised"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 56-75 revised"
+    - "/Users/snjannah/Documents/workspace/life3/data/uploaded/images 76-100 revised"
+  raw_data_path: "/Users/snjannah/Documents/workspace/life3/data/raw"
+  processed_data_path: "/Users/snjannah/Documents/workspace/life3/data/processed"
+  interim_data_path: "/Users/snjannah/Documents/workspace/life3/data/interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -50,7 +50,7 @@ data_prep:
   train_base_filename: 'annotations_train.csv'
   validation_base_filename: 'annotations_validation.csv'
   test_base_filename: 'annotations_test.csv'
-  meta_data_filename: '/Users/dylanpoh/Documents/AIsingapore/GitHub/data/Metadata list for AI Singapore final.xlsx'
+  meta_data_filename: '/Users/snjannah/Documents/workspace/life3/data/uploaded/metadata.xlsx'
   stratify_column: 'incubation_day'  # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
 
 train:
@@ -63,7 +63,7 @@ train:
   mlflow_artifact_location: "gs://life3-biotech-artifacts/mlflow-tracking-server"
   save_weights_only: True
   lr_scheduler: "reduce_on_plateau"
-  initial_lr: 0.001
+  initial_lr: 0.0001
   # LR parameters for reduce on plateau
   lr_reduce_factor: 0.1
   lr_reduce_patience: 2
@@ -73,7 +73,7 @@ train:
   save_augmented_images: False
   early_stopping: True
   eval_only: False
-  patience: 20
+  patience: 10
   # Non-maximum suppression params
   run_nms: True
   nms_threshold: 0.5
@@ -107,7 +107,7 @@ efficientdet:
     test_annotations_path: './data/processed/annotations_test_efficientdet_b0.csv'
     saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
     snapshot-path: './models/'
-    gpu: -1
+    gpu: 0
     train_backbone: 0
     snapshot: 'imagenet'
     weighted_bifpn: True
@@ -115,13 +115,12 @@ efficientdet:
     freeze_backbone: False
     random_transform: False
     batch_size: 8
-    epochs: 5
+    epochs: 50
     steps: 128
-    inference_backbone: 0
-    inference_model_path: ''
-    inference_confidence_cutoff: 0.3
     # parameters for anchor boxes
-    anchor_box_ratios: [1, 0.5, 2]
-    anchor_box_scales: [0.5, 1.0, 2.0]
+    anchor_box_ratios: [0.403, 1.0, 2.479]
+    anchor_box_scales: [0.4, 0.496, 0.625]
+    # anchor_box_ratios: [1, 0.5, 2]
+    # anchor_box_scales: [0.5, 1.0, 2.0]
     image_sizes: [512, 640, 768, 896, 1024, 1280, 1408]
   
