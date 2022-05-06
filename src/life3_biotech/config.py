@@ -113,6 +113,9 @@ class PipelineConfig:
             const.INFERENCE_INPUT_PATH = inf_params["input_path"]
             const.INFERENCE_OUTPUT_PATH = inf_params["output_path"]
             const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
+            const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
+            const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
+            const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]
 
         if "efficientdet" in params:
             ed_params = params["efficientdet"]
