@@ -92,13 +92,6 @@ class PipelineConfig:
                 const.LR_REDUCE_PATIENCE = train_params["lr_reduce_patience"]
             if "lr_min_delta" in train_params:
                 const.LR_MIN_DELTA = train_params["lr_min_delta"]
-            # Non-maximum suppression
-            if "run_nms" in train_params:
-                const.RUN_TRAIN_NMS = train_params["run_nms"]
-            if "nms_threshold" in train_params:
-                const.TRAIN_NMS_THRESHOLD = train_params["nms_threshold"]
-            if "score_threshold" in train_params:
-                const.TRAIN_SCORE_THRESHOLD = train_params["score_threshold"]
 
         # Initialise constants for augmentation pipeline within training
         if "train_augmentation" in params:
@@ -113,6 +106,8 @@ class PipelineConfig:
             const.INFERENCE_INPUT_PATH = inf_params["input_path"]
             const.INFERENCE_OUTPUT_PATH = inf_params["output_path"]
             const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
+            const.INFERENCE_RUN_NMS = train_params["run_nms"]
+            const.INFERENCE_NMS_THRESH = train_params["nms_threshold"]
             const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
             const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
             const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]

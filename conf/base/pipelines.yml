@@ -74,10 +74,6 @@ train:
   early_stopping: True
   eval_only: False
   patience: 10
-  # Non-maximum suppression params
-  run_nms: True
-  nms_threshold: 0.5
-  score_threshold: 0.05
   # Evaluation params
   eval_batch_size: 8
   eval_iou_threshold: [0.5]
@@ -92,6 +88,8 @@ inference:
   save_output_image: True
   output_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/output/output.csv"
   confidence_threshold: 0.75
+  run_nms: True
+  nms_threshold: 0.5
   efficientdet_config: {
       "model_type": 0,
       "score_threshold": 0.5,
