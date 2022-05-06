@@ -102,15 +102,27 @@ class PipelineConfig:
             inf_params = params["inference"]
 
             const.INFERENCE_MODEL_PATH = inf_params["model_path"]
-            const.INFERENCE_SAVE_OUTPUT = inf_params["save_output_image"]
-            const.INFERENCE_INPUT_PATH = inf_params["input_path"]
-            const.INFERENCE_OUTPUT_PATH = inf_params["output_path"]
             const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
             const.INFERENCE_RUN_NMS = train_params["run_nms"]
             const.INFERENCE_NMS_THRESH = train_params["nms_threshold"]
             const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
             const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
             const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]
+            # Input/Output
+            const.IMAGE_INPUT_PATH = inf_params["image_input_path"]
+            const.CSV_OUTPUT = inf_params["csv_output"]
+            const.SAVE_OUTPUT_IMAGE = inf_params["save_output_image"]
+            const.IMAGE_OUTPUT_DIR = inf_params["image_output_dir"]
+            # Sahi slice parameter
+            const.SLICE_HEIGHT = inf_params["slice_height"]
+            const.SLICE_WIDTH = inf_params["slice_width"]
+            const.OVERLAP_HEIGHT_RATIO = inf_params["overlap_height_ratio"]
+            const.OVERLAP_WIDTH_RATIO = inf_params["overlap_width_ratio"]
+            const.POSTPROCESS_TYPE = inf_params["postprocess_type"]
+            const.POSTPROCESS_MATCH_METRIC = inf_params["postprocess_match_metric"]
+            const.POSTPROCESS_MATCH_THRESHOLD = inf_params[
+                "postprocess_match_threshold"
+            ]
 
         if "efficientdet" in params:
             ed_params = params["efficientdet"]

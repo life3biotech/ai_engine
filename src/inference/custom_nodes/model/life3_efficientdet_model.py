@@ -53,7 +53,10 @@ class Life3EfficientDetModel:
         )
         return model
 
-    def predict(self, model, image, filename):
+    # def predict(self, model, image, filename):
+    def predict(
+        self, model, image
+    ):  # remove filename - move output file handling to sahi
         """This function preprocesses the given image and performs inference on it using the given model weights.
 
         Args:
@@ -101,22 +104,22 @@ class Life3EfficientDetModel:
             output_image = draw_boxes(
                 src_image, boxes, scores, labels, colors, const.CLASS_MAP_REVERSE
             )
-            if const.INFERENCE_SAVE_OUTPUT:
-                if not os.path.exists(const.INFERENCE_OUTPUT_PATH):
-                    os.makedirs(const.INFERENCE_OUTPUT_PATH)
-                output_filepath = str(Path(const.INFERENCE_OUTPUT_PATH, filename))
-                self.logger.info(f"Writing output to: {output_filepath}")
-                saved = cv2.imwrite(output_filepath, output_image)
-                if saved:
-                    self.logger.info(
-                        f"Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}"
-                    )
+            # if const.INFERENCE_SAVE_OUTPUT:   # Shifted save output to be handle by Sahi
+            #     if not os.path.exists(const.INFERENCE_OUTPUT_PATH):
+            #         os.makedirs(const.INFERENCE_OUTPUT_PATH)
+            #     output_filepath = str(Path(const.INFERENCE_OUTPUT_PATH, filename))
+            #     self.logger.info(f"Writing output to: {output_filepath}")
+            #     saved = cv2.imwrite(output_filepath, output_image)
+            #     if saved:
+            #         self.logger.info(
+            #             f"Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}"
+            #         )
 
             pred_output = {
                 "bboxes": boxes,
                 "bbox_labels": labels,
                 "bbox_scores": scores,
-                "img_path": output_filepath,
+                # "img_path": output_filepath,
             }
 
             return pred_output
