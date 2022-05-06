@@ -1,6 +1,5 @@
 # Ignore all local configuration
 conf/local/**
-!conf/local/.gitkeep
 
 # Ignore potentially sensitive credentials files
 conf/**/*credentials*
