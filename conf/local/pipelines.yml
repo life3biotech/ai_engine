@@ -111,10 +111,10 @@ efficientdet:
     gpu: -1
     train_backbone: 0
     snapshot: 'imagenet'
-    weighted-bifpn: True
-    freeze-bn: False
-    freeze-backbone: False
-    random-transform: False
+    weighted_bifpn: True
+    freeze_bn: False
+    freeze_backbone: False
+    random_transform: False
     batch_size: 8
     epochs: 5
     steps: 128

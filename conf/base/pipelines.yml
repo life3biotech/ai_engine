@@ -73,7 +73,7 @@ train:
   save_augmented_images: False
   early_stopping: True
   eval_only: False
-  patience: 20
+  patience: 10
   # Non-maximum suppression params
   run_nms: True
   nms_threshold: 0.5
@@ -111,18 +111,20 @@ efficientdet:
     gpu: 0
     train_backbone: 0
     snapshot: 'imagenet'
-    weighted-bifpn: True
-    freeze-bn: False
-    freeze-backbone: False
-    random-transform: False
+    weighted_bifpn: True
+    freeze_bn: False
+    freeze_backbone: False
+    random_transform: False
     batch_size: 8
     epochs: 50
-    steps: 128
+    steps: 1000
     inference_backbone: 0
     inference_model_path: ''
     inference_confidence_cutoff: 0.75
     # parameters for anchor boxes
-    anchor_box_ratios: [1, 0.5, 2] # [0.403, 1.0, 2.479]
-    anchor_box_scales: [0.5, 1.0, 2.0] # [0.4, 0.496, 0.625]
+    # anchor_box_ratios: [0.403, 1.0, 2.479]
+    # anchor_box_scales: [0.4, 0.496, 0.625]
+    anchor_box_ratios: [1, 0.5, 2]
+    anchor_box_scales: [0.5, 1.0, 2.0]
     image_sizes: [512, 640, 768, 896, 1024, 1280, 1408]
   

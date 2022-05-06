@@ -4,7 +4,7 @@ FROM nvidia/cuda:10.1-cudnn7-devel-ubuntu18.04
 
 ARG REPO_DIR="."
 ARG CONDA_ENV_FILE="life3-biotech-conda-env-train-gpu.yml"
-ARG CONDA_ENV_NAME="life3-biotech"
+ARG CONDA_ENV_NAME="life3-biotech-train"
 ARG PROJECT_USER="aisg"
 ARG HOME_DIR="/home/$PROJECT_USER"
 
