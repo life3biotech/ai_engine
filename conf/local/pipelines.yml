@@ -36,7 +36,7 @@ data_prep:
     - "Cells"
     - "cell accumulation (small cells)"
     - "cell accumulation (large cells)"
-  tile_data_dir_paths: "/Users/snjannah/Documents/workspace/life3/data/processed/tiled_512"
+  tile_data_dir_paths: "/users/dylanpoh/documents/aisingapore/github/data/tile_processed"
   tile_slice_height : 512
   tile_slice_width : 512
   tile_overlap_height_ratio : 0.2
@@ -83,22 +83,37 @@ train_augmentation:
   aug_seed: 42
 
 inference:
-  model_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/models/efficientdet_b0_20220414_110244.h5"
-  input_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/inference/class_1"
-  save_output_image: True
-  output_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/data/output/output.csv"
-  confidence_threshold: 0.75
+  model_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/models/efficientdet_b0_20220505_101317.h5"
+  confidence_threshold: 0.91
   run_nms: True
   nms_threshold: 0.5
   efficientdet_config: {
       "model_type": 0,
-      "score_threshold": 0.5,
-      "detect_ids": [0],
+      # "score_threshold": 0.75,
+      "detect_ids": [0,1],
   }
   draw_bbox_config: {
     "show_labels":True
   }
-  pkd_base_dir: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/src/inference/custom_nodes/"
+  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inference/custom_nodes"
+  # Input/Output
+  image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/21.jpg"
+  csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"
+  save_output_image: True
+  image_output_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/"
+  # Sahi slice parameter
+  slice_height: 512  # The height of the image to be sliced
+  slice_width: 512 # The width of the image to be sliced
+  overlap_height_ratio: 0.2 # Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
+  overlap_width_ratio: 0.2 # Fractional overlap in width of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
+  # postprocess_type: Type of the postprocess to be used after sliced inference while merging/eliminating predictions.
+  # Options are 'NMM', 'GREEDYNMM' or 'NMS'. Default is 'GREEDYNMM'.
+  postprocess_type: "GREEDYNMM" 
+  # postprocess_match_metric: Metric to be used during object prediction matching after sliced prediction.
+  # 'IOU' for intersection over union, 'IOS' for intersection over smaller area.
+  postprocess_match_metric: "IOS"  
+  postprocess_match_threshold: 0.9  # Sliced predictions having higher iou than postprocess_match_threshold will be postprocessed after sliced prediction.
+
 
 efficientdet:
     train_annotations_path: './data/processed/annotations_train_efficientdet_b0.csv'

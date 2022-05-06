@@ -38,16 +38,18 @@ class Node(AbstractNode):
 
         self.model = Life3EfficientDetModel(self.config)
 
+        # load model
+        self.loaded_model = self.model.load_model()
+
     def run(self, inputs: Dict[str, Any]) -> Dict[str, Any]:  # type: ignore
         """This node does prediction using the
         fine-tuned life3 efficientdet model.
         """
 
-        # load model
-        model = self.model.load_model()
-
         # make predictions
         outputs = self.model.predict(
-            model=model, image=inputs["img"], filename=inputs["filename"]
+            # model=model, image=inputs["img"], filename=inputs["filename"]  # remove filename - move output file handling to sahi
+            model=self.loaded_model,
+            image=inputs["img"],
         )
         return outputs

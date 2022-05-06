@@ -159,7 +159,7 @@ class PeekingDuckPipeline:
     #################
     # Core function #
     #################
-    def predict(self, image_list, save_output_option=False, output_path=None):
+    def predict(self, image, save_output_option=False, output_path=None):
         """Gets prediction based on the dataset in Keras format
 
         Args:
@@ -170,49 +170,18 @@ class PeekingDuckPipeline:
             bbox_outputs (List): predicted outputs
         """
 
-        # inference pipeline
-        pred_outputs = []
-        for path in image_list:
-            # for patch in path:
+        eff_det_input = {"img": image}
+        eff_det_output = self.model_node.run(inputs=eff_det_input)
 
-            # for i, (element, path) in enumerate(zip(dataset, dataset.file_paths)):
-            # print(f"my path: {path}")
-            # load the original image
-            image_orig = cv2.imread(path)
-            image_orig = cv2.cvtColor(image_orig, cv2.COLOR_BGR2RGB)
+        # prediction is None
+        if not eff_det_output:
+            eff_det_output = {
+                "bboxes": None,
+                "bbox_labels": None,
+                "bbox_scores": None,
+            }
 
-            # load the image as numpy array
-            # image = cv2.cvtColor(
-            #     element[0].numpy().astype("uint8")[0], cv2.COLOR_RGB2BGR
-            # )
-            filename = Path(path).name
-            self.logger.info(f"ingesting image: {filename}")
-
-            # run inference
-            eff_det_input = {"img": image_orig, "filename": filename}
-            eff_det_output = self.model_node.run(inputs=eff_det_input)
-
-            # prediction is None
-            if not eff_det_output:
-                eff_det_output = {
-                    "bboxes": None,
-                    "bbox_labels": None,
-                    "bbox_scores": None,
-                    "img_path": path,
-                }
-
-            pred_outputs.append(eff_det_output)
-
-            pred_outputs_df = pd.DataFrame(pred_outputs)
-
-            # save output into csv
-            if save_output_option:
-                # save to csv
-                self.save_predict_output(
-                    output_df=pred_outputs_df, output_path=output_path
-                )
-
-        return pred_outputs_df
+        return eff_det_output
 
 
 @hydra.main(config_path="../../conf/local", config_name="pipelines.yml")

@@ -7,13 +7,31 @@ import jsonlines
 from pconst import const
 import tensorflow as tf
 
-import life3_biotech as life3
+# import life3_biotech as life3
+from . import life3_biotech as life3
 from src.life3_biotech.config import PipelineConfig
-from inference.inference_pipeline import PeekingDuckPipeline, get_image_list
+
+# from src.inference.inference_pipeline import PeekingDuckPipeline, get_image_list
+
+# sahi require import
+import time
+
+from src.sahi.slicing import slice_image
+from src.sahi.postprocess.combine import (
+    GreedyNMMPostprocess,
+    LSNMSPostprocess,
+    NMMPostprocess,
+    NMSPostprocess,
+    PostprocessPredictions,
+)
+from src.sahi.prediction import ObjectPrediction, PredictionResult
+from src.sahi.model import EfficientDetModel
+from src.sahi.predict import get_prediction, get_sliced_prediction, predict
+import pandas as pd
 
 
 @hydra.main(
-    config_path="/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/custom_node_model/life3/conf/local",
+    config_path="/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/conf/local",
     config_name="pipelines.yml",
 )
 def main(args):
@@ -33,47 +51,42 @@ def main(args):
     life3.general_utils.setup_logging(logger_config_path)
     pipeline_conf = PipelineConfig(args, logger)
 
-    # logger.info("Loading the model...")
-    # pred_model = life3.modeling.utils.load_model(args["inference"]["model_path"])
+    start = time.time()
 
-    # call inference functions here
-    logger.info("Loading the input data")
-    image_list = get_image_list(logger=logger)
-    logger.info(f"Displaying image list:{image_list}")
-    # dataset = tf.keras.utils.image_dataset_from_directory(
-    #     args.inference.input_path, batch_size=1, shuffle=False
-    # )
-
-    logger.info("Instantiating model")
-    pkd = PeekingDuckPipeline(
-        logger=logger,
-        model_node_type="life3_effdet",
-        model_config=const.EFFICIENTDET_CONFIG,
-        draw_node_type="draw_bbox",
-        draw_config=const.DRAW_BBOX_CONFIG,
+    detection_model = EfficientDetModel(
+        device="cpu",  # or 'cuda:0'
     )
 
-    # pkd = PeekingDuckPipeline(
-    #     logger=logger,
-    #     model_node_type="effdet",
-    #     model_config=args.inference.efficientdet_config,
-    #     draw_node_type="draw_bbox",
-    #     draw_config=args.inference.draw_bbox_config,
+    # predicting without slicing the image
+    # result = get_prediction(
+    #     const.IMAGE_INPUT_PATH,
+    #     detection_model,
     # )
 
-    logger.info("Generating model predictions")
-    # pred_outputs = pkd.predict(
-    #     dataset=dataset, save_output_option=True, output_path=args.inference.output_path
-    # )
-
-    pred_outputs = pkd.predict(
-        image_list=image_list,
-        save_output_option=True,
-        output_path=const.INFERENCE_OUTPUT_PATH,
+    result = get_sliced_prediction(
+        const.IMAGE_INPUT_PATH,
+        detection_model,
+        slice_height=const.SLICE_HEIGHT,
+        slice_width=const.SLICE_WIDTH,
+        overlap_height_ratio=const.OVERLAP_HEIGHT_RATIO,
+        overlap_width_ratio=const.OVERLAP_WIDTH_RATIO,
+        postprocess_type=const.POSTPROCESS_TYPE,
+        postprocess_match_metric=const.POSTPROCESS_MATCH_METRIC,
+        postprocess_match_threshold=const.POSTPROCESS_MATCH_THRESHOLD,
     )
+
+    # Export predicted output annotations to csv
+    df = result.to_coco_annotations(panda_df_bool=True)
+    df.to_csv(const.CSV_OUTPUT)
+
+    # Export predicted output image
+    result.export_visuals(export_dir=const.IMAGE_OUTPUT_DIR)
+
+    end = time.time()
 
     logger.info("Batch inferencing has completed.")
-    logger.info("Output result location: {}".format(args.inference.output_path))
+    logger.info("Output result location: {}".format(const.CSV_OUTPUT))
+    logger.info("The time of execution of above program is : {}".format(end - start))
 
 
 if __name__ == "__main__":
