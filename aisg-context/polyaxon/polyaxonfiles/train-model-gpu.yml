@@ -106,6 +106,26 @@ inputs:
     isOptional: true
     type: int
     value: 8
+  - name: WEIGHTED_BIFPN
+    description: Determines whether EfficientNet backbone uses weighted BiFPN.
+    isOptional: true
+    type: bool
+    value: true
+  - name: FREEZE_BN
+    description: Determines whether the batch normalization layers of the backbone network are frozen during training.
+    isOptional: true
+    type: bool
+    value: false
+  - name: FREEZE_BACKBONE
+    description: Determines whether the weights of the backbone network are frozen during training.
+    isOptional: true
+    type: bool
+    value: false
+  - name: SNAPSHOT
+    description: Base model weights to start training from.
+    isOptional: true
+    type: str
+    value: imagenet
   - name: SA_CRED_PATH
     description: Path to credential file for GCP service account.
     isOptional: true
@@ -151,16 +171,20 @@ run:
       efficientdet.train_backbone={{ TRAIN_BACKBONE }}
       efficientdet.epochs={{ EPOCHS }}
       efficientdet.steps={{ STEPS }}
-      efficientdet.batch_size={{ BATCH_SIZE }}"
+      efficientdet.batch_size={{ BATCH_SIZE }}
+      efficientdet.snapshot={{ SNAPSHOT }}
+      efficientdet.weighted_bifpn={{ WEIGHTED_BIFPN }}
+      efficientdet.freeze_bn={{ FREEZE_BN }}
+      efficientdet.freeze_backbone={{ FREEZE_BACKBONE }}"
     ]
     resources:
       requests:
         memory: "8Gi"
-        cpu: "4"
+        cpu: 3
         nvidia.com/gpu: 1
       limits:
         memory: "8Gi"
-        cpu: "4"
+        cpu: 3
         nvidia.com/gpu: 1
     volumeMounts:
       - name: gcp-service-account
