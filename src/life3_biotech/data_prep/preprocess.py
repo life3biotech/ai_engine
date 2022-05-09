@@ -12,8 +12,8 @@ from json import load
 from sklearn.model_selection import train_test_split
 
 from . import coco_filter as coco_filter
-from sahi.slicing import slice_coco
-from sahi.utils.coco import Coco
+from src.sahi.slicing import slice_coco
+from src.sahi.utils.coco import Coco
 
 
 class Preprocessor:
@@ -162,7 +162,9 @@ class Preprocessor:
                 )
             else:
                 df_annot.drop(
-                    labels=["segmentation", "iscrowd"], axis=1, inplace=True,
+                    labels=["segmentation", "iscrowd"],
+                    axis=1,
+                    inplace=True,
                 )
 
             final_df = df_annot.merge(df_images, left_on="image_id", right_on="id")
@@ -506,14 +508,18 @@ class Preprocessor:
         for data_subdir in const.DATA_SUBDIRS_PATH_LIST:
             # Original data path
             annot_path = Path(
-                data_subdir, const.ANNOTATIONS_SUBDIR, const.COCO_ANNOTATION_FILENAME,
+                data_subdir,
+                const.ANNOTATIONS_SUBDIR,
+                const.COCO_ANNOTATION_FILENAME,
             )
             img_path = Path(data_subdir, const.IMAGES_SUBDIR)
 
             # Tile data path
             orig_folder = os.path.basename(os.path.normpath(data_subdir))
             before_tile_filter_annot_path = Path(
-                const.TILE_DATA_DIR_PATHS, orig_folder, const.ANNOTATIONS_SUBDIR,
+                const.TILE_DATA_DIR_PATHS,
+                orig_folder,
+                const.ANNOTATIONS_SUBDIR,
             )
             before_tile_filter_annot_filepath = Path(
                 const.TILE_DATA_DIR_PATHS,
@@ -534,7 +540,8 @@ class Preprocessor:
             # Filter, treatment, exclude images of coco json file
             self._make_dir(before_tile_filter_annot_path)
             cocofilter.filter_coco(
-                annot_path, before_tile_filter_annot_filepath,
+                annot_path,
+                before_tile_filter_annot_filepath,
             )
 
             # Display coco stats before image tile
@@ -577,51 +584,92 @@ class Preprocessor:
         # Calculate the proportion of validation size as of the (1 - test size) because in the codes, validation split occurs after test split
         val_actual_size = val_size / (1 - test_size)
 
-        # split_array = df["file_name"].unique()
-        split_array = df[["file_name", const.STRATIFY_COLUMN]]
-        split_array = split_array.drop_duplicates()
         split_var = "file_name"
-        # Split images into train & test sets
-        train, test = train_test_split(
-            split_array,
-            test_size=test_size,
-            random_state=self.seed,
-            stratify=split_array[const.STRATIFY_COLUMN],
-        )
-        self.logger.info(
-            f"1st Train stratify: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
-        )
-        self.logger.info(
-            f"1st Test stratify: {test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
-        )
-        # Split train images further into train & validation
-        train, val = train_test_split(
-            train,
-            test_size=val_actual_size,
-            random_state=self.seed,
-            stratify=train[const.STRATIFY_COLUMN],
-        )
-        self.logger.info(
-            f" 2nd train: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
-        )
-        self.logger.info(
-            f"2nd val: {val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} ",
-        )
-        # Retrieve annotations belonging to images in each dataset
-        X_train = df[df[split_var].isin(train[split_var])]
-        images_train = X_train["file_name"].unique()
-        y_train = X_train[const.TARGET_COL]
-        train_defects_count = X_train[const.TARGET_COL].value_counts()
 
-        X_val = df[df[split_var].isin(val[split_var])]
-        images_val = X_val["file_name"].unique()
-        y_val = X_val[const.TARGET_COL]
-        val_defects_count = X_val[const.TARGET_COL].value_counts()
+        # Split without stratification
+        if const.STRATIFY_COLUMN == "None":
+            print("check const.STRATIFY_COLUMN done: ", const.STRATIFY_COLUMN)
+            split_array = df["file_name"].unique()
 
-        X_test = df[df[split_var].isin(test[split_var])]
-        images_test = X_test["file_name"].unique()
-        y_test = X_test[const.TARGET_COL]
-        test_defects_count = X_test[const.TARGET_COL].value_counts()
+            # Split images into train & test sets
+            train, test = train_test_split(
+                split_array,
+                test_size=test_size,
+                random_state=self.seed,
+            )
+
+            # Split train images further into train & validation
+            train, val = train_test_split(
+                train,
+                test_size=val_actual_size,
+                random_state=self.seed,
+            )
+
+            # Retrieve annotations belonging to images in each dataset
+            X_train = df[df[split_var].isin(train)]
+            images_train = X_train["file_name"].unique()
+            y_train = X_train[const.TARGET_COL]
+            train_defects_count = X_train[const.TARGET_COL].value_counts()
+
+            X_val = df[df[split_var].isin(val)]
+            images_val = X_val["file_name"].unique()
+            y_val = X_val[const.TARGET_COL]
+            val_defects_count = X_val[const.TARGET_COL].value_counts()
+
+            X_test = df[df[split_var].isin(test)]
+            images_test = X_test["file_name"].unique()
+            y_test = X_test[const.TARGET_COL]
+            test_defects_count = X_test[const.TARGET_COL].value_counts()
+
+        else:  # Split with stratification
+            print("check const.STRATIFY_COLUMN fail: ", const.STRATIFY_COLUMN)
+            split_array = df[["file_name", const.STRATIFY_COLUMN]]
+            split_array = split_array.drop_duplicates()
+
+            # Split images into train & test sets
+            train, test = train_test_split(
+                split_array,
+                test_size=test_size,
+                random_state=self.seed,
+                stratify=split_array[const.STRATIFY_COLUMN],
+            )
+
+            self.logger.info(
+                f"1st Train stratify: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
+            )
+            self.logger.info(
+                f"1st Test stratify: {test[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
+            )
+            # Split train images further into train & validation
+            train, val = train_test_split(
+                train,
+                test_size=val_actual_size,
+                random_state=self.seed,
+                stratify=train[const.STRATIFY_COLUMN],
+            )
+
+            self.logger.info(
+                f" 2nd train: {train[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} "
+            )
+            self.logger.info(
+                f"2nd val: {val[const.STRATIFY_COLUMN].value_counts(normalize=True) * 100} ",
+            )
+
+            # Retrieve annotations belonging to images in each dataset
+            X_train = df[df[split_var].isin(train[split_var])]
+            images_train = X_train["file_name"].unique()
+            y_train = X_train[const.TARGET_COL]
+            train_defects_count = X_train[const.TARGET_COL].value_counts()
+
+            X_val = df[df[split_var].isin(val[split_var])]
+            images_val = X_val["file_name"].unique()
+            y_val = X_val[const.TARGET_COL]
+            val_defects_count = X_val[const.TARGET_COL].value_counts()
+
+            X_test = df[df[split_var].isin(test[split_var])]
+            images_test = X_test["file_name"].unique()
+            y_test = X_test[const.TARGET_COL]
+            test_defects_count = X_test[const.TARGET_COL].value_counts()
 
         self.logger.info(f"Number of images in train: {len(images_train)}")
         self.logger.info(f"Number of images in validation: {len(images_val)}")
