@@ -31,7 +31,7 @@ import pandas as pd
 
 
 @hydra.main(
-    config_path="/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/conf/local",
+    config_path="/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/conf/base",
     config_name="pipelines.yml",
 )
 def main(args):

@@ -42,14 +42,14 @@ class Life3EfficientDetModel:
         self.logger.info(f"Classes: {const.CLASS_MAP_REVERSE}")
         num_classes = len(const.CLASS_MAP)
         _, model = efficientdet(
-            phi=const.ED_INFERENCE_BACKBONE,
+            phi=const.INFERENCE_BACKBONE,
             weighted_bifpn=weighted_bifpn,
             num_classes=num_classes,
             score_threshold=const.INFERENCE_CONFIDENCE_THRESH,
         )
         model.load_weights(const.INFERENCE_MODEL_PATH, by_name=True)
         self.logger.info(
-            f"Inferencing on backbone B{const.ED_INFERENCE_BACKBONE} with saved model weights: {const.INFERENCE_MODEL_PATH}"
+            f"Inferencing on backbone B{const.INFERENCE_BACKBONE} with saved model weights: {const.INFERENCE_MODEL_PATH}"
         )
         return model
 
@@ -69,7 +69,7 @@ class Life3EfficientDetModel:
             float: Floating point number representing time taken to predict on given image
         """
         colors = [(244, 223, 156), (164, 232, 241), (119, 118, 188)]
-        image_size = const.ED_IMAGE_SIZES[const.ED_INFERENCE_BACKBONE]
+        image_size = const.ED_IMAGE_SIZES[const.INFERENCE_BACKBONE]
 
         preprocess_time = time.time()
 

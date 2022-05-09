@@ -102,9 +102,10 @@ class PipelineConfig:
             inf_params = params["inference"]
 
             const.INFERENCE_MODEL_PATH = inf_params["model_path"]
+            const.INFERENCE_BACKBONE = inf_params["inference_backbone"]
             const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
-            const.INFERENCE_RUN_NMS = train_params["run_nms"]
-            const.INFERENCE_NMS_THRESH = train_params["nms_threshold"]
+            const.INFERENCE_RUN_NMS = inf_params["run_nms"]
+            const.INFERENCE_NMS_THRESH = inf_params["nms_threshold"]
             const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
             const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
             const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]
@@ -148,5 +149,4 @@ class PipelineConfig:
                 const.ED_TRAIN_BACKBONE = ed_params["train_backbone"]
             if "image_sizes" in ed_params:
                 const.ED_IMAGE_SIZES = tuple(ed_params["image_sizes"])
-            if "inference_backbone" in ed_params:
-                const.ED_INFERENCE_BACKBONE = ed_params["inference_backbone"]
+
