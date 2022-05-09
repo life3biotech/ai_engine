@@ -1,6 +1,7 @@
 # import keras
 from tensorflow import keras
 import tensorflow as tf
+from pconst import const
 
 
 class BatchNormalization(keras.layers.BatchNormalization):
@@ -246,9 +247,9 @@ class FilterDetections(keras.layers.Layer):
 
     def __init__(
             self,
-            nms=True,
+            nms=const.INFERENCE_RUN_NMS,
             class_specific_filter=True,
-            nms_threshold=0.5,
+            nms_threshold=const.INFERENCE_NMS_THRESH,
             score_threshold=0.01,
             max_detections=100,
             parallel_iterations=32,
