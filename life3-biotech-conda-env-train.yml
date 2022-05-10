@@ -1,9 +1,0 @@
-name: life3-biotech-train
-channels:
-  - defaults
-  - conda-forge
-dependencies:
-  - python=3.6.8
-  - pip=20.2.2
-  - pip:
-    - -r requirements_train.txt
