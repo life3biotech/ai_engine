@@ -5,7 +5,7 @@ import hydra
 from pconst import const
 
 import life3_biotech as life3
-# from . import life3_biotech as life3
+
 
 @hydra.main(config_path="../conf/base", config_name="pipelines.yml")
 def main(args):

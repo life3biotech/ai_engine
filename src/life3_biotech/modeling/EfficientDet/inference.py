@@ -8,8 +8,8 @@ from pconst import const
 from pathlib import Path
 from PIL import Image
 from io import BytesIO
-from src.life3_biotech.config import PipelineConfig
-from src.life3_biotech import general_utils
+from life3_biotech.config import PipelineConfig
+from life3_biotech import general_utils
 from model import efficientdet
 from utils import preprocess_image, postprocess_boxes
 from utils.draw_boxes import draw_boxes
@@ -25,7 +25,7 @@ def process_image(image_file):
         numpy.array: Numpy array representing the original image
         numpy.array: Numpy array representing the image after RGB conversion
     """
-    pil_image = Image.open(BytesIO(image_file)).convert('RGB')
+    pil_image = Image.open(BytesIO(image_file)).convert("RGB")
     image = np.asarray(pil_image)
     src_image = image.copy()
     image = image[:, :, ::-1].copy()
@@ -61,7 +61,7 @@ def get_image_list(logger):
         if img_file.exists() and img_file.is_file():
             image_list.append(img_file)
         else:
-            logger.error(f'Invalid image file path: {img_file}')
+            logger.error(f"Invalid image file path: {img_file}")
     return image_list
 
 
@@ -74,14 +74,18 @@ def load_model(logger):
     """
     weighted_bifpn = True
     global temp_model_location
-    logger.info(f'Classes: {const.CLASS_MAP_REVERSE}')
+    logger.info(f"Classes: {const.CLASS_MAP_REVERSE}")
     num_classes = len(const.CLASS_MAP)
-    _, model = efficientdet(phi=const.ED_INFERENCE_BACKBONE,
-                            weighted_bifpn=weighted_bifpn,
-                            num_classes=num_classes,
-                            score_threshold=const.INFERENCE_CONFIDENCE_THRESH)
+    _, model = efficientdet(
+        phi=const.ED_INFERENCE_BACKBONE,
+        weighted_bifpn=weighted_bifpn,
+        num_classes=num_classes,
+        score_threshold=const.INFERENCE_CONFIDENCE_THRESH,
+    )
     model.load_weights(const.INFERENCE_MODEL_PATH, by_name=True)
-    logger.info(f'Inferencing on backbone B{const.ED_INFERENCE_BACKBONE} with saved model weights: {const.INFERENCE_MODEL_PATH}')
+    logger.info(
+        f"Inferencing on backbone B{const.ED_INFERENCE_BACKBONE} with saved model weights: {const.INFERENCE_MODEL_PATH}"
+    )
     return model
 
 
@@ -92,11 +96,9 @@ def main(args):
     Returns:
         dict: Output dictionary to be formatted to JSON if inference mode is `rest_api`. Otherwise, None is returned.
     """
-    os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
-    os.chdir(
-        hydra.utils.get_original_cwd()
-    )
+    os.chdir(hydra.utils.get_original_cwd())
 
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
@@ -108,7 +110,7 @@ def main(args):
     pipeline_conf = PipelineConfig(args, logger)
 
     images = get_image_list(logger)
-    logger.info(f'Number of images: {len(images)}')
+    logger.info(f"Number of images: {len(images)}")
 
     total_inf_time = 0
     total_preprocess_time = 0
@@ -121,15 +123,17 @@ def main(args):
         total_inf_time += inf_time
 
     if total_inf_time > 0:
-        logger.info(f'Time taken: {round(total_inf_time,2)} seconds')
-        logger.info(f'FPS: {round(len(images) / total_inf_time,2)}')
-        logger.info(f'Avg preprocessing time: {round(total_preprocess_time/len(images),2)} seconds')
+        logger.info(f"Time taken: {round(total_inf_time,2)} seconds")
+        logger.info(f"FPS: {round(len(images) / total_inf_time,2)}")
+        logger.info(
+            f"Avg preprocessing time: {round(total_preprocess_time/len(images),2)} seconds"
+        )
 
     return output
 
 
 def predict(model, image_file, logger):
-    """This function preprocesses the given image and performs inference on it using the given model weights. 
+    """This function preprocesses the given image and performs inference on it using the given model weights.
 
     Args:
         model (tensorflow.keras.models.Model): Keras inference model object
@@ -147,7 +151,7 @@ def predict(model, image_file, logger):
 
     preprocess_time = time.time()
     filename = image_file.name
-    logger.info(f'Loading image from {image_file}')
+    logger.info(f"Loading image from {image_file}")
     src_image, image = load_image_from_path(str(image_file))
     h, w = image.shape[:2]
     image, scale = preprocess_image(image, image_size=image_size)
@@ -168,21 +172,25 @@ def predict(model, image_file, logger):
     boxes = boxes[indices]
     labels = labels[indices]
     if len(boxes) == 0:
-        logger.info(f'No inference results for image: {filename}')
+        logger.info(f"No inference results for image: {filename}")
     else:
-        logger.info(f'Drawing {len(boxes)} boxes...')
-        output_image = draw_boxes(src_image, boxes, scores, labels, colors, const.CLASS_MAP_REVERSE)
+        logger.info(f"Drawing {len(boxes)} boxes...")
+        output_image = draw_boxes(
+            src_image, boxes, scores, labels, colors, const.CLASS_MAP_REVERSE
+        )
         if const.INFERENCE_SAVE_OUTPUT:
             if not os.path.exists(const.INFERENCE_OUTPUT_PATH):
                 os.makedirs(const.INFERENCE_OUTPUT_PATH)
             output_filepath = str(Path(const.INFERENCE_OUTPUT_PATH, filename))
-            logger.info(f'Writing output to: {output_filepath}')
+            logger.info(f"Writing output to: {output_filepath}")
             saved = cv2.imwrite(output_filepath, output_image)
             if saved:
-                logger.info(f'Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}')
+                logger.info(
+                    f"Saved inferenced image to {const.INFERENCE_OUTPUT_PATH}{filename}"
+                )
 
     return output, preprocess_time, inf_time
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

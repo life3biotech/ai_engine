@@ -11,15 +11,12 @@ from PIL import Image
 from typing import Any, Dict, List, Tuple
 from io import BytesIO
 
-sys.path.append("..")
-from src.life3_biotech.config import PipelineConfig
-from src.life3_biotech import general_utils
-from src.life3_biotech.modeling.EfficientDet.model import efficientdet
-from src.life3_biotech.modeling.EfficientDet.utils import (
+from life3_biotech.modeling.EfficientDet.model import efficientdet
+from life3_biotech.modeling.EfficientDet.utils import (
     preprocess_image,
     postprocess_boxes,
 )
-from src.life3_biotech.modeling.EfficientDet.utils.draw_boxes import draw_boxes
+from life3_biotech.modeling.EfficientDet.utils.draw_boxes import draw_boxes
 
 
 class Life3EfficientDetModel:

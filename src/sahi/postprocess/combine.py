@@ -6,12 +6,12 @@ from typing import List
 
 import torch
 
-from src.sahi.postprocess.utils import (
+from .utils import (
     ObjectPredictionList,
     has_match,
     merge_object_prediction_pair,
 )
-from src.sahi.prediction import ObjectPrediction
+from ..prediction import ObjectPrediction
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,9 @@ def batched_nms(
 
 
 def nms(
-    predictions: torch.tensor, match_metric: str = "IOU", match_threshold: float = 0.5,
+    predictions: torch.tensor,
+    match_metric: str = "IOU",
+    match_threshold: float = 0.5,
 ):
     """
     Apply non-maximum suppression to avoid detecting too many
@@ -485,7 +487,8 @@ class PostprocessPredictions:
 
 class NMSPostprocess(PostprocessPredictions):
     def __call__(
-        self, object_predictions: List[ObjectPrediction],
+        self,
+        object_predictions: List[ObjectPrediction],
     ):
         object_prediction_list = ObjectPredictionList(object_predictions)
         object_predictions_as_torch = object_prediction_list.totensor()
@@ -511,7 +514,8 @@ class NMSPostprocess(PostprocessPredictions):
 
 class NMMPostprocess(PostprocessPredictions):
     def __call__(
-        self, object_predictions: List[ObjectPrediction],
+        self,
+        object_predictions: List[ObjectPrediction],
     ):
         object_prediction_list = ObjectPredictionList(object_predictions)
         object_predictions_as_torch = object_prediction_list.totensor()
@@ -550,7 +554,8 @@ class NMMPostprocess(PostprocessPredictions):
 
 class GreedyNMMPostprocess(PostprocessPredictions):
     def __call__(
-        self, object_predictions: List[ObjectPrediction],
+        self,
+        object_predictions: List[ObjectPrediction],
     ):
         object_prediction_list = ObjectPredictionList(object_predictions)
         object_predictions_as_torch = object_prediction_list.totensor()
@@ -590,7 +595,8 @@ class GreedyNMMPostprocess(PostprocessPredictions):
 class LSNMSPostprocess(PostprocessPredictions):
     # https://github.com/remydubois/lsnms/blob/10b8165893db5bfea4a7cb23e268a502b35883cf/lsnms/nms.py#L62
     def __call__(
-        self, object_predictions: List[ObjectPrediction],
+        self,
+        object_predictions: List[ObjectPrediction],
     ):
         try:
             from lsnms import nms

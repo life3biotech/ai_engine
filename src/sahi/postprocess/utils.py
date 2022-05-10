@@ -4,8 +4,8 @@ from typing import List, Union
 import numpy as np
 import torch
 
-from src.sahi.annotation import BoundingBox, Category, Mask
-from src.sahi.prediction import ObjectPrediction
+from ..annotation import BoundingBox, Category, Mask
+from ..prediction import ObjectPrediction
 
 
 class ObjectPredictionList(Sequence):
@@ -181,7 +181,10 @@ def get_merged_mask(pred1: ObjectPrediction, pred2: ObjectPrediction) -> Mask:
     )
 
 
-def get_merged_score(pred1: ObjectPrediction, pred2: ObjectPrediction,) -> float:
+def get_merged_score(
+    pred1: ObjectPrediction,
+    pred2: ObjectPrediction,
+) -> float:
     scores: List[float] = [pred.score.value for pred in (pred1, pred2)]
     return max(scores)
 
@@ -201,7 +204,8 @@ def get_merged_category(pred1: ObjectPrediction, pred2: ObjectPrediction) -> Cat
 
 
 def merge_object_prediction_pair(
-    pred1: ObjectPrediction, pred2: ObjectPrediction,
+    pred1: ObjectPrediction,
+    pred2: ObjectPrediction,
 ) -> ObjectPrediction:
     shift_amount = pred1.bbox.shift_amount
     merged_bbox: BoundingBox = get_merged_bbox(pred1, pred2)

@@ -96,7 +96,7 @@ inference:
   draw_bbox_config: {
     "show_labels":True
   }
-  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inference/custom_nodes"
+  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inferencing/custom_nodes"
   # Input/Output
   image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/21.jpg"
   csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"

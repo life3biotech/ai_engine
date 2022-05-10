@@ -96,7 +96,7 @@ inference:
   draw_bbox_config: {
     "show_labels":True
   }
-  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inference/custom_nodes"
+  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inferencing/custom_nodes"
   # Input/Output
   image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/21.jpg"
   csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"
@@ -131,7 +131,7 @@ efficientdet:
     random_transform: False
     batch_size: 8
     epochs: 50
-    steps: 128
+    steps: 1000
     # parameters for anchor boxes
     # anchor_box_ratios: [0.403, 1.0, 2.479]
     # anchor_box_scales: [0.4, 0.496, 0.625]

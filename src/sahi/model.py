@@ -8,15 +8,14 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from src.sahi.prediction import ObjectPrediction
-from src.sahi.utils.compatibility import fix_full_shape_list, fix_shift_amount_list
-from src.sahi.utils.cv import get_bbox_from_bool_mask
-from src.sahi.utils.torch import cuda_is_available, empty_cuda_cache
+from .prediction import ObjectPrediction
+from .utils.compatibility import fix_full_shape_list, fix_shift_amount_list
+from .utils.cv import get_bbox_from_bool_mask
+from .utils.torch import cuda_is_available, empty_cuda_cache
 
-# Test adding efficientDet Peekingduck node
-# import life3_biotech as life3
-from src import life3_biotech as life3
-from src.inference.inference_pipeline import PeekingDuckPipeline
+import life3_biotech as life3
+from inferencing.inference_pipeline import PeekingDuckPipeline
+
 from pconst import const
 
 logger = logging.getLogger(__name__)

@@ -6,13 +6,13 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from src.sahi.utils.coco import CocoAnnotation, CocoPrediction
-from src.sahi.utils.cv import (
+from .utils.coco import CocoAnnotation, CocoPrediction
+from .utils.cv import (
     get_bbox_from_bool_mask,
     get_bool_mask_from_coco_segmentation,
     get_coco_segmentation_from_bool_mask,
 )
-from src.sahi.utils.shapely import ShapelyAnnotation
+from .utils.shapely import ShapelyAnnotation
 
 
 class BoundingBox:
@@ -131,12 +131,17 @@ class Mask:
         """
         bool_mask = mask > mask_threshold
         return cls(
-            bool_mask=bool_mask, shift_amount=shift_amount, full_shape=full_shape,
+            bool_mask=bool_mask,
+            shift_amount=shift_amount,
+            full_shape=full_shape,
         )
 
     @classmethod
     def from_coco_segmentation(
-        cls, segmentation, full_shape=None, shift_amount: list = [0, 0],
+        cls,
+        segmentation,
+        full_shape=None,
+        shift_amount: list = [0, 0],
     ):
         """
         Init Mask from coco segmentation representation.
@@ -161,11 +166,16 @@ class Mask:
             segmentation, height=full_shape[0], width=full_shape[1]
         )
         return cls(
-            bool_mask=bool_mask, shift_amount=shift_amount, full_shape=full_shape,
+            bool_mask=bool_mask,
+            shift_amount=shift_amount,
+            full_shape=full_shape,
         )
 
     def __init__(
-        self, bool_mask=None, full_shape=None, shift_amount: list = [0, 0],
+        self,
+        bool_mask=None,
+        full_shape=None,
+        shift_amount: list = [0, 0],
     ):
         """
         Args:
@@ -229,7 +239,12 @@ class Mask:
         ), "full_shape is None"
         # init full mask
         mask_fullsized = np.full(
-            (self.full_shape_height, self.full_shape_width,), 0, dtype="float32",
+            (
+                self.full_shape_height,
+                self.full_shape_width,
+            ),
+            0,
+            dtype="float32",
         )
 
         # arrange starting ending indexes
@@ -246,7 +261,11 @@ class Mask:
             : ending_pixel[1] - starting_pixel[1], : ending_pixel[0] - starting_pixel[0]
         ]
 
-        return Mask(mask_fullsized, shift_amount=[0, 0], full_shape=self.full_shape,)
+        return Mask(
+            mask_fullsized,
+            shift_amount=[0, 0],
+            full_shape=self.full_shape,
+        )
 
     def to_coco_segmentation(self):
         """
@@ -516,7 +535,9 @@ class ObjectAnnotation:
 
         if bool_mask is not None:
             self.mask = Mask(
-                bool_mask=bool_mask, shift_amount=shift_amount, full_shape=full_shape,
+                bool_mask=bool_mask,
+                shift_amount=shift_amount,
+                full_shape=full_shape,
             )
             bbox_from_bool_mask = get_bbox_from_bool_mask(bool_mask)
             # https://github.com/obss/sahi/issues/235
@@ -541,7 +562,10 @@ class ObjectAnnotation:
         self.bbox = BoundingBox(bbox, shift_amount)
 
         category_name = category_name if category_name else str(category_id)
-        self.category = Category(id=category_id, name=category_name,)
+        self.category = Category(
+            id=category_id,
+            name=category_name,
+        )
 
         self.merged = None
 

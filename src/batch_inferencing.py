@@ -6,34 +6,12 @@ import hydra
 import jsonlines
 from pconst import const
 import tensorflow as tf
-
-# import life3_biotech as life3
-from . import life3_biotech as life3
-from src.life3_biotech.config import PipelineConfig
-
-# from src.inference.inference_pipeline import PeekingDuckPipeline, get_image_list
-
-# sahi require import
 import time
 
-from src.sahi.slicing import slice_image
-from src.sahi.postprocess.combine import (
-    GreedyNMMPostprocess,
-    LSNMSPostprocess,
-    NMMPostprocess,
-    NMSPostprocess,
-    PostprocessPredictions,
-)
-from src.sahi.prediction import ObjectPrediction, PredictionResult
-from src.sahi.model import EfficientDetModel
-from src.sahi.predict import get_prediction, get_sliced_prediction, predict
-import pandas as pd
+import life3_biotech as life3
+import sahi
 
-
-@hydra.main(
-    config_path="/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/conf/base",
-    config_name="pipelines.yml",
-)
+@hydra.main(config_path="../conf/base", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
     - load logging config
@@ -42,6 +20,9 @@ def main(args):
     - conducts inferencing on data
     - outputs prediction results to a jsonline file
     """
+    os.chdir(
+        hydra.utils.get_original_cwd()
+    )  # Default behavior of hydra changes the working directory, this line changes the working directory back to the root
 
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
@@ -49,21 +30,21 @@ def main(args):
         hydra.utils.get_original_cwd(), "conf/base/logging.yml"
     )
     life3.general_utils.setup_logging(logger_config_path)
-    pipeline_conf = PipelineConfig(args, logger)
+    pipeline_conf = life3.config.PipelineConfig(args, logger)
 
     start = time.time()
 
-    detection_model = EfficientDetModel(
+    detection_model = sahi.model.EfficientDetModel(
         device="cpu",  # or 'cuda:0'
     )
 
     # predicting without slicing the image
-    # result = get_prediction(
+    # result = sahi.predict.get_prediction(
     #     const.IMAGE_INPUT_PATH,
     #     detection_model,
     # )
 
-    result = get_sliced_prediction(
+    result = sahi.predict.get_sliced_prediction(
         const.IMAGE_INPUT_PATH,
         detection_model,
         slice_height=const.SLICE_HEIGHT,

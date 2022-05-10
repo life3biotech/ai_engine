@@ -11,7 +11,7 @@ from typing import Dict, List, Optional
 import numpy as np
 from tqdm import tqdm
 
-from src.sahi.postprocess.combine import (
+from .postprocess.combine import (
     GreedyNMMPostprocess,
     LSNMSPostprocess,
     NMMPostprocess,
@@ -20,15 +20,15 @@ from src.sahi.postprocess.combine import (
 )
 
 # from sahi.postprocess.legacy.combine import UnionMergePostprocess
-from src.sahi.prediction import ObjectPrediction, PredictionResult
-from src.sahi.slicing import slice_image
-from src.sahi.utils.coco import Coco, CocoImage
-from src.sahi.utils.cv import (
+from .prediction import ObjectPrediction, PredictionResult
+from .slicing import slice_image
+from .utils.coco import Coco, CocoImage
+from .utils.cv import (
     crop_object_predictions,
     read_image_as_pil,
     visualize_object_predictions,
 )
-from src.sahi.utils.file import (
+from .utils.file import (
     Path,
     import_class,
     increment_path,

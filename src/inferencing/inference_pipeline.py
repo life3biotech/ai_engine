@@ -15,9 +15,8 @@ import tensorflow as tf
 from peekingduck.pipeline.nodes.draw import bbox
 from peekingduck.pipeline.nodes.model import efficientdet
 
-from src.inference.custom_nodes.model import life3_efficientdet
-from src.life3_biotech.config import PipelineConfig
-from src.life3_biotech import general_utils
+import inferencing
+import life3_biotech as life3
 
 
 def get_image_list(logger):
@@ -80,7 +79,9 @@ class PeekingDuckPipeline:
 
         # add custom node here
         if self.model_node_type == "life3_effdet":
-            self.model_node = life3_efficientdet.Node(**self.model_config)
+            self.model_node = inferencing.custom_nodes.model.life3_efficientdet.Node(
+                **self.model_config
+            )
             self.logger.info("Instantiate Model Node.")
 
         else:
@@ -193,8 +194,8 @@ def get_hydra_config(args):
     logger_config_path = os.path.join(
         hydra.utils.get_original_cwd(), "conf/base/logging.yml"
     )
-    general_utils.setup_logging(logger_config_path)
-    pipeline_conf = PipelineConfig(args, logger)
+    life3.general_utils.setup_logging(logger_config_path)
+    pipeline_conf = life3.config.PipelineConfig(args, logger)
     return pipeline_conf
 
 

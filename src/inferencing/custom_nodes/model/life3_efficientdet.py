@@ -9,11 +9,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from peekingduck.pipeline.nodes.node import AbstractNode
-from src.inference.custom_nodes.model.life3_efficientdet_model import (
+from inferencing.custom_nodes.model.life3_efficientdet_model import (
     Life3EfficientDetModel,
 )
-from src.life3_biotech.config import PipelineConfig
-from src.life3_biotech import general_utils
 
 
 class Node(AbstractNode):
