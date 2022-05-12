@@ -9,7 +9,7 @@ from pconst import const
 import load_data
 import life3_biotech as life3
 
-@hydra.main(config_path="../conf/base", config_name="pipelines.yml")
+@hydra.main(config_path="../conf/life3", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
     - load logging config
