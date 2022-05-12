@@ -100,8 +100,13 @@ class PipelineConfig:
         # Initialise constants for model inference
         if "inference" in params:
             inf_params = params["inference"]
-
+            # Input/Output
             const.INFERENCE_MODEL_PATH = inf_params["model_path"]
+            const.IMAGE_INPUT_PATH = inf_params["image_input_path"]
+            const.CSV_OUTPUT = inf_params["csv_output"]
+            const.SAVE_OUTPUT_IMAGE = inf_params["save_output_image"]
+            const.IMAGE_OUTPUT_DIR = inf_params["image_output_dir"]
+            # Model parameters
             const.INFERENCE_BACKBONE = inf_params["inference_backbone"]
             const.INFERENCE_CONFIDENCE_THRESH = inf_params["confidence_threshold"]
             const.INFERENCE_RUN_NMS = inf_params["run_nms"]
@@ -109,12 +114,7 @@ class PipelineConfig:
             const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
             # const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
             const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]
-            # Input/Output
-            const.IMAGE_INPUT_PATH = inf_params["image_input_path"]
-            const.CSV_OUTPUT = inf_params["csv_output"]
-            const.SAVE_OUTPUT_IMAGE = inf_params["save_output_image"]
-            const.IMAGE_OUTPUT_DIR = inf_params["image_output_dir"]
-            # Slice parameter
+            # Postprocessing parameter
             const.SLICE_HEIGHT = inf_params["slice_height"]
             const.SLICE_WIDTH = inf_params["slice_width"]
             const.OVERLAP_HEIGHT_RATIO = inf_params["overlap_height_ratio"]

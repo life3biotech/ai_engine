@@ -83,36 +83,34 @@ train_augmentation:
   aug_seed: 42
 
 inference:
-  model_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/models/efficientdet_b0_20220505_101317.h5"
+  # ===Input/Output===
+  model_path: "./models/efficientdet_b0_20220505_101317.h5"
+  image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/9.jpg"
+  csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"
+  save_output_image: True # option: True or False
+  image_output_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/"
+  # ===Model parameter===
   inference_backbone: 0
-  confidence_threshold: 0.91
+  confidence_threshold: 0.5
   run_nms: True
-  nms_threshold: 0.5
-  efficientdet_config: {
+  nms_threshold: 0.1
+  efficientdet_config: {  # Do not change the default value
       "model_type": 0,
       "detect_ids": [0,1],
   }
-  # draw_bbox_config: {
-  #   "show_labels":True
-  # }
-  pkd_base_dir: "./src/inferencing/custom_nodes"
-  # Input/Output
-  image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/21.jpg"
-  csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"
-  save_output_image: True
-  image_output_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/"
-  # Slice parameter
+  pkd_base_dir: "./src/inferencing/custom_nodes"  # Do not change the default value
+  # ===Postprocessing parameter===
   slice_height: 512  # The height of the image to be sliced
   slice_width: 512 # The width of the image to be sliced
-  overlap_height_ratio: 0.2 # Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
-  overlap_width_ratio: 0.2 # Fractional overlap in width of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
+  overlap_height_ratio: 0.1 # Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
+  overlap_width_ratio: 0.1 # Fractional overlap in width of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
   # postprocess_type: Type of the postprocess to be used after sliced inference while merging/eliminating predictions.
   # Options are 'NMM', 'GREEDYNMM' or 'NMS'. Default is 'GREEDYNMM'.
-  postprocess_type: "GREEDYNMM" 
+  postprocess_type: "NMS" 
   # postprocess_match_metric: Metric to be used during object prediction matching after sliced prediction.
   # 'IOU' for intersection over union, 'IOS' for intersection over smaller area.
   postprocess_match_metric: "IOS"  
-  postprocess_match_threshold: 0.9  # Sliced predictions having higher iou than postprocess_match_threshold will be postprocessed after sliced prediction.
+  postprocess_match_threshold: 0.2  # Sliced predictions having higher iou than postprocess_match_threshold will be postprocessed after sliced prediction.
 
 
 efficientdet:

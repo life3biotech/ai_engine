@@ -42,7 +42,7 @@ def main(args):
         device="cpu",  # or 'cuda:0'
     )
 
-    # predicting without slicing the image
+    # # predicting without slicing the image
     # result = sahi.predict.get_prediction(
     #     const.IMAGE_INPUT_PATH,
     #     detection_model,
@@ -65,7 +65,8 @@ def main(args):
     df.to_csv(const.CSV_OUTPUT)
 
     # Export predicted output image
-    result.export_visuals(export_dir=const.IMAGE_OUTPUT_DIR)
+    if const.SAVE_OUTPUT_IMAGE:
+        result.export_visuals(export_dir=const.IMAGE_OUTPUT_DIR)
 
     end = time.time()
 
