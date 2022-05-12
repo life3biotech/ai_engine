@@ -21,11 +21,13 @@ class BatchNormalization(keras.layers.BatchNormalization):
         if not training:
             return super(BatchNormalization, self).call(inputs, training=False)
         else:
-            return super(BatchNormalization, self).call(inputs, training=(not self.freeze))
+            return super(BatchNormalization, self).call(
+                inputs, training=(not self.freeze)
+            )
 
     def get_config(self):
         config = super(BatchNormalization, self).get_config()
-        config.update({'freeze': self.freeze})
+        config.update({"freeze": self.freeze})
         return config
 
 
@@ -36,11 +38,13 @@ class wBiFPNAdd(keras.layers.Layer):
 
     def build(self, input_shape):
         num_in = len(input_shape)
-        self.w = self.add_weight(name=self.name,
-                                 shape=(num_in,),
-                                 initializer=keras.initializers.constant(1 / num_in),
-                                 trainable=True,
-                                 dtype=tf.float32)
+        self.w = self.add_weight(
+            name=self.name,
+            shape=(num_in,),
+            initializer=keras.initializers.constant(1 / num_in),
+            trainable=True,
+            dtype=tf.float32,
+        )
 
     def call(self, inputs, **kwargs):
         w = keras.activations.relu(self.w)
@@ -53,9 +57,7 @@ class wBiFPNAdd(keras.layers.Layer):
 
     def get_config(self):
         config = super(wBiFPNAdd, self).get_config()
-        config.update({
-            'epsilon': self.epsilon
-        })
+        config.update({"epsilon": self.epsilon})
         return config
 
 
@@ -74,10 +76,10 @@ def bbox_transform_inv(boxes, deltas, scale_factors=None):
     h = tf.exp(th) * ha
     cy = ty * ha + cya
     cx = tx * wa + cxa
-    ymin = cy - h / 2.
-    xmin = cx - w / 2.
-    ymax = cy + h / 2.
-    xmax = cx + w / 2.
+    ymin = cy - h / 2.0
+    xmin = cx - w / 2.0
+    ymax = cy + h / 2.0
+    xmax = cx + w / 2.0
     return tf.stack([xmin, ymin, xmax, ymax], axis=-1)
 
 
@@ -115,16 +117,16 @@ class RegressBoxes(keras.layers.Layer):
 
 
 def filter_detections(
-        boxes,
-        classification,
-        alphas=None,
-        ratios=None,
-        class_specific_filter=True,
-        nms=True,
-        score_threshold=0.01,
-        max_detections=100,
-        nms_threshold=0.5,
-        detect_quadrangle=False,
+    boxes,
+    classification,
+    alphas=None,
+    ratios=None,
+    class_specific_filter=True,
+    nms=True,
+    score_threshold=0.01,
+    max_detections=100,
+    nms_threshold=0.5,
+    detect_quadrangle=False,
 ):
     """
     Filter detections using the boxes and classification values.
@@ -175,8 +177,12 @@ def filter_detections(
             # perform NMS
             # filtered_boxes = tf.concat([filtered_boxes[..., 1:2], filtered_boxes[..., 0:1],
             #                             filtered_boxes[..., 3:4], filtered_boxes[..., 2:3]], axis=-1)
-            nms_indices = tf.image.non_max_suppression(filtered_boxes, filtered_scores, max_output_size=max_detections,
-                                                       iou_threshold=nms_threshold)
+            nms_indices = tf.image.non_max_suppression(
+                filtered_boxes,
+                filtered_scores,
+                max_output_size=max_detections,
+                iou_threshold=nms_threshold,
+            )
 
             # filter indices based on NMS
             # (num_score_nms_keeps, 1)
@@ -195,7 +201,7 @@ def filter_detections(
         # perform per class filtering
         for c in range(int(classification.shape[1])):
             scores = classification[:, c]
-            labels = c * tf.ones((keras.backend.shape(scores)[0],), dtype='int64')
+            labels = c * tf.ones((keras.backend.shape(scores)[0],), dtype="int64")
             all_indices.append(_filter_detections(scores, labels))
 
         # concatenate indices to single tensor
@@ -209,7 +215,9 @@ def filter_detections(
     # select top k
     scores = tf.gather_nd(classification, indices)
     labels = indices[:, 1]
-    scores, top_indices = tf.nn.top_k(scores, k=keras.backend.minimum(max_detections, keras.backend.shape(scores)[0]))
+    scores, top_indices = tf.nn.top_k(
+        scores, k=keras.backend.minimum(max_detections, keras.backend.shape(scores)[0])
+    )
 
     # filter input using the final set of indices
     indices = keras.backend.gather(indices[:, 0], top_indices)
@@ -221,7 +229,7 @@ def filter_detections(
     boxes = tf.pad(boxes, [[0, pad_size], [0, 0]], constant_values=-1)
     scores = tf.pad(scores, [[0, pad_size]], constant_values=-1)
     labels = tf.pad(labels, [[0, pad_size]], constant_values=-1)
-    labels = keras.backend.cast(labels, 'int32')
+    labels = keras.backend.cast(labels, "int32")
 
     # set shapes, since we know what they are
     boxes.set_shape([max_detections, 4])
@@ -246,15 +254,15 @@ class FilterDetections(keras.layers.Layer):
     """
 
     def __init__(
-            self,
-            nms=const.INFERENCE_RUN_NMS,
-            class_specific_filter=True,
-            nms_threshold=const.INFERENCE_NMS_THRESH,
-            score_threshold=0.01,
-            max_detections=100,
-            parallel_iterations=32,
-            detect_quadrangle=False,
-            **kwargs
+        self,
+        # nms=const.INFERENCE_RUN_NMS,
+        class_specific_filter=True,
+        # nms_threshold=const.INFERENCE_NMS_THRESH,
+        score_threshold=0.1,
+        max_detections=100,
+        parallel_iterations=32,
+        detect_quadrangle=False,
+        **kwargs
     ):
         """
         Filters detections using score threshold, NMS and selecting the top-k detections.
@@ -267,9 +275,10 @@ class FilterDetections(keras.layers.Layer):
             max_detections: Maximum number of detections to keep.
             parallel_iterations: Number of batch items to process in parallel.
         """
-        self.nms = nms
+
+        self.nms = const.INFERENCE_RUN_NMS
         self.class_specific_filter = class_specific_filter
-        self.nms_threshold = nms_threshold
+        self.nms_threshold = const.INFERENCE_NMS_THRESH
         self.score_threshold = score_threshold
         self.max_detections = max_detections
         self.parallel_iterations = parallel_iterations
@@ -314,15 +323,15 @@ class FilterDetections(keras.layers.Layer):
             outputs = tf.map_fn(
                 _filter_detections,
                 elems=[boxes, classification, alphas, ratios],
-                dtype=['float32', 'float32', 'float32', 'float32', 'int32'],
-                parallel_iterations=self.parallel_iterations
+                dtype=["float32", "float32", "float32", "float32", "int32"],
+                parallel_iterations=self.parallel_iterations,
             )
         else:
             outputs = tf.map_fn(
                 _filter_detections,
                 elems=[boxes, classification],
-                dtype=['float32', 'float32', 'int32'],
-                parallel_iterations=self.parallel_iterations
+                dtype=["float32", "float32", "int32"],
+                parallel_iterations=self.parallel_iterations,
             )
 
         return outputs
@@ -367,13 +376,15 @@ class FilterDetections(keras.layers.Layer):
             Dictionary containing the parameters of this layer.
         """
         config = super(FilterDetections, self).get_config()
-        config.update({
-            'nms': self.nms,
-            'class_specific_filter': self.class_specific_filter,
-            'nms_threshold': self.nms_threshold,
-            'score_threshold': self.score_threshold,
-            'max_detections': self.max_detections,
-            'parallel_iterations': self.parallel_iterations,
-        })
+        config.update(
+            {
+                "nms": self.nms,
+                "class_specific_filter": self.class_specific_filter,
+                "nms_threshold": self.nms_threshold,
+                "score_threshold": self.score_threshold,
+                "max_detections": self.max_detections,
+                "parallel_iterations": self.parallel_iterations,
+            }
+        )
 
         return config

@@ -185,18 +185,18 @@ class PeekingDuckPipeline:
         return eff_det_output
 
 
-@hydra.main(config_path="../../conf/local", config_name="pipelines.yml")
-def get_hydra_config(args):
+# @hydra.main(config_path="../../conf/base", config_name="pipelines.yml")
+# def get_hydra_config(args):
 
-    os.chdir(hydra.utils.get_original_cwd())
-    logger = logging.getLogger(__name__)
-    logger.info("Setting up logging configuration.")
-    logger_config_path = os.path.join(
-        hydra.utils.get_original_cwd(), "conf/base/logging.yml"
-    )
-    life3.general_utils.setup_logging(logger_config_path)
-    pipeline_conf = life3.config.PipelineConfig(args, logger)
-    return pipeline_conf
+#     os.chdir(hydra.utils.get_original_cwd())
+#     logger = logging.getLogger(__name__)
+#     logger.info("Setting up logging configuration.")
+#     logger_config_path = os.path.join(
+#         hydra.utils.get_original_cwd(), "conf/base/logging.yml"
+#     )
+#     life3.general_utils.setup_logging(logger_config_path)
+#     pipeline_conf = life3.config.PipelineConfig(args, logger)
+#     return pipeline_conf
 
 
 # if __name__ == "__main__":

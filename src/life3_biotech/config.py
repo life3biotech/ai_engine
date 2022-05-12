@@ -107,14 +107,14 @@ class PipelineConfig:
             const.INFERENCE_RUN_NMS = inf_params["run_nms"]
             const.INFERENCE_NMS_THRESH = inf_params["nms_threshold"]
             const.PKD_BASE_DIR = inf_params["pkd_base_dir"]
-            const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
+            # const.DRAW_BBOX_CONFIG = inf_params["draw_bbox_config"]
             const.EFFICIENTDET_CONFIG = inf_params["efficientdet_config"]
             # Input/Output
             const.IMAGE_INPUT_PATH = inf_params["image_input_path"]
             const.CSV_OUTPUT = inf_params["csv_output"]
             const.SAVE_OUTPUT_IMAGE = inf_params["save_output_image"]
             const.IMAGE_OUTPUT_DIR = inf_params["image_output_dir"]
-            # Sahi slice parameter
+            # Slice parameter
             const.SLICE_HEIGHT = inf_params["slice_height"]
             const.SLICE_WIDTH = inf_params["slice_width"]
             const.OVERLAP_HEIGHT_RATIO = inf_params["overlap_height_ratio"]
@@ -149,4 +149,3 @@ class PipelineConfig:
                 const.ED_TRAIN_BACKBONE = ed_params["train_backbone"]
             if "image_sizes" in ed_params:
                 const.ED_IMAGE_SIZES = tuple(ed_params["image_sizes"])
-

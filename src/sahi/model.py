@@ -183,8 +183,8 @@ class EfficientDetModel(DetectionModel):
             logger=logger,
             model_node_type="life3_effdet",
             model_config=const.EFFICIENTDET_CONFIG,
-            draw_node_type="draw_bbox",
-            draw_config=const.DRAW_BBOX_CONFIG,
+            # draw_node_type="draw_bbox",
+            # draw_config=const.DRAW_BBOX_CONFIG,
         )
 
         self.model = model

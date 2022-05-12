@@ -90,19 +90,18 @@ inference:
   nms_threshold: 0.5
   efficientdet_config: {
       "model_type": 0,
-      # "score_threshold": 0.75,
       "detect_ids": [0,1],
   }
-  draw_bbox_config: {
-    "show_labels":True
-  }
-  pkd_base_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/src/inferencing/custom_nodes"
+  # draw_bbox_config: {
+  #   "show_labels":True
+  # }
+  pkd_base_dir: "./src/inferencing/custom_nodes"
   # Input/Output
   image_input_path: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/21.jpg"
   csv_output: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/annotation_output.csv"
   save_output_image: True
   image_output_dir: "/Users/dylanpoh/Documents/AIsingapore/GitHub/life3/data/car/output2/"
-  # Sahi slice parameter
+  # Slice parameter
   slice_height: 512  # The height of the image to be sliced
   slice_width: 512 # The width of the image to be sliced
   overlap_height_ratio: 0.2 # Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
@@ -131,7 +130,7 @@ efficientdet:
     random_transform: False
     batch_size: 8
     epochs: 50
-    steps: 1000
+    steps: 128
     # parameters for anchor boxes
     # anchor_box_ratios: [0.403, 1.0, 2.479]
     # anchor_box_scales: [0.4, 0.496, 0.625]
