@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>2-data-pipeline-setup.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="data-pipeline-setup">Data Pipeline Setup</h1>
+<h2 id="overview">Overview</h2>
+<p>The data pipeline consists of 5 steps.</p>
+<h3 id="1-data-loading">1. Data loading</h3>
+<p>This serves as the entry point of the process, which initialises the data pipeline and calls the relevant functions to carry out the rest of the steps.</p>
+<h3 id="2-tiling">2. Tiling</h3>
+<p>This subprocess ingests the raw images and annotations, performs image tiling and generates the new COCO annotations based on the tiled images. Option to exclude images are executed here.</p>
+<h3 id="3-preprocessing">3. Preprocessing</h3>
+<p>This subprocess combines the annotations generated in the previous steps, cleans the data, performs feature engineering and converts the preprocessed annotations data into CSV format.</p>
+<h3 id="4-data-splitting">4. Data splitting</h3>
+<p>This subprocess stratifies the data according to the configuration and splits it into three sets for training, validation and testing.</p>
+<h3 id="5-model-specific-preprocessing">5. Model-specific preprocessing</h3>
+<p>This subprocess converts the annotations generated in the previous step into a format that can be ingested by the model (EfficientDet).</p>
+<h2 id="configuration">Configuration</h2>
+<p>The main configuration file used to customise the AI engine is <code>pipelines.yml</code>, located in <code>conf/life3</code> subfolder.</p>
+<p>In <code>pipelines.yml</code>, the following parameters in the <code>data_prep</code> section are configurable.</p>
+<table>
+<thead>
+<tr>
+<th>Constant (<code>const.</code>)</th>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MODELS</td>
+<td>models</td>
+<td>list of str</td>
+<td>List of model names to run the data loader on. Each model usually requires annotations to be in a particular format for ingestion.</td>
+<td><code>[&quot;efficientdet&quot;]</code></td>
+</tr>
+<tr>
+<td>RAW_DATA_PATH</td>
+<td>raw_data_path</td>
+<td>str</td>
+<td>Absolute path pointing to the raw data directory of the project. This directory should contain the raw data exported from CVAT, to be processed by AI engine, e.g. annotations JSON files and images</td>
+<td></td>
+</tr>
+<tr>
+<td>INTERIM_DATA_PATH</td>
+<td>interim_data_path</td>
+<td>str</td>
+<td>Absolute path pointing to the interim data directory of the project. This directory is used to store the annotations files generated by the image tiling and preprocessing steps.</td>
+<td></td>
+</tr>
+<tr>
+<td>PROCESSED_DATA_PATH</td>
+<td>processed_data_path</td>
+<td>str</td>
+<td>Absolute path pointing to the processed data directory of the project. This directory is used to store the final split datasets (train, validation &amp; test) generated. It may also be used to store augmented training images for experimental purpose (see documentation on training pipeline).</td>
+<td></td>
+</tr>
+<tr>
+<td>ANNOTATIONS_SUBDIR</td>
+<td>annotations_subdir</td>
+<td>str</td>
+<td>Name of subdirectory containing annotation files, residing within the directories listed in <code>data_subdirs_paths</code></td>
+<td>&quot;annotations&quot;</td>
+</tr>
+<tr>
+<td>IMAGES_SUBDIR</td>
+<td>images_subdir</td>
+<td>str</td>
+<td>Name of subdirectory containing image files, residing within the directories listed in <code>data_subdirs_paths</code></td>
+<td>&quot;images&quot;</td>
+</tr>
+<tr>
+<td>COCO_ANNOTATION_FILENAME</td>
+<td>coco_annotations_filename</td>
+<td>str</td>
+<td>Name of JSON file containing annotations, residing within the subdirectory specified in <code>annotations_subdir</code></td>
+<td>&quot;instances_default.json&quot;</td>
+</tr>
+<tr>
+<td>COMBINED_ANNOTATIONS_FILENAME</td>
+<td>combined_annotations_filename</td>
+<td>str</td>
+<td>Name of CSV file containing preprocessed annotations generated into the directory specified in <code>interim_data_path</code></td>
+<td>&quot;annotations_all.csv&quot;</td>
+</tr>
+<tr>
+<td>EXCLUDED_IMAGES</td>
+<td>excluded_images</td>
+<td>list of str</td>
+<td>List of image filenames (str) to exclude from the data pipeline</td>
+<td></td>
+</tr>
+<tr>
+<td>CLASS_MAP</td>
+<td>class_map</td>
+<td>dict</td>
+<td>Object mapping of the classes and their numerical representations</td>
+<td></td>
+</tr>
+<tr>
+<td><code>{'cell': 0, 'cell accumulation': 1}</code></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>REMAP_CLASSES</td>
+<td>remap_classes</td>
+<td>dict</td>
+<td>Determines whether remapping of classes is carried out in the preprocessing step. Remapping may be used to combine/collapse two or more class labels into one, or to incorrectly labelled data.</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>CLASS_REMAPPING</td>
+<td>class_remapping</td>
+<td>dict</td>
+<td>Object mapping of the labelled category names to their corrected labels</td>
+<td></td>
+</tr>
+<tr>
+<td>ACCEPTED_IMAGE_FORMATS</td>
+<td>accepted_image_formats</td>
+<td>list of str</td>
+<td>A list of image extensions determining the expected image formats for the data (see <a href="https://docs.opencv.org/4.5.3/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56">here</a> for extensions supported by OpenCV)</td>
+<td><code>['jpg', 'JPG', 'jpeg', 'png']</code></td>
+</tr>
+<tr>
+<td><strong><em>Tile/Slice</em></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>RUN_TILING</td>
+<td>run_tiling</td>
+<td>boolean</td>
+<td>Determines whether to tile image at the start of the training process.</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>TILE_COCO_FILTER_CATEGORIES</td>
+<td>tile_coco_filter_categories</td>
+<td>list of str</td>
+<td>Categories can be filter/selected here for COCO json</td>
+<td>- &quot;Cells&quot;<br>- &quot;cell accumulation (small cells)&quot;<br>- &quot;cell accumulation (large cells)&quot;</td>
+</tr>
+<tr>
+<td>TILE_DATA_DIR_PATHS</td>
+<td>tile_data_dir_paths</td>
+<td>str</td>
+<td>Absolute path pointing to the tile process data directory of the project. This directory contain the same directory structure as original data, with images and coco json processed as tile format.</td>
+<td></td>
+</tr>
+<tr>
+<td>TILE_SLICE_HEIGHT</td>
+<td>tile_slice_height</td>
+<td>int</td>
+<td>Parameter to determine the height of each tile/slice image.</td>
+<td>512</td>
+</tr>
+<tr>
+<td>TILE_SLICE_WIDTH</td>
+<td>tile_slice_width</td>
+<td>int</td>
+<td>Parameter to determine the width of each tile/slice image.</td>
+<td>512</td>
+</tr>
+<tr>
+<td>TILE_OVERLAP_HEIGHT_RATIO</td>
+<td>tile_overlap_height_ratio</td>
+<td>float</td>
+<td>Parameter to specify adjacent tiles height overlapping percentage.</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>TILE_OVERLAP_WIDTH_RATIO</td>
+<td>tile_overlap_width_ratio</td>
+<td>float</td>
+<td>Parameter to specify adjacent tiles width overlapping percentage.</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>TILE_IGNORE_NEGATIVE_SAMPLES</td>
+<td>tile_ignore_negative_samples</td>
+<td>boolean</td>
+<td>Determines whether to include images without annotation. Setting as <code>False</code> will include images without annotations.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><strong><em>Data Split</em></strong></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>TARGET_COL</td>
+<td>target_col</td>
+<td>str</td>
+<td>Column name to take reference for the class name</td>
+<td>'category_name'</td>
+</tr>
+<tr>
+<td>SAVE_DATA_SPLITS</td>
+<td>save_data_splits</td>
+<td>boolean</td>
+<td>Determines whether to save the train/validation/test splits as separate csv files</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>VAL_SIZE</td>
+<td>val_size</td>
+<td>float</td>
+<td>Proportion of data allocated to the validation set, based on the proportion of the overall data</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>TEST_SIZE</td>
+<td>test_size</td>
+<td>float</td>
+<td>Proportion of data allocated to the test set, based on the proportion of the overall data</td>
+<td>0.2</td>
+</tr>
+<tr>
+<td>TRAIN_BASE_FILENAME</td>
+<td>train_base_filename</td>
+<td>str</td>
+<td>Base filename (prefix) to be used for naming the train split file</td>
+<td>'train.csv'</td>
+</tr>
+<tr>
+<td>VAL_BASE_FILENAME</td>
+<td>validation_base_filename</td>
+<td>str</td>
+<td>Base filename (prefix) to be used for naming the validation split file</td>
+<td>'validation.csv'</td>
+</tr>
+<tr>
+<td>TEST_BASE_FILENAME</td>
+<td>test_base_filename</td>
+<td>str</td>
+<td>Base filename (prefix) to be used for naming the test split file</td>
+<td>'test.csv'</td>
+</tr>
+<tr>
+<td>META_DATA_FILENAME</td>
+<td>meta_data_filename</td>
+<td>str</td>
+<td>Meta data that contain extra information of the images such as incubation_day filepath and filename.</td>
+<td></td>
+</tr>
+<tr>
+<td>STRATIFY_COLUMN</td>
+<td>stratify_column</td>
+<td>str</td>
+<td>Column name that will be used for data stratification.</td>
+<td>'incubation_day'</td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-the-data-pipeline">Running the data pipeline</h2>
+<p>To run the data pipeline only (without entering the model training pipeline), open Anaconda Prompt and run the following commands:</p>
+<pre class="hljs"><code><div>cd C:\ai_engine
+conda activate life3-biotech
+python -m src.load_data
+</div></code></pre>
+<p>Upon successful run of the pipeline, the following message would be printed in the console log: <code>Data preparation pipeline has completed.</code></p>
+<p>Additionally, the following files would be generated in the <code>data</code> directory:</p>
+<table>
+<thead>
+<tr>
+<th>Files</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tiled images and COCO annotations</td>
+<td><code>tile_data_dir_paths</code></td>
+</tr>
+<tr>
+<td>Tiled images</td>
+<td><code>raw_data_path</code></td>
+</tr>
+<tr>
+<td>CSV file containing combined &amp; preprocessed annotations, e.g. <code>annotations_all.csv</code></td>
+<td><code>interim_data_path</code></td>
+</tr>
+<tr>
+<td>CSV file containing train set annotations, e.g. <code>annotations_train.csv</code></td>
+<td><code>interim_data_path</code></td>
+</tr>
+<tr>
+<td>CSV file containing validation set annotations, e.g. <code>annotations_val.csv</code></td>
+<td><code>interim_data_path</code></td>
+</tr>
+<tr>
+<td>CSV file containing test set annotations, e.g. <code>annotations_test.csv</code></td>
+<td><code>interim_data_path</code></td>
+</tr>
+<tr>
+<td>CSV files containing annotations in points 3 to 5, formatted for the EfficientDet model architecture, e.g. <code>annotations_train_efficientdet_b0.csv</code>, <code>annotations_val_efficientdet_b0.csv</code> and <code>annotations_test_efficientdet_b0.csv</code></td>
+<td><code>processed_data_path</code></td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>

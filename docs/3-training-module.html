@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>3-training-module.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="training-module">Training Module</h1>
+<p>Please ensure that you have completed the &quot;Environment Setup&quot; guide before proceeding to follow this guide.</p>
+<h2 id="overview">Overview</h2>
+<p>The diagram below shows the process flow of the model training module, which optionally includes the data pipeline.</p>
+<p>The entrypoint of the training module is the script <code>src/train_model.py</code> by default. If the data pipeline is configured to run before training begins, the entrypoint would be <code>src/load_data.py</code>. Running the data pipeline is necessary only if there are changes or additions to the training dataset or if the data pipeline has never been run on the current training environment.</p>
+<p><img src="images/training-module-flow.png" alt="Training Module Process Flow"></p>
+<h2 id="configuration">Configuration</h2>
+<p>The main configuration file used to customise the AI engine is <code>pipelines.yml</code>, located in <code>conf/life3</code> subfolder.</p>
+<h3 id="data-pipeline-configuration">Data pipeline configuration</h3>
+<p>To configure and run the data pipeline, refer to the &quot;Data Pipeline Setup&quot; guide.</p>
+<h3 id="general-training-configuration">General training configuration</h3>
+<p>In <code>pipelines.yml</code>, the following parameters in the <code>train</code> section are configurable.</p>
+<table>
+<thead>
+<tr>
+<th>Constant (<code>const.</code>)</th>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LOAD_DATA</td>
+<td>load_data</td>
+<td>boolean</td>
+<td>Determines whether to run the data pipeline process before training. Set to <code>True</code> if there is new data to be trained on.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>TRAIN_MODEL_NAME</td>
+<td>model_name</td>
+<td>str</td>
+<td>Name of model to be trained</td>
+<td>&quot;efficientdet&quot;</td>
+</tr>
+<tr>
+<td>SAVE_WEIGHTS_ONLY</td>
+<td>save_weights_only</td>
+<td>boolean</td>
+<td>Determines whether to run the data pipeline process before training. Set to <code>True</code> if there is new data to be trained on.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>TRAIN_EARLY_STOPPING</td>
+<td>early_stopping</td>
+<td>boolean</td>
+<td>Determines whether the early stopping mechanism is activated during training.</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>TRAIN_EARLY_STOP_PATIENCE</td>
+<td>patience</td>
+<td>int</td>
+<td>Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set.</td>
+<td></td>
+</tr>
+<tr>
+<td>EVAL_ONLY</td>
+<td>eval_only</td>
+<td>boolean</td>
+<td>Determines whether the training process should be skipped. Set to <code>True</code> to perform validation only on a saved model checkpoint. This may be done to compare results when different threshold values are used (see below).</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>LR_SCHEDULER</td>
+<td>lr_scheduler</td>
+<td>str</td>
+<td>The learning rate scheduler used by the model during training. For <code>reduce_on_plateau</code>, the learning rate will reduce by <code>lr_reduce_factor</code> (see below) if there is no improvement in model performance for 2 consecutive epochs. The number of consecutive epochs depends on <code>lr_reduce_patience</code> (see below).</td>
+<td>&quot;reduce_on_plateau&quot;</td>
+</tr>
+<tr>
+<td>INITIAL_LR</td>
+<td>initial_lr</td>
+<td>float</td>
+<td>Learning rate to start from.</td>
+<td>0.001</td>
+</tr>
+<tr>
+<td>LR_REDUCE_FACTOR</td>
+<td>lr_reduce_factor</td>
+<td>float</td>
+<td>Factor by which the learning rate will be reduced. The new learning rate is computed by multiplying the current LR by this factor.</td>
+<td>0.1</td>
+</tr>
+<tr>
+<td>LR_REDUCE_PATIENCE</td>
+<td>lr_reduce_patience</td>
+<td>int</td>
+<td>Number of epochs with no improvement after which learning rate will be reduced.</td>
+<td>2</td>
+</tr>
+<tr>
+<td>LR_MIN_DELTA</td>
+<td>lr_min_delta</td>
+<td>float</td>
+<td>Threshold for measuring the new optimum, to only focus on significant changes.</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td>EVAL_BATCH_SIZE</td>
+<td>eval_batch_size</td>
+<td>int</td>
+<td>The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32.</td>
+<td>4</td>
+</tr>
+<tr>
+<td>EVAL_IOU_THRESHOLD</td>
+<td>eval_iou_threshold</td>
+<td>list of float</td>
+<td>The threshold used to consider when a detection is positive or negative.<br>Possible values:<br>1. a single floating point number; or <br>2. 3 numbers representing lower boundary, upper boundary (inclusive) &amp; number of evenly spaced values to generate, e.g. <code>[0.5, 0.95, 10]</code>.<br>For more stringent evaluation, use the latter option.</td>
+<td><code>[0.5]</code></td>
+</tr>
+<tr>
+<td>EVAL_SCORE_THRESHOLD</td>
+<td>eval_score_threshold</td>
+<td>float</td>
+<td>The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction.</td>
+<td>0.1</td>
+</tr>
+</tbody>
+</table>
+<h3 id="efficientdet-configuration">EfficientDet configuration</h3>
+<p>The implementation of EfficientDet is based on <a href="https://github.com/xuannianz/EfficientDet">this open source GitHub project</a>. See <a href="https://gitlab.aisingapore.net/aisg/sip/life3/-/blob/dev/src/life3_biotech/modeling/EfficientDet/README.md">this README</a> for more details.</p>
+<p>Under the <code>efficientdet</code> section in <code>pipelines.yml</code>, the training-related hyperparameters that can be changed are as follows:</p>
+<table>
+<thead>
+<tr>
+<th>Constant (<code>const.</code>)</th>
+<th>Parameter</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TRAIN_ANNOTATIONS_PATH</td>
+<td>train_annotations_path</td>
+<td>str</td>
+<td>Absolute or relative path pointing to the training data set to be used.</td>
+<td></td>
+</tr>
+<tr>
+<td>VAL_ANNOTATIONS_PATH</td>
+<td>val_annotations_path</td>
+<td>str</td>
+<td>Absolute or relative path pointing to the validation data set to be used during training.</td>
+<td></td>
+</tr>
+<tr>
+<td>TEST_ANNOTATIONS_PATH</td>
+<td>test_annotations_path</td>
+<td>str</td>
+<td>Absolute or relative path pointing to the test data set to be used during evaluation.</td>
+<td></td>
+</tr>
+<tr>
+<td>BEST_MODEL</td>
+<td>saved_best_model</td>
+<td>str</td>
+<td>Filename of saved model to be used during evaluation. Value must be set if <code>eval_only</code> (in <code>train</code> section; see above) is <code>True</code>.</td>
+<td></td>
+</tr>
+<tr>
+<td>SAVED_MODEL_PATH</td>
+<td>snapshot-path</td>
+<td>str</td>
+<td>Absolute or relative path to directory where model snapshots are saved during training.</td>
+<td></td>
+</tr>
+<tr>
+<td>None</td>
+<td>gpu</td>
+<td>int or str</td>
+<td>ID of GPU device to be used. Only single GPU is supported by this EfficientDet implementation.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>ED_TRAIN_BACKBONE</td>
+<td>train_backbone</td>
+<td>int</td>
+<td>Compound coefficient used to scale up EfficientNet, the backbone network. Possible values: 0, 1, 2, 3, 4, 5, 6.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>None</td>
+<td>snapshot</td>
+<td>str</td>
+<td>Base model weights to start training from. If a filename is specified, the file must be in h5 format and exist in the location defined in <code>snapshot-path</code>. If 'imagenet' is specified, the base weights will be downloaded from https://github.com/Callidior/keras-applications/releases/.</td>
+<td>'imagenet'</td>
+</tr>
+<tr>
+<td>None</td>
+<td>weighted_bifpn</td>
+<td>boolean</td>
+<td>Determines whether EfficientNet backbone uses weighted BiFPN (bidirectional feature pyramid network).</td>
+<td><code>True</code></td>
+</tr>
+<tr>
+<td>None</td>
+<td>freeze_bn</td>
+<td>boolean</td>
+<td>Determines whether the batch normalization layers of the backbone network are frozen during training.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>None</td>
+<td>freeze_backbone</td>
+<td>boolean</td>
+<td>Determines whether the weights of the backbone network are frozen during training.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>None</td>
+<td>random_transform</td>
+<td>boolean</td>
+<td>Determines whether EfficientDet's in-built data augmentation is activated during training.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td>None</td>
+<td>batch_size</td>
+<td>int</td>
+<td>The number of images included in each batch during training. Recommended values: 2, 4, 8, 16.</td>
+<td>8</td>
+</tr>
+<tr>
+<td>None</td>
+<td>epochs</td>
+<td>int</td>
+<td>Number of epochs to train.</td>
+<td>100</td>
+</tr>
+<tr>
+<td>None</td>
+<td>steps</td>
+<td>int</td>
+<td>Number of steps per epoch. For example, if training on 4000 images with a batch size of 4, the number of steps should be 4000 / 4 = 1000.</td>
+<td>128</td>
+</tr>
+<tr>
+<td>ED_IMAGE_SIZES</td>
+<td>image_sizes</td>
+<td>list of int</td>
+<td>Input image sizes in pixels used by each EfficientNet backbone (B0 to B6). Do not change.</td>
+<td><code>[512, 640, 768, 896, 1024, 1280, 1408]</code></td>
+</tr>
+<tr>
+<td>ANCHOR_BOX_RATIOS</td>
+<td>anchor_box_ratios</td>
+<td>list of float</td>
+<td>Each float represents an aspect ratio (width/height) of the anchor box. The number of ratios can be increased beyond 3. Ratios should reflect the average shape of objects in the dataset, in order for the model to fit the anchor box to the ground truth bounding box.</td>
+<td><code>[1, 0.5, 2]</code></td>
+</tr>
+<tr>
+<td>ANCHOR_BOX_SCALES</td>
+<td>anchor_box_scales</td>
+<td>list of float</td>
+<td>Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images.</td>
+<td><code>[0.5, 1.0, 2.0]</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="running-the-training-pipeline">Running the training pipeline</h2>
+<ol>
+<li>
+<p>Open Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
+</li>
+<li>
+<p>Activate the conda environment with the following command:</p>
+</li>
+</ol>
+<pre class="hljs"><code><div>conda activate life3-biotech
+</div></code></pre>
+<ol start="3">
+<li>If there are known updates to the dependencies, update the conda environment by running:</li>
+</ol>
+<pre class="hljs"><code><div>conda env update --file life3-biotech-conda-env.yml
+</div></code></pre>
+<ol start="4">
+<li>To run the data pipeline before the training process starts, ensure that <code>load_data</code> is set to <code>True</code> in <code>pipelines.yml</code>:</li>
+</ol>
+<pre class="hljs"><code><div>train:
+  load_data: True
+...
+</div></code></pre>
+<ol start="5">
+<li>To train a model to detect the <code>cell</code> class ONLY, in the <code>data_prep</code> section, comment out or remove the line <code>'cell accumulation': 1</code> as shown below. (In Python, a single-line comment is prefixed by the pound sign <code>#</code>.)</li>
+</ol>
+<pre class="hljs"><code><div>data_prep: 
+ ...
+ class_map: { 
+        'cell': 0, 
+        # 'cell accumulation': 1 
+  }
+</div></code></pre>
+<ol start="6">
+<li>Finally, run the following command to start the model training pipeline:</li>
+</ol>
+<pre class="hljs"><code><div>python3 -m src.train_model
+</div></code></pre>
+
+</body>
+</html>
