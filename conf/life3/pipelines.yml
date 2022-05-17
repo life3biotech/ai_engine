@@ -3,15 +3,15 @@ data_prep:
     "efficientdet"
     ]
   data_subdirs_paths:
-    - "C:\\life3\\data\\uploaded\\images 1-7 revised"
-    - "C:\\life3\\data\\uploaded\\images 8-24 revised"
-    - "C:\\life3\\data\\uploaded\\images 25-35 revised"
-    - "C:\\life3\\data\\uploaded\\images 36-55 revised"
-    - "C:\\life3\\data\\uploaded\\images 56-75 revised"
-    - "C:\\life3\\data\\uploaded\\images 76-100 revised"
-  raw_data_path: "C:\\life3\\data\\raw"
-  processed_data_path: "C:\\life3\\data\\processed"
-  interim_data_path: "C:\\life3\\data\\interim"
+    - "C:\\ai_engine\\data\\uploaded\\images 1-7 revised"
+    - "C:\\ai_engine\\data\\uploaded\\images 8-24 revised"
+    - "C:\\ai_engine\\data\\uploaded\\images 25-35 revised"
+    - "C:\\ai_engine\\data\\uploaded\\images 36-55 revised"
+    - "C:\\ai_engine\\data\\uploaded\\images 56-75 revised"
+    - "C:\\ai_engine\\data\\uploaded\\images 76-100 revised"
+  raw_data_path: "C:\\ai_engine\\data\\raw"
+  processed_data_path: "C:\\ai_engine\\data\\processed"
+  interim_data_path: "C:\\ai_engine\\data\\interim"
   annotations_subdir: "annotations"
   images_subdir: "images"
   coco_annotations_filename: "instances_default.json"
@@ -36,7 +36,7 @@ data_prep:
     - "Cells"
     - "cell accumulation (small cells)"
     - "cell accumulation (large cells)"
-  tile_data_dir_paths: "C:\\life3\\data\\processed\\tiled_512"
+  tile_data_dir_paths: "C:\\ai_engine\\data\\processed\\tiled_512"
   tile_slice_height : 512
   tile_slice_width : 512
   tile_overlap_height_ratio : 0.2
@@ -50,7 +50,7 @@ data_prep:
   train_base_filename: 'annotations_train.csv'
   validation_base_filename: 'annotations_validation.csv'
   test_base_filename: 'annotations_test.csv'
-  meta_data_filename: "C:\\life3\\data\\metadata.xlsx"
+  meta_data_filename: "C:\\ai_engine\\data\\metadata.xlsx"
   stratify_column: 'incubation_day'   # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
 
 train:
@@ -84,11 +84,11 @@ train_augmentation:
 
 inference:
   # ===Input/Output===
-  model_path: "C:\\life3\\models\\efficientdet_b0_20220505_101317.h5"
-  image_input_path: "C:\\life3\\data\\inference\\input\\9.jpg"
-  csv_output: "C:\\life3\\data\\inference\\output\\annotation_output.csv"
+  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220505_101317.h5"
+  image_input_path: "C:\\ai_engine\\data\\inference\\input\\9.jpg"
+  csv_output: "C:\\ai_engine\\data\\inference\\output\\annotation_output.csv"
   save_output_image: True # option: True or False
-  image_output_dir: "C:\\life3\\data\\inference\\output\\"
+  image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
   # ===Model parameter===
   inference_backbone: 0
   confidence_threshold: 0.5
@@ -113,11 +113,11 @@ inference:
   postprocess_match_threshold: 0.2  # Sliced predictions having higher iou than postprocess_match_threshold will be postprocessed after sliced prediction.
 
 efficientdet:
-    train_annotations_path: "C:\\life3\\data\\processed\\annotations_train_efficientdet_b0.csv"
-    val_annotations_path: "C:\\life3\\data\\processed\\annotations_val_efficientdet_b0.csv"
-    test_annotations_path: "C:\\life3\\data\\processed\\annotations_test_efficientdet_b0.csv"
+    train_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_train_efficientdet_b0.csv"
+    val_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_val_efficientdet_b0.csv"
+    test_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_test_efficientdet_b0.csv"
     saved_best_model: '' # model file must exist in directory referenced in snapshot-path below
-    snapshot-path: "C:\\life3\\models\\"
+    snapshot-path: "C:\\ai_engine\\models\\"
     gpu: 0
     train_backbone: 0
     snapshot: 'imagenet'
