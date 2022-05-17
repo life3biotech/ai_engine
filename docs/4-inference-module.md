@@ -366,26 +366,7 @@ intersection over smaller area. Options are 'IOU' or 'IOS'
 </tr>
 </table>
 
-### The input/output path for inference configuration.
-
-Before any inference/prediction of image can be performed, some parameters need to be configure according to your workstation settings. The parameters to be configured are located in this file `pipelines.yml`. The following steps will guide you on how to setup the configuration.
-
-1. On the terminal, change to your working directory with the following command:
-
-<div>
-
-<div>
-
-```plaintext
-cd C:\ai_engine\conf\life3
-```
-
-</div>
-</div>2. Locate the file  `pipelines.yml` in this folder and edit the follow parameters to your current environment settings.
-
-<div>
-
-<div>
+Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment.
 
 ```plaintext
   model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220510_201515.h5"
@@ -395,10 +376,7 @@ cd C:\ai_engine\conf\life3
   image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
 ```
 
-</div>
-</div>
-
-**_Take note:_** Models trained on a single class (i.e. "cell") can only perform single class inference. If such a model is selected, another parameter in `pipelines.yml` must be amended. Under `data_prep`, comment out the line `'cell accumulation': 1` as shown below.
+**_Note:_** Models trained on a single class (i.e. "cell") can only perform single class inference. If such a model is selected, another parameter in `pipelines.yml` must be amended. Under `data_prep`, comment out the line `'cell accumulation': 1` as shown below.
 
 <div>
 
