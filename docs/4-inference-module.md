@@ -381,7 +381,7 @@ cd C:\ai_engine\conf\life3
 ```
 
 </div>
-</div>2. Locate the file  `pipelines.yml` in this folder and edit the follow parameters to your current workstation settings.
+</div>2. Locate the file  `pipelines.yml` in this folder and edit the follow parameters to your current environment settings.
 
 <div>
 
@@ -398,15 +398,7 @@ cd C:\ai_engine\conf\life3
 </div>
 </div>
 
-**_Parameter explanation_**
-
-* model_path = Select the model that you want to use for prediction
-* image_input_path = The input path of the image you wish to predict
-* csv_output = The output path to save the image annotation csv file.
-* save_output_image = Set True to save predicted image. Otherwise False.
-* image_output_dir = The output path to save the image annotation csv file.
-
-**_Take note:_** Certain model only accept 1 class inference. If such model are selected, another parameter in `pipelines.yml` has to be amended. Under data_prep, comment out the line \``'cell accumulation': 1`\` as shown below.
+**_Take note:_** Models trained on a single class (i.e. "cell") can only perform single class inference. If such a model is selected, another parameter in `pipelines.yml` must be amended. Under `data_prep`, comment out the line `'cell accumulation': 1` as shown below.
 
 <div>
 
