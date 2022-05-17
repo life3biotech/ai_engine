@@ -54,7 +54,7 @@ data_prep:
   stratify_column: 'incubation_day'   # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
 
 train:
-  load_data: True
+  load_data: False
   model_name: "efficientdet"
   setup_mlflow: false
   mlflow_autolog: false
@@ -68,9 +68,6 @@ train:
   lr_reduce_factor: 0.1
   lr_reduce_patience: 2
   lr_min_delta: 0.01
-  # Augmentation
-  run_data_augmentation: False
-  save_augmented_images: False
   early_stopping: True
   eval_only: False
   patience: 10
@@ -89,7 +86,7 @@ inference:
   csv_output: "C:\\ai_engine\\data\\inference\\output\\annotation_output.csv"
   save_output_image: True # option: True or False
   image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
-  # ===Model parameter===
+  # ===Model parameters===
   inference_backbone: 0
   confidence_threshold: 0.5
   run_nms: True
@@ -99,7 +96,7 @@ inference:
       "detect_ids": [0,1],
   }
   pkd_base_dir: ".\\src\\inferencing\\custom_nodes"  # Do not change the default value
-  # ===Postprocessing parameter===
+  # ===Postprocessing parameters===
   slice_height: 256  # The height of the image to be sliced
   slice_width: 256 # The width of the image to be sliced
   overlap_height_ratio: 0.1 # Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).
