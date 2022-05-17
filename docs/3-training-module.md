@@ -1,3 +1,5 @@
+# Training Module 
+
 Please ensure that you have completed the "Environment Setup" guide before proceeding to follow this guide.
 
 ## Overview
