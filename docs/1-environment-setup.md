@@ -101,3 +101,25 @@ set PYTHONPATH
 ```
 You should see an output similar to the following:
 ![21](images/21.png)
+
+## 5. Set up conda environment for training on GPU (optional)
+
+5.1. Open Anaconda Prompt and run `conda env list` and verify that the environment named `life3-biotech-train` is listed.
+
+![08](images/08.png)
+
+5.2. If the environment is not listed, use the following command to create a new conda environment and install the relevant dependencies required to run model training on GPU:
+```
+conda env create -f life3-biotech-conda-env-train-gpu.yml
+```
+
+If the environment already exists, enter the following command to update it:
+```
+conda env update -f life3-biotech-conda-env-train-gpu.yml
+```
+
+In comparison with the `life3-biotech` environment, `life3-biotech-train` contains two additional libraries, CUDA 10.1 and cuDNN 7.6.4, which are required for the AI engine to run on GPU-enabled machine.
+
+5.3. Run `conda activate life3-biotech-train` to activate the environment. It should now appear as the activated environment.
+
+Note: The steps in this section have been tested on Windows 11 Pro and may not work on other versions of Windows.
