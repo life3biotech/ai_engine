@@ -63,6 +63,25 @@ Constant (`const.`)
 <tr>
 <td>
 
+<div>UM_PIXEL_MAPPING</div></td>
+<td>
+
+<div>um_pixel_mapping</div></td>
+<td>
+
+<div>float</div></td>
+<td>Map one pixel of image to the corresponding micrometer for cell size. Unit: micrometer/pixel </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
 <div>SMALL_MID_CELL_CUTOFF</div></td>
 <td>
 
