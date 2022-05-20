@@ -24,7 +24,7 @@
 
 ## 2. Set up conda environment for training & inference on CPU
 
-2.1. Extract `life3-initial-release.zip` to a folder, e.g. `C:\ai_engine`. You should see the following folder structure. (Some files seen below may not be present in the initial deployment package.)
+2.1. After extracting `life3-initial-release.zip` to a folder, e.g. `C:\ai_engine`, you should see the following folder structure. (Some files seen below may not be present in the initial deployment package.)
 
 ![07](images/07.png)
 
@@ -46,8 +46,23 @@ conda env create -f life3-biotech-conda-env.yml
 
 ## 3. Set up files required by AI engine
 
-3.1. If this is the first time the AI engine is being set up in the current environment, run the following command (in the same terminal window) to build the Cython files required by EfficientDet:
+3.1. If this is the first time the AI engine is being set up in the current environment, Microsoft's _Build Tools for Visual Studio_ must be installed. Download it from [here](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022).
+
+![18](images/18.png)
+
+3.2. Open the `.exe` file once the download is complete. Follow the steps until you reach this screen:
+
+![17](images/17.png)
+
+Select the "Desktop development with C++" option and click Install. The installation process may take a while.
+
+3.3. Once installation is complete, you should see the below dialog box. Restart the computer before proceeding with the next steps.
+
+![19](images/19.png)
+
+3.4. Open Anaconda Prompt and run the following commands to change the working directory to the location where the files were extracted and build the Cython files required by EfficientDet:
 ```
+cd C:\ai_engine
 python src/life3_biotech/modeling/EfficientDet/setup.py build_ext --inplace
 ```
 You should see an output similar to the following:
@@ -56,7 +71,7 @@ You should see an output similar to the following:
 
 You may also see a `build` subfolder created in the working directory, e.g. `C:\ai_engine\build`.
 
-3.2. In order to use the training module, data must exist in the `\data` subfolder. Copy the training data into its respective subfolder in the `\data\uploaded` subfolder. An example of the folder structure is as follows:
+3.5. In order to use the training module, data must exist in the `\data` subfolder. Copy the training data into its respective subfolder in the `\data\uploaded` subfolder. An example of the folder structure is as follows:
 
 ![10](images/10.png)
 
