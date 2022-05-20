@@ -45,6 +45,62 @@ Constant (`const.`)
 <tr>
 <td>
 
+### _Defined Cell Size_
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<div>SMALL_MID_CELL_CUTOFF</div></td>
+<td>
+
+<div>small_mid_cell_cutoff</div></td>
+<td>
+
+<div>float</div></td>
+<td>The upper bound of the small cell and lower bound of the mid-size cell in micrometer (μm) </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
+<div>MID_LARGE_CELL_CUTOFF</div></td>
+<td>
+
+<div>mid_large_cell_cutoff</div></td>
+<td>
+
+<div>float</div></td>
+<td>The upper bound of the mid-size cell and lower bound of the large-size cell in micrometer (μm) </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
 ### _Input/Output_
 </td>
 <td>
@@ -82,13 +138,13 @@ Constant (`const.`)
 
 <div>
 
-<div>IMAGE_INPUT_PATH</div>
+<div>IMAGE_INPUT_DIR</div>
 </div></td>
 <td>
 
 <div>
 
-<div>image_input_path</div>
+<div>image_input_dir</div>
 </div></td>
 <td>
 
@@ -100,7 +156,7 @@ Constant (`const.`)
 
 <div>
 
-<div>Absolute or relative path pointing to the input image path and filename for inference.</div>
+<div>Absolute or relative path pointing to the input image directory for inference/prediction. File extensions = ".png" </div>
 </div></td>
 <td>
 
@@ -113,13 +169,13 @@ Constant (`const.`)
 
 <div>
 
-<div>CSV_OUTPUT</div>
+<div>CSV_OUTPUT_DIR</div>
 </div></td>
 <td>
 
 <div>
 
-<div>csv_output</div>
+<div>csv_output_dir</div>
 </div></td>
 <td>
 
@@ -129,7 +185,7 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Absolute or relative path pointing to the predicted annotated csv.</div></td>
+<div>Absolute or relative path pointing to the output inferred/predicted annotated csv directory. File extensions = ".csv" Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder</div></td>
 <td>
 
 <div>
@@ -157,7 +213,33 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Determines whether to save predicted image.</div></td>
+<div>Determines whether to save inferred/predicted image.</div></td>
+<td>
+
+<div>True</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
+<div>SAVE_OUTPUT_IMAGE_SHOWLABEL</div>
+</div></td>
+<td>
+
+<div>
+
+<div>save_output_image_showlabel</div>
+</div></td>
+<td>
+
+<div>
+
+<div>boolean</div>
+</div></td>
+<td>
+
+<div>Determines whether to save inferred/predicted image with prediction text label.</div></td>
 <td>
 
 <div>True</div></td>
@@ -183,7 +265,7 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Absolute or relative path pointing to the predicted image with cell bounding box drawn.</div></td>
+<div>Absolute or relative path pointing to the output inferred/predicted image with cell bounding box drawn.</div></td>
 <td>
 
 </td>
