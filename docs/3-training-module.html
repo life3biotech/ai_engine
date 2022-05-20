@@ -668,6 +668,27 @@ code {
 </ol>
 <pre class="hljs"><code><div>python3 -m src.train_model
 </div></code></pre>
+<h2 id="running-the-training-pipeline-using-gpu">Running the training pipeline using GPU</h2>
+<ol>
+<li>
+<p>Open Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
+</li>
+<li>
+<p>Activate the conda environment with the following command:</p>
+</li>
+</ol>
+<pre class="hljs"><code><div>conda activate life3-biotech-train
+</div></code></pre>
+<ol start="3">
+<li>If there are known updates to the dependencies, update the conda environment by running:</li>
+</ol>
+<pre class="hljs"><code><div>conda env update --file life3-biotech-conda-env-train-gpu.yml
+</div></code></pre>
+<ol start="4">
+<li>Run the following command to start the model training pipeline:</li>
+</ol>
+<pre class="hljs"><code><div>python3 -m src.train_model
+</div></code></pre>
 
 </body>
 </html>

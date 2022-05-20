@@ -102,3 +102,22 @@ data_prep:
 ```
 python3 -m src.train_model
 ```
+
+## Running the training pipeline using GPU
+
+1. Open Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
+
+2. Activate the conda environment with the following command: 
+```
+conda activate life3-biotech-train
+```
+
+3. If there are known updates to the dependencies, update the conda environment by running:
+```
+conda env update --file life3-biotech-conda-env-train-gpu.yml
+```
+
+4. Run the following command to start the model training pipeline:
+```
+python3 -m src.train_model
+```

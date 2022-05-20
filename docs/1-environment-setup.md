@@ -104,6 +104,8 @@ You should see an output similar to the following:
 
 ## 5. Set up conda environment for training on GPU (optional)
 
+Please ensure that the machine you are setting up this conda environment on is GPU-enabled.
+
 5.1. Open Anaconda Prompt and run `conda env list` and verify that the environment named `life3-biotech-train` is listed.
 
 ![08](images/08.png)

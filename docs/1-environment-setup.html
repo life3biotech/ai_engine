@@ -421,6 +421,19 @@ python src/life3_biotech/modeling/EfficientDet/setup.py build_ext --inplace
 </div></code></pre>
 <p>You should see an output similar to the following:
 <img src="images/21.png" alt="21"></p>
+<h2 id="5-set-up-conda-environment-for-training-on-gpu-optional">5. Set up conda environment for training on GPU (optional)</h2>
+<p>Please ensure that the machine you are setting up this conda environment on is GPU-enabled.</p>
+<p>5.1. Open Anaconda Prompt and run <code>conda env list</code> and verify that the environment named <code>life3-biotech-train</code> is listed.</p>
+<p><img src="images/08.png" alt="08"></p>
+<p>5.2. If the environment is not listed, use the following command to create a new conda environment and install the relevant dependencies required to run model training on GPU:</p>
+<pre class="hljs"><code><div>conda env create -f life3-biotech-conda-env-train-gpu.yml
+</div></code></pre>
+<p>If the environment already exists, enter the following command to update it:</p>
+<pre class="hljs"><code><div>conda env update -f life3-biotech-conda-env-train-gpu.yml
+</div></code></pre>
+<p>In comparison with the <code>life3-biotech</code> environment, <code>life3-biotech-train</code> contains two additional libraries, CUDA 10.1 and cuDNN 7.6.4, which are required for the AI engine to run on GPU-enabled machine.</p>
+<p>5.3. Run <code>conda activate life3-biotech-train</code> to activate the environment. It should now appear as the activated environment.</p>
+<p>Note: The steps in this section have been tested on Windows 11 Pro and may not work on other versions of Windows.</p>
 
 </body>
 </html>
