@@ -94,3 +94,10 @@ You may also see a `build` subfolder created in the working directory, e.g. `C:\
 4.5. You should see the new variable reflected in the "System variables" list. Click "OK".
 
 ![15](images/15.png)
+
+4.6. To verify whether the environment variables have been set up correctly, open a new Anaconda Prompt or Windows PowerShell window and run the following command:
+```
+set PYTHONPATH
+```
+You should see an output similar to the following:
+![21](images/21.png)
