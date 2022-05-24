@@ -467,13 +467,15 @@ intersection over smaller area. Options are 'IOU' or 'IOS'
 </tr>
 </table>
 
-Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment.
+Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment. 
+Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder as csv_output_dir
 
 ```plaintext
   model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220510_201515.h5"
-  image_input_path: "C:\\ai_engine\\data\\inference\\input\\11.jpg"
-  csv_output: "C:\\ai_engine\\data\\inference\\output\\annotation_output.csv"
+  image_input_dir: "C:\\ai_engine\\data\\inference\\input\\"
+  csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
   save_output_image: True
+  save_output_image_showlabel: True
   image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
 ```
 
