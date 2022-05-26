@@ -529,5 +529,9 @@ conda env update --file life3-biotech-conda-env.yml
 ```plaintext
 python3 -m src.batch_inferencing
 ```
+or,
+```plaintext
+python -m src.batch_inferencing
+```
 
 </div>
