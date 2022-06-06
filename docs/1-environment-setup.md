@@ -44,6 +44,15 @@ conda env create -f life3-biotech-conda-env.yml
 
 ![08](images/08.png)
 
+2.6. Enter the following command to check for your python version. Ensure the version stated is _3.6.8_. Depending on your workstation setup, if python has been installed before, the command to run the python might differ. After checking which python command to use (Usually `python3` or `python`) Please use the correct command throughout the course of the documentation. Example, if after typing `python3 -V` returns _3.6.8_, kindly stick to `python3`.
+```
+python3 -V
+```
+or
+```
+python -V
+```
+
 ## 3. Set up files required by AI engine
 
 3.1. If this is the first time the AI engine is being set up in the current environment, Microsoft's _Build Tools for Visual Studio_ must be installed. Download it from [here](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022).

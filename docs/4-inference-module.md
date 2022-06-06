@@ -45,6 +45,81 @@ Constant (`const.`)
 <tr>
 <td>
 
+### _Defined Cell Size_
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+<td>
+
+</td>
+</tr>
+<tr>
+<td>
+
+<div>UM_PIXEL_MAPPING</div></td>
+<td>
+
+<div>um_pixel_mapping</div></td>
+<td>
+
+<div>float</div></td>
+<td>Map one pixel of image to the corresponding micrometer for cell size. Unit: micrometer/pixel </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
+<div>SMALL_MID_CELL_CUTOFF</div></td>
+<td>
+
+<div>small_mid_cell_cutoff</div></td>
+<td>
+
+<div>float</div></td>
+<td>The upper bound of the small cell and lower bound of the mid-size cell in micrometer (μm) </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
+<div>MID_LARGE_CELL_CUTOFF</div></td>
+<td>
+
+<div>mid_large_cell_cutoff</div></td>
+<td>
+
+<div>float</div></td>
+<td>The upper bound of the mid-size cell and lower bound of the large-size cell in micrometer (μm) </td>
+<td>
+
+<div>
+
+</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
 ### _Input/Output_
 </td>
 <td>
@@ -82,13 +157,13 @@ Constant (`const.`)
 
 <div>
 
-<div>IMAGE_INPUT_PATH</div>
+<div>IMAGE_INPUT_DIR</div>
 </div></td>
 <td>
 
 <div>
 
-<div>image_input_path</div>
+<div>image_input_dir</div>
 </div></td>
 <td>
 
@@ -100,7 +175,7 @@ Constant (`const.`)
 
 <div>
 
-<div>Absolute or relative path pointing to the input image path and filename for inference.</div>
+<div>Absolute or relative path pointing to the input image directory for inference/prediction. File extensions = ".png" </div>
 </div></td>
 <td>
 
@@ -113,13 +188,13 @@ Constant (`const.`)
 
 <div>
 
-<div>CSV_OUTPUT</div>
+<div>CSV_OUTPUT_DIR</div>
 </div></td>
 <td>
 
 <div>
 
-<div>csv_output</div>
+<div>csv_output_dir</div>
 </div></td>
 <td>
 
@@ -129,7 +204,7 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Absolute or relative path pointing to the predicted annotated csv.</div></td>
+<div>Absolute or relative path pointing to the output inferred/predicted annotated csv directory. File extensions = ".csv" Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder</div></td>
 <td>
 
 <div>
@@ -157,7 +232,33 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Determines whether to save predicted image.</div></td>
+<div>Determines whether to save inferred/predicted image.</div></td>
+<td>
+
+<div>True</div></td>
+</tr>
+<tr>
+<td>
+
+<div>
+
+<div>SAVE_OUTPUT_IMAGE_SHOWLABEL</div>
+</div></td>
+<td>
+
+<div>
+
+<div>save_output_image_showlabel</div>
+</div></td>
+<td>
+
+<div>
+
+<div>boolean</div>
+</div></td>
+<td>
+
+<div>Determines whether to save inferred/predicted image with prediction text label.</div></td>
 <td>
 
 <div>True</div></td>
@@ -183,7 +284,7 @@ Constant (`const.`)
 </div></td>
 <td>
 
-<div>Absolute or relative path pointing to the predicted image with cell bounding box drawn.</div></td>
+<div>Absolute or relative path pointing to the output inferred/predicted image with cell bounding box drawn.</div></td>
 <td>
 
 </td>
@@ -366,13 +467,15 @@ intersection over smaller area. Options are 'IOU' or 'IOS'
 </tr>
 </table>
 
-Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment.
+Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment. 
+Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder as csv_output_dir
 
 ```plaintext
   model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220510_201515.h5"
-  image_input_path: "C:\\ai_engine\\data\\inference\\input\\11.jpg"
-  csv_output: "C:\\ai_engine\\data\\inference\\output\\annotation_output.csv"
+  image_input_dir: "C:\\ai_engine\\data\\inference\\input\\"
+  csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
   save_output_image: True
+  save_output_image_showlabel: True
   image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
 ```
 
@@ -425,6 +528,10 @@ conda env update --file life3-biotech-conda-env.yml
 
 ```plaintext
 python3 -m src.batch_inferencing
+```
+or,
+```plaintext
+python -m src.batch_inferencing
 ```
 
 </div>

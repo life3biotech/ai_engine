@@ -75,6 +75,10 @@ cd C:\ai_engine
 conda activate life3-biotech
 python -m src.load_data
 ```
+or, 
+```
+python3 -m src.load_data
+```
 
 Upon successful run of the pipeline, the following message would be printed in the console log: `Data preparation pipeline has completed.`
 

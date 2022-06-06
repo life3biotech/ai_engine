@@ -102,6 +102,10 @@ data_prep:
 ```
 python3 -m src.train_model
 ```
+or,
+```
+python -m src.train_model
+```
 
 ## Running the training pipeline using GPU
 
@@ -120,4 +124,8 @@ conda env update --file life3-biotech-conda-env-train-gpu.yml
 4. Run the following command to start the model training pipeline:
 ```
 python3 -m src.train_model
+```
+or,
+```
+python -m src.train_model
 ```
