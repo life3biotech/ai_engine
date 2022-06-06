@@ -419,10 +419,10 @@ python src/life3_biotech/modeling/EfficientDet/setup.py build_ext --inplace
 <p>4.6. To verify whether the environment variables have been set up correctly, open a new Anaconda Prompt or Windows PowerShell window and run the following command:</p>
 <pre class="hljs"><code><div>set PYTHONPATH
 </div></code></pre>
-<p>You should see an output similar to the following:
-<img src="images/21.png" alt="21"></p>
+<p>You should see an output similar to the following:</p>
+<p><img src="images/21.png" alt="21"></p>
 <h2 id="5-set-up-conda-environment-for-training-on-gpu-optional">5. Set up conda environment for training on GPU (optional)</h2>
-<p>Please ensure that the machine you are setting up this conda environment on is GPU-enabled.</p>
+<p>Please ensure that the machine you are setting up this conda environment on is GPU-enabled. If you have installed any other version of CUDA and/or cuDNN besides those mentioned in this guide, it is recommended to <strong>uninstall</strong> them first.</p>
 <p>5.1. Open Anaconda Prompt and run <code>conda env list</code> and verify that the environment named <code>life3-biotech-train</code> is listed.</p>
 <p><img src="images/08.png" alt="08"></p>
 <p>5.2. If the environment is not listed, use the following command to create a new conda environment and install the relevant dependencies required to run model training on GPU:</p>

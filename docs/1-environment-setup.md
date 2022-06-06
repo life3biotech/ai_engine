@@ -100,11 +100,12 @@ You may also see a `build` subfolder created in the working directory, e.g. `C:\
 set PYTHONPATH
 ```
 You should see an output similar to the following:
+
 ![21](images/21.png)
 
 ## 5. Set up conda environment for training on GPU (optional)
 
-Please ensure that the machine you are setting up this conda environment on is GPU-enabled.
+Please ensure that the machine you are setting up this conda environment on is GPU-enabled. If you have installed any other version of CUDA and/or cuDNN besides those mentioned in this guide, it is recommended to **uninstall** them first.
 
 5.1. Open Anaconda Prompt and run `conda env list` and verify that the environment named `life3-biotech-train` is listed.
 
