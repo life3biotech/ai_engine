@@ -41,8 +41,7 @@ In `pipelines.yml`, the following parameters in the `data_prep` section are conf
 | COCO_ANNOTATION_FILENAME | coco_annotations_filename | str | Name of JSON file containing annotations, residing within the subdirectory specified in `annotations_subdir`| "instances_default.json" |
 | COMBINED_ANNOTATIONS_FILENAME | combined_annotations_filename | str | Name of CSV file containing preprocessed annotations generated into the directory specified in `interim_data_path`| "annotations_all.csv" |
 | EXCLUDED_IMAGES | excluded_images | list of str | List of image filenames (str) to exclude from the data pipeline | |
-| CLASS_MAP | class_map | dict | Object mapping of the classes and their numerical representations | 
-`{'cell': 0, 'cell accumulation': 1}`|
+| CLASS_MAP | class_map | dict | Object mapping of the classes and their numerical representations | `{'cell': 0, 'cell accumulation': 1}`|
 | REMAP_CLASSES | remap_classes | dict | Determines whether remapping of classes is carried out in the preprocessing step. Remapping may be used to combine/collapse two or more class labels into one, or to incorrectly labelled data. | `True`|
 | CLASS_REMAPPING | class_remapping | dict | Object mapping of the labelled category names to their corrected labels | |
 | ACCEPTED_IMAGE_FORMATS | accepted_image_formats | list of str | A list of image extensions determining the expected image formats for the data (see [here](https://docs.opencv.org/4.5.3/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56) for extensions supported by OpenCV)| `['jpg', 'JPG', 'jpeg', 'png']` |
@@ -50,20 +49,20 @@ In `pipelines.yml`, the following parameters in the `data_prep` section are conf
 | RUN_TILING | run_tiling | boolean | Determines whether to tile image at the start of the training process. | `True` |
 | TILE_COCO_FILTER_CATEGORIES | tile_coco_filter_categories | list of str | Categories can be filter/selected here for COCO json | - "Cells"<br>- "cell accumulation (small cells)"<br>- "cell accumulation (large cells)" |
 | TILE_DATA_DIR_PATHS | tile_data_dir_paths | str | Absolute path pointing to the tile process data directory of the project. This directory contain the same directory structure as original data, with images and coco json processed as tile format. | |
-| TILE_SLICE_HEIGHT | tile_slice_height | int | Parameter to determine the height of each tile/slice image. | 512 |
-| TILE_SLICE_WIDTH | tile_slice_width | int | Parameter to determine the width of each tile/slice image. | 512 |
-| TILE_OVERLAP_HEIGHT_RATIO | tile_overlap_height_ratio | float | Parameter to specify adjacent tiles height overlapping percentage. | 0.2 |
-| TILE_OVERLAP_WIDTH_RATIO | tile_overlap_width_ratio | float | Parameter to specify adjacent tiles width overlapping percentage. | 0.2 |
+| TILE_SLICE_HEIGHT | tile_slice_height | int | Parameter to determine the height of each tile/slice image. | 384 |
+| TILE_SLICE_WIDTH | tile_slice_width | int | Parameter to determine the width of each tile/slice image. | 384 |
+| TILE_OVERLAP_HEIGHT_RATIO | tile_overlap_height_ratio | float | Parameter to specify adjacent tiles height overlapping percentage. | 0.1 |
+| TILE_OVERLAP_WIDTH_RATIO | tile_overlap_width_ratio | float | Parameter to specify adjacent tiles width overlapping percentage. | 0.1 |
 | TILE_IGNORE_NEGATIVE_SAMPLES | tile_ignore_negative_samples | boolean | Determines whether to include images without annotation. Setting as `False` will include images without annotations. | `False` |
 | **_Data Split_** |  |  |  |  |
 | TARGET_COL | target_col | str | Column name to take reference for the class name | 'category_name' |
 | SAVE_DATA_SPLITS | save_data_splits | boolean | Determines whether to save the train/validation/test splits as separate csv files | `True` |
 | VAL_SIZE | val_size | float | Proportion of data allocated to the validation set, based on the proportion of the overall data | 0.1 |
 | TEST_SIZE | test_size | float | Proportion of data allocated to the test set, based on the proportion of the overall data | 0.2 |
-| TRAIN_BASE_FILENAME | train_base_filename | str | Base filename (prefix) to be used for naming the train split file | 'train.csv' |
-| VAL_BASE_FILENAME | validation_base_filename | str | Base filename (prefix) to be used for naming the validation split file | 'validation.csv' |
-| TEST_BASE_FILENAME | test_base_filename | str | Base filename (prefix) to be used for naming the test split file | 'test.csv' |
-| META_DATA_FILENAME | meta_data_filename | str | Meta data that contain extra information of the images such as incubation_day filepath and filename. | |
+| TRAIN_BASE_FILENAME | train_base_filename | str | Base filename (prefix) to be used for naming the train split file | 'annotations_train.csv' |
+| VAL_BASE_FILENAME | validation_base_filename | str | Base filename (prefix) to be used for naming the validation split file | 'annotations_val.csv' |
+| TEST_BASE_FILENAME | test_base_filename | str | Base filename (prefix) to be used for naming the test split file | 'annotations_test.csv' |
+| META_DATA_FILENAME | meta_data_filename | str | Absolute path pointing to the metadata Excel file that contains additional information on the images, such as incubation day. | |
 | STRATIFY_COLUMN | stratify_column | str | Column name that will be used for data stratification. | 'incubation_day' |
 
 ## Running the data pipeline
@@ -75,7 +74,7 @@ cd C:\ai_engine
 conda activate life3-biotech
 python -m src.load_data
 ```
-or, 
+or
 ```
 python3 -m src.load_data
 ```

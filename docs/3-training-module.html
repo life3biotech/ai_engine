@@ -406,8 +406,8 @@ code {
 <td>SAVE_WEIGHTS_ONLY</td>
 <td>save_weights_only</td>
 <td>boolean</td>
-<td>Determines whether to run the data pipeline process before training. Set to <code>True</code> if there is new data to be trained on.</td>
-<td><code>False</code></td>
+<td>Determines whether to save only model weights or the entire model. The latter option will result in a larger file size.</td>
+<td><code>True</code></td>
 </tr>
 <tr>
 <td>TRAIN_EARLY_STOPPING</td>
@@ -422,13 +422,6 @@ code {
 <td>int</td>
 <td>Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set.</td>
 <td></td>
-</tr>
-<tr>
-<td>EVAL_ONLY</td>
-<td>eval_only</td>
-<td>boolean</td>
-<td>Determines whether the training process should be skipped. Set to <code>True</code> to perform validation only on a saved model checkpoint. This may be done to compare results when different threshold values are used (see below).</td>
-<td><code>False</code></td>
 </tr>
 <tr>
 <td>LR_SCHEDULER</td>
@@ -448,7 +441,7 @@ code {
 <td>LR_REDUCE_FACTOR</td>
 <td>lr_reduce_factor</td>
 <td>float</td>
-<td>Factor by which the learning rate will be reduced. The new learning rate is computed by multiplying the current LR by this factor.</td>
+<td>Factor by which the learning rate will be reduced.</td>
 <td>0.1</td>
 </tr>
 <tr>
@@ -463,14 +456,14 @@ code {
 <td>lr_min_delta</td>
 <td>float</td>
 <td>Threshold for measuring the new optimum, to only focus on significant changes.</td>
-<td>0.01</td>
+<td>0.001</td>
 </tr>
 <tr>
 <td>EVAL_BATCH_SIZE</td>
 <td>eval_batch_size</td>
 <td>int</td>
 <td>The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32.</td>
-<td>4</td>
+<td>8</td>
 </tr>
 <tr>
 <td>EVAL_IOU_THRESHOLD</td>
@@ -484,7 +477,14 @@ code {
 <td>eval_score_threshold</td>
 <td>float</td>
 <td>The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction.</td>
-<td>0.1</td>
+<td>0.01</td>
+</tr>
+<tr>
+<td>EVAL_CELL_ACCU_AS_CELL</td>
+<td>eval_cell_accu_as_cell</td>
+<td>boolean</td>
+<td>Determines whether the model treats <code>cell accumulation</code> annotations as <code>cell</code> during evaluation. The purpose of doing so is to evaluate the model less strictly, i.e. the model would score a true positive even if a <code>cell</code> prediction overlaps with a <code>cell accumulation</code> ground truth.</td>
+<td><code>False</code></td>
 </tr>
 </tbody>
 </table>
@@ -524,13 +524,6 @@ code {
 <td></td>
 </tr>
 <tr>
-<td>BEST_MODEL</td>
-<td>saved_best_model</td>
-<td>str</td>
-<td>Filename of saved model to be used during evaluation. Value must be set if <code>eval_only</code> (in <code>train</code> section; see above) is <code>True</code>.</td>
-<td></td>
-</tr>
-<tr>
 <td>SAVED_MODEL_PATH</td>
 <td>snapshot-path</td>
 <td>str</td>
@@ -557,6 +550,13 @@ code {
 <td>str</td>
 <td>Base model weights to start training from. If a filename is specified, the file must be in h5 format and exist in the location defined in <code>snapshot-path</code>. If 'imagenet' is specified, the base weights will be downloaded from https://github.com/Callidior/keras-applications/releases/.</td>
 <td>'imagenet'</td>
+</tr>
+<tr>
+<td>None</td>
+<td>compute_val_loss</td>
+<td>boolean</td>
+<td>Determines whether to compute validation loss during training, if a validation set exists.</td>
+<td><code>True</code></td>
 </tr>
 <tr>
 <td>None</td>
@@ -626,14 +626,14 @@ code {
 <td>anchor_box_scales</td>
 <td>list of float</td>
 <td>Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images.</td>
-<td><code>[0.5, 1.0, 2.0]</code></td>
+<td><code>[0.4, 0.496, 0.625]</code></td>
 </tr>
 </tbody>
 </table>
 <h2 id="running-the-training-pipeline">Running the training pipeline</h2>
 <ol>
 <li>
-<p>Open Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
+<p>Open Anaconda Prompt or Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
 </li>
 <li>
 <p>Activate the conda environment with the following command:</p>
@@ -668,13 +668,13 @@ code {
 </ol>
 <pre class="hljs"><code><div>python3 -m src.train_model
 </div></code></pre>
-<p>or,</p>
+<p>or</p>
 <pre class="hljs"><code><div>python -m src.train_model
 </div></code></pre>
 <h2 id="running-the-training-pipeline-using-gpu">Running the training pipeline using GPU</h2>
 <ol>
 <li>
-<p>Open Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
+<p>Open Anaconda Prompt or Windows Powershell and change to your working directory, e.g. <code>cd C:\ai_engine</code>.</p>
 </li>
 <li>
 <p>Activate the conda environment with the following command:</p>
@@ -692,9 +692,14 @@ code {
 </ol>
 <pre class="hljs"><code><div>python3 -m src.train_model
 </div></code></pre>
-<p>or,</p>
+<p>or</p>
 <pre class="hljs"><code><div>python -m src.train_model
 </div></code></pre>
+<h2 id="possible-issues">Possible Issues</h2>
+<h3 id="%22resource-exhausted%22-error">&quot;Resource exhausted&quot; error</h3>
+<p>You may see the following error if the GPU memory is insufficient to handle the number of training images.</p>
+<p><img src="images/22.png" alt="GPU OOM"></p>
+<p>In this case, reduce the batch size to a number that is a power of 2. For example, if the current batch size is 16, reduce to 8 and attempt to restart the training process.</p>
 
 </body>
 </html>

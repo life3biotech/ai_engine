@@ -460,14 +460,7 @@ code {
 <td>class_map</td>
 <td>dict</td>
 <td>Object mapping of the classes and their numerical representations</td>
-<td></td>
-</tr>
-<tr>
 <td><code>{'cell': 0, 'cell accumulation': 1}</code></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
 </tr>
 <tr>
 <td>REMAP_CLASSES</td>
@@ -523,28 +516,28 @@ code {
 <td>tile_slice_height</td>
 <td>int</td>
 <td>Parameter to determine the height of each tile/slice image.</td>
-<td>512</td>
+<td>384</td>
 </tr>
 <tr>
 <td>TILE_SLICE_WIDTH</td>
 <td>tile_slice_width</td>
 <td>int</td>
 <td>Parameter to determine the width of each tile/slice image.</td>
-<td>512</td>
+<td>384</td>
 </tr>
 <tr>
 <td>TILE_OVERLAP_HEIGHT_RATIO</td>
 <td>tile_overlap_height_ratio</td>
 <td>float</td>
 <td>Parameter to specify adjacent tiles height overlapping percentage.</td>
-<td>0.2</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>TILE_OVERLAP_WIDTH_RATIO</td>
 <td>tile_overlap_width_ratio</td>
 <td>float</td>
 <td>Parameter to specify adjacent tiles width overlapping percentage.</td>
-<td>0.2</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>TILE_IGNORE_NEGATIVE_SAMPLES</td>
@@ -593,27 +586,27 @@ code {
 <td>train_base_filename</td>
 <td>str</td>
 <td>Base filename (prefix) to be used for naming the train split file</td>
-<td>'train.csv'</td>
+<td>'annotations_train.csv'</td>
 </tr>
 <tr>
 <td>VAL_BASE_FILENAME</td>
 <td>validation_base_filename</td>
 <td>str</td>
 <td>Base filename (prefix) to be used for naming the validation split file</td>
-<td>'validation.csv'</td>
+<td>'annotations_val.csv'</td>
 </tr>
 <tr>
 <td>TEST_BASE_FILENAME</td>
 <td>test_base_filename</td>
 <td>str</td>
 <td>Base filename (prefix) to be used for naming the test split file</td>
-<td>'test.csv'</td>
+<td>'annotations_test.csv'</td>
 </tr>
 <tr>
 <td>META_DATA_FILENAME</td>
 <td>meta_data_filename</td>
 <td>str</td>
-<td>Meta data that contain extra information of the images such as incubation_day filepath and filename.</td>
+<td>Absolute path pointing to the metadata Excel file that contains additional information on the images, such as incubation day.</td>
 <td></td>
 </tr>
 <tr>
@@ -631,7 +624,7 @@ code {
 conda activate life3-biotech
 python -m src.load_data
 </div></code></pre>
-<p>or,</p>
+<p>or</p>
 <pre class="hljs"><code><div>python3 -m src.load_data
 </div></code></pre>
 <p>Upon successful run of the pipeline, the following message would be printed in the console log: <code>Data preparation pipeline has completed.</code></p>
