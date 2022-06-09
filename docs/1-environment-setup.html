@@ -378,18 +378,20 @@ code {
 <p>1.5. To test the installation, run the following command <code>conda list</code>. You should see an output similar to the following:</p>
 <p><img src="images/05.png" alt="05"></p>
 <h2 id="2-set-up-conda-environment-for-training--inference-on-cpu">2. Set up conda environment for training &amp; inference on CPU</h2>
-<p>2.1. After extracting <code>life3-initial-release.zip</code> to a folder, e.g. <code>C:\ai_engine</code>, you should see the following folder structure. (Some files seen below may not be present in the initial deployment package.)</p>
+<p>2.1. Follow <a href="https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository">this guide</a> to clone your GitHub repository into the local computer. You may use any of the options available - GitHub CLI, Desktop or Web browser. (If you're new to Git or GitHub, going though <a href="https://docs.github.com/en/get-started/quickstart/set-up-git">this quickstart tutorial</a> is also recommended.)</p>
+<p>If you have previously retrieved the code base from another source (e.g. download from Basecamp) and not from GitHub, it is recommended that you start afresh by cloning your GitHub repository in order to get the latest version of the code base.</p>
+<p>2.2. After cloning the repository into a folder, e.g. <code>C:\ai_engine</code>, you should see the following folder structure. (Some files seen below are automatically generated may not be present in the deployment package.)</p>
 <p><img src="images/07.png" alt="07"></p>
-<p>2.2. Open Anaconda Prompt and change the working directory to the location where the files were extracted using the following command:</p>
+<p>2.3. Open Anaconda Prompt and change the working directory to the location where the files were extracted using the following command:</p>
 <pre class="hljs"><code><div>cd C:\ai_engine
 </div></code></pre>
-<p>2.3. Enter the following command to create a new conda environment and install the relevant dependencies required by both the training &amp; inference modules:</p>
+<p>2.4. Enter the following command to create a new conda environment and install the relevant dependencies required by both the training &amp; inference modules:</p>
 <pre class="hljs"><code><div>conda env create -f life3-biotech-conda-env.yml
 </div></code></pre>
-<p>2.4. Once the environment creation is complete, run <code>conda env list</code> and verify that the environment named <code>life3-biotech</code> is listed.</p>
-<p>2.5. Run <code>conda activate life3-biotech</code> to activate the environment. It should now appear as the activated environment as per the screenshot below. The Conda environment setup is now complete.</p>
+<p>2.5. Once the environment creation is complete, run <code>conda env list</code> and verify that the environment named <code>life3-biotech</code> is listed.</p>
+<p>2.6. Run <code>conda activate life3-biotech</code> to activate the environment. It should now appear as the activated environment as per the screenshot below. The Conda environment setup is now complete.</p>
 <p><img src="images/08.png" alt="08"></p>
-<p>2.6. Enter the following command to check for your python version. Ensure the version stated is <em>3.6.8</em>. Depending on your workstation setup, if python has been installed before, the command to run the python might differ. After checking which python command to use (Usually <code>python3</code> or <code>python</code>) Please use the correct command throughout the course of the documentation. Example, if after typing <code>python3 -V</code> returns <em>3.6.8</em>, kindly stick to <code>python3</code>.</p>
+<p>2.7. Enter the following command to check for your python version. Ensure the version stated is <em>3.6.8</em>. Depending on your workstation setup, if python has been installed before, the command to run the python might differ. After checking which python command to use (Usually <code>python3</code> or <code>python</code>) Please use the correct command throughout the course of the documentation. Example, if after typing <code>python3 -V</code> returns <em>3.6.8</em>, kindly stick to <code>python3</code>.</p>
 <pre class="hljs"><code><div>python3 -V
 </div></code></pre>
 <p>or</p>

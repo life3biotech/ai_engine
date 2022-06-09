@@ -29,7 +29,6 @@ In `pipelines.yml`, the following parameters in the `train` section are configur
 | SAVE_WEIGHTS_ONLY | save_weights_only | boolean | Determines whether to run the data pipeline process before training. Set to `True` if there is new data to be trained on. | `False` |
 | TRAIN_EARLY_STOPPING | early_stopping | boolean | Determines whether the early stopping mechanism is activated during training. | `True` |
 | TRAIN_EARLY_STOP_PATIENCE | patience | int | Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set. | |
-| EVAL_ONLY | eval_only | boolean | Determines whether the training process should be skipped. Set to `True` to perform validation only on a saved model checkpoint. This may be done to compare results when different threshold values are used (see below). | `False` |
 | LR_SCHEDULER | lr_scheduler | str | The learning rate scheduler used by the model during training. For `reduce_on_plateau`, the learning rate will reduce by `lr_reduce_factor` (see below) if there is no improvement in model performance for 2 consecutive epochs. The number of consecutive epochs depends on `lr_reduce_patience` (see below). | "reduce_on_plateau" |
 | INITIAL_LR | initial_lr | float | Learning rate to start from. | 0.001 |
 | LR_REDUCE_FACTOR | lr_reduce_factor | float | Factor by which the learning rate will be reduced. The new learning rate is computed by multiplying the current LR by this factor. | 0.1 |
@@ -38,6 +37,7 @@ In `pipelines.yml`, the following parameters in the `train` section are configur
 | EVAL_BATCH_SIZE | eval_batch_size | int | The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32. | 4 |
 | EVAL_IOU_THRESHOLD | eval_iou_threshold | list of float | The threshold used to consider when a detection is positive or negative.<br>Possible values:<br>1. a single floating point number; or <br>2. 3 numbers representing lower boundary, upper boundary (inclusive) & number of evenly spaced values to generate, e.g. `[0.5, 0.95, 10]`.<br>For more stringent evaluation, use the latter option. | `[0.5]` |
 | EVAL_SCORE_THRESHOLD  | eval_score_threshold  | float | The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction. | 0.1 |
+| EVAL_CELL_ACCU_AS_CELL  | eval_cell_accu_as_cell  | boolean | Determines whether the model treats `cell accumulation` annotations as `cell` during evaluation. The purpose of doing so is to evaluate the model less strictly, i.e. the model would score a true positive even if a `cell` prediction overlaps with a `cell accumulation` ground truth. | `False` |
 
 ### EfficientDet configuration
 
@@ -50,11 +50,11 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 | TRAIN_ANNOTATIONS_PATH | train_annotations_path | str | Absolute or relative path pointing to the training data set to be used. | |
 | VAL_ANNOTATIONS_PATH | val_annotations_path | str | Absolute or relative path pointing to the validation data set to be used during training. | |
 | TEST_ANNOTATIONS_PATH | test_annotations_path | str | Absolute or relative path pointing to the test data set to be used during evaluation. | |
-| BEST_MODEL | saved_best_model | str | Filename of saved model to be used during evaluation. Value must be set if `eval_only` (in `train` section; see above) is `True`. | |
 | SAVED_MODEL_PATH | snapshot-path | str | Absolute or relative path to directory where model snapshots are saved during training. | |
 | None | gpu | int or str | ID of GPU device to be used. Only single GPU is supported by this EfficientDet implementation. | 0 |
 | ED_TRAIN_BACKBONE | train_backbone | int | Compound coefficient used to scale up EfficientNet, the backbone network. Possible values: 0, 1, 2, 3, 4, 5, 6. | 0 |
 | None | snapshot | str | Base model weights to start training from. If a filename is specified, the file must be in h5 format and exist in the location defined in `snapshot-path`. If 'imagenet' is specified, the base weights will be downloaded from https://github.com/Callidior/keras-applications/releases/. | 'imagenet'  |
+| None | compute_val_loss | boolean | Determines whether to compute validation loss during training, if a validation set exists. | `True` |
 | None | weighted_bifpn | boolean | Determines whether EfficientNet backbone uses weighted BiFPN (bidirectional feature pyramid network). | `True` |
 | None | freeze_bn | boolean | Determines whether the batch normalization layers of the backbone network are frozen during training. | `False` |
 | None | freeze_backbone | boolean | Determines whether the weights of the backbone network are frozen during training. | `False` |
@@ -129,3 +129,13 @@ or,
 ```
 python -m src.train_model
 ```
+
+## Possible Issues
+
+### "Resource exhausted" error
+
+You may see the following error if the GPU memory is insufficient to handle the number of training images.
+
+![GPU OOM](images/22.png)
+
+In this case, reduce the batch size to a number that is a power of 2. For example, if the current batch size is 16, reduce to 8 and attempt to restart the training process.
