@@ -48,7 +48,7 @@ conda env create -f life3-biotech-conda-env.yml
 
 ![08](images/08.png)
 
-2.7. Enter the following command to check for your python version. Ensure the version stated is _3.6.8_. Depending on your workstation setup, if python has been installed before, the command to run the python might differ. After checking which python command to use (Usually `python3` or `python`) Please use the correct command throughout the course of the documentation. Example, if after typing `python3 -V` returns _3.6.8_, kindly stick to `python3`.
+2.6. Enter the following command to check for your Python version. Ensure the version stated is _3.6.8_. 
 ```
 python3 -V
 ```
@@ -56,6 +56,7 @@ or
 ```
 python -V
 ```
+Depending on your workstation setup, if older versions of Python had been installed before, the command to run Python scripts may differ. After checking which Python command to use (`python3` or `python`), do use the same command throughout this guide. For example, if the command `python3 -V` returns _3.6.8_, do continue to use `python3`.
 
 ## 3. Set up files required by AI engine
 
