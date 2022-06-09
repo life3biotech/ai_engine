@@ -44,4 +44,4 @@ The Oceans.ai project uses the following libraries:
 | Cython                | Apache 2.0   	|
 | CLR                  	| MIT          	|
 
-#### The project was a collaboration between Oceansai and AISG. Hence, due recognition is given to Oceansai as the project sponsor and for providing the data, and AISG for crafting the software and model.
+#### The project was a collaboration between Life3 Biotech and AISG. Hence, due recognition is given to Life3 Biotech as the project sponsor and for providing the data, and AISG for crafting the software and model.
