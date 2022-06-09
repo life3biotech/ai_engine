@@ -41,8 +41,7 @@ In `pipelines.yml`, the following parameters in the `data_prep` section are conf
 | COCO_ANNOTATION_FILENAME | coco_annotations_filename | str | Name of JSON file containing annotations, residing within the subdirectory specified in `annotations_subdir`| "instances_default.json" |
 | COMBINED_ANNOTATIONS_FILENAME | combined_annotations_filename | str | Name of CSV file containing preprocessed annotations generated into the directory specified in `interim_data_path`| "annotations_all.csv" |
 | EXCLUDED_IMAGES | excluded_images | list of str | List of image filenames (str) to exclude from the data pipeline | |
-| CLASS_MAP | class_map | dict | Object mapping of the classes and their numerical representations | 
-`{'cell': 0, 'cell accumulation': 1}`|
+| CLASS_MAP | class_map | dict | Object mapping of the classes and their numerical representations | `{'cell': 0, 'cell accumulation': 1}`|
 | REMAP_CLASSES | remap_classes | dict | Determines whether remapping of classes is carried out in the preprocessing step. Remapping may be used to combine/collapse two or more class labels into one, or to incorrectly labelled data. | `True`|
 | CLASS_REMAPPING | class_remapping | dict | Object mapping of the labelled category names to their corrected labels | |
 | ACCEPTED_IMAGE_FORMATS | accepted_image_formats | list of str | A list of image extensions determining the expected image formats for the data (see [here](https://docs.opencv.org/4.5.3/d4/da8/group__imgcodecs.html#ga288b8b3da0892bd651fce07b3bbd3a56) for extensions supported by OpenCV)| `['jpg', 'JPG', 'jpeg', 'png']` |
@@ -75,7 +74,7 @@ cd C:\ai_engine
 conda activate life3-biotech
 python -m src.load_data
 ```
-or, 
+or
 ```
 python3 -m src.load_data
 ```

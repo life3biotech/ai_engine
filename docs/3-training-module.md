@@ -31,7 +31,7 @@ In `pipelines.yml`, the following parameters in the `train` section are configur
 | TRAIN_EARLY_STOP_PATIENCE | patience | int | Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set. | |
 | LR_SCHEDULER | lr_scheduler | str | The learning rate scheduler used by the model during training. For `reduce_on_plateau`, the learning rate will reduce by `lr_reduce_factor` (see below) if there is no improvement in model performance for 2 consecutive epochs. The number of consecutive epochs depends on `lr_reduce_patience` (see below). | "reduce_on_plateau" |
 | INITIAL_LR | initial_lr | float | Learning rate to start from. | 0.001 |
-| LR_REDUCE_FACTOR | lr_reduce_factor | float | Factor by which the learning rate will be reduced. The new learning rate is computed by multiplying the current LR by this factor. | 0.1 |
+| LR_REDUCE_FACTOR | lr_reduce_factor | float | Factor by which the learning rate will be reduced. | 0.1 |
 | LR_REDUCE_PATIENCE | lr_reduce_patience | int | Number of epochs with no improvement after which learning rate will be reduced. | 2 |
 | LR_MIN_DELTA | lr_min_delta | float | Threshold for measuring the new optimum, to only focus on significant changes. | 0.001 |
 | EVAL_BATCH_SIZE | eval_batch_size | int | The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32. | 8 |
@@ -68,7 +68,7 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 
 ## Running the training pipeline
 
-1. Open Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
+1. Open Anaconda Prompt or Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
 
 2. Activate the conda environment with the following command: 
 ```
@@ -109,7 +109,7 @@ python -m src.train_model
 
 ## Running the training pipeline using GPU
 
-1. Open Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
+1. Open Anaconda Prompt or Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
 
 2. Activate the conda environment with the following command: 
 ```
