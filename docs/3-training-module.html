@@ -406,8 +406,8 @@ code {
 <td>SAVE_WEIGHTS_ONLY</td>
 <td>save_weights_only</td>
 <td>boolean</td>
-<td>Determines whether to run the data pipeline process before training. Set to <code>True</code> if there is new data to be trained on.</td>
-<td><code>False</code></td>
+<td>Determines whether to save only model weights or the entire model. The latter option will result in a larger file size.</td>
+<td><code>True</code></td>
 </tr>
 <tr>
 <td>TRAIN_EARLY_STOPPING</td>
@@ -456,14 +456,14 @@ code {
 <td>lr_min_delta</td>
 <td>float</td>
 <td>Threshold for measuring the new optimum, to only focus on significant changes.</td>
-<td>0.01</td>
+<td>0.001</td>
 </tr>
 <tr>
 <td>EVAL_BATCH_SIZE</td>
 <td>eval_batch_size</td>
 <td>int</td>
 <td>The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32.</td>
-<td>4</td>
+<td>8</td>
 </tr>
 <tr>
 <td>EVAL_IOU_THRESHOLD</td>
@@ -477,7 +477,7 @@ code {
 <td>eval_score_threshold</td>
 <td>float</td>
 <td>The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction.</td>
-<td>0.1</td>
+<td>0.01</td>
 </tr>
 <tr>
 <td>EVAL_CELL_ACCU_AS_CELL</td>
@@ -626,7 +626,7 @@ code {
 <td>anchor_box_scales</td>
 <td>list of float</td>
 <td>Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images.</td>
-<td><code>[0.5, 1.0, 2.0]</code></td>
+<td><code>[0.4, 0.496, 0.625]</code></td>
 </tr>
 </tbody>
 </table>
@@ -668,7 +668,7 @@ code {
 </ol>
 <pre class="hljs"><code><div>python3 -m src.train_model
 </div></code></pre>
-<p>or,</p>
+<p>or</p>
 <pre class="hljs"><code><div>python -m src.train_model
 </div></code></pre>
 <h2 id="running-the-training-pipeline-using-gpu">Running the training pipeline using GPU</h2>
@@ -692,7 +692,7 @@ code {
 </ol>
 <pre class="hljs"><code><div>python3 -m src.train_model
 </div></code></pre>
-<p>or,</p>
+<p>or</p>
 <pre class="hljs"><code><div>python -m src.train_model
 </div></code></pre>
 <h2 id="possible-issues">Possible Issues</h2>

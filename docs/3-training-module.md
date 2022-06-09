@@ -26,17 +26,17 @@ In `pipelines.yml`, the following parameters in the `train` section are configur
 |---|---|---|---|---|
 | LOAD_DATA | load_data | boolean | Determines whether to run the data pipeline process before training. Set to `True` if there is new data to be trained on. | `False` |
 | TRAIN_MODEL_NAME | model_name | str | Name of model to be trained | "efficientdet" |
-| SAVE_WEIGHTS_ONLY | save_weights_only | boolean | Determines whether to run the data pipeline process before training. Set to `True` if there is new data to be trained on. | `False` |
+| SAVE_WEIGHTS_ONLY | save_weights_only | boolean | Determines whether to save only model weights or the entire model. The latter option will result in a larger file size. | `True` |
 | TRAIN_EARLY_STOPPING | early_stopping | boolean | Determines whether the early stopping mechanism is activated during training. | `True` |
 | TRAIN_EARLY_STOP_PATIENCE | patience | int | Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set. | |
 | LR_SCHEDULER | lr_scheduler | str | The learning rate scheduler used by the model during training. For `reduce_on_plateau`, the learning rate will reduce by `lr_reduce_factor` (see below) if there is no improvement in model performance for 2 consecutive epochs. The number of consecutive epochs depends on `lr_reduce_patience` (see below). | "reduce_on_plateau" |
 | INITIAL_LR | initial_lr | float | Learning rate to start from. | 0.001 |
 | LR_REDUCE_FACTOR | lr_reduce_factor | float | Factor by which the learning rate will be reduced. The new learning rate is computed by multiplying the current LR by this factor. | 0.1 |
 | LR_REDUCE_PATIENCE | lr_reduce_patience | int | Number of epochs with no improvement after which learning rate will be reduced. | 2 |
-| LR_MIN_DELTA | lr_min_delta | float | Threshold for measuring the new optimum, to only focus on significant changes. | 0.01 |
-| EVAL_BATCH_SIZE | eval_batch_size | int | The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32. | 4 |
+| LR_MIN_DELTA | lr_min_delta | float | Threshold for measuring the new optimum, to only focus on significant changes. | 0.001 |
+| EVAL_BATCH_SIZE | eval_batch_size | int | The number of images from the validation set to be evaluated per batch. Recommended values: 4, 8, 16, or 32. | 8 |
 | EVAL_IOU_THRESHOLD | eval_iou_threshold | list of float | The threshold used to consider when a detection is positive or negative.<br>Possible values:<br>1. a single floating point number; or <br>2. 3 numbers representing lower boundary, upper boundary (inclusive) & number of evenly spaced values to generate, e.g. `[0.5, 0.95, 10]`.<br>For more stringent evaluation, use the latter option. | `[0.5]` |
-| EVAL_SCORE_THRESHOLD  | eval_score_threshold  | float | The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction. | 0.1 |
+| EVAL_SCORE_THRESHOLD  | eval_score_threshold  | float | The score confidence threshold used for detections. A prediction with a score below this value is not considered a valid prediction. | 0.01 |
 | EVAL_CELL_ACCU_AS_CELL  | eval_cell_accu_as_cell  | boolean | Determines whether the model treats `cell accumulation` annotations as `cell` during evaluation. The purpose of doing so is to evaluate the model less strictly, i.e. the model would score a true positive even if a `cell` prediction overlaps with a `cell accumulation` ground truth. | `False` |
 
 ### EfficientDet configuration
@@ -64,7 +64,7 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 | None | steps | int | Number of steps per epoch. For example, if training on 4000 images with a batch size of 4, the number of steps should be 4000 / 4 = 1000. | 128 |
 | ED_IMAGE_SIZES | image_sizes | list of int | Input image sizes in pixels used by each EfficientNet backbone (B0 to B6). Do not change. | `[512, 640, 768, 896, 1024, 1280, 1408]` |
 | ANCHOR_BOX_RATIOS | anchor_box_ratios | list of float | Each float represents an aspect ratio (width/height) of the anchor box. The number of ratios can be increased beyond 3. Ratios should reflect the average shape of objects in the dataset, in order for the model to fit the anchor box to the ground truth bounding box. | `[1, 0.5, 2]` |
-| ANCHOR_BOX_SCALES | anchor_box_scales | list of float | Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images. | `[0.5, 1.0, 2.0]` |
+| ANCHOR_BOX_SCALES | anchor_box_scales | list of float | Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images. | `[0.4, 0.496, 0.625]` |
 
 ## Running the training pipeline
 
@@ -102,7 +102,7 @@ data_prep:
 ```
 python3 -m src.train_model
 ```
-or,
+or
 ```
 python -m src.train_model
 ```
@@ -125,7 +125,7 @@ conda env update --file life3-biotech-conda-env-train-gpu.yml
 ```
 python3 -m src.train_model
 ```
-or,
+or
 ```
 python -m src.train_model
 ```

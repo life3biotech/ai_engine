@@ -50,20 +50,20 @@ In `pipelines.yml`, the following parameters in the `data_prep` section are conf
 | RUN_TILING | run_tiling | boolean | Determines whether to tile image at the start of the training process. | `True` |
 | TILE_COCO_FILTER_CATEGORIES | tile_coco_filter_categories | list of str | Categories can be filter/selected here for COCO json | - "Cells"<br>- "cell accumulation (small cells)"<br>- "cell accumulation (large cells)" |
 | TILE_DATA_DIR_PATHS | tile_data_dir_paths | str | Absolute path pointing to the tile process data directory of the project. This directory contain the same directory structure as original data, with images and coco json processed as tile format. | |
-| TILE_SLICE_HEIGHT | tile_slice_height | int | Parameter to determine the height of each tile/slice image. | 512 |
-| TILE_SLICE_WIDTH | tile_slice_width | int | Parameter to determine the width of each tile/slice image. | 512 |
-| TILE_OVERLAP_HEIGHT_RATIO | tile_overlap_height_ratio | float | Parameter to specify adjacent tiles height overlapping percentage. | 0.2 |
-| TILE_OVERLAP_WIDTH_RATIO | tile_overlap_width_ratio | float | Parameter to specify adjacent tiles width overlapping percentage. | 0.2 |
+| TILE_SLICE_HEIGHT | tile_slice_height | int | Parameter to determine the height of each tile/slice image. | 384 |
+| TILE_SLICE_WIDTH | tile_slice_width | int | Parameter to determine the width of each tile/slice image. | 384 |
+| TILE_OVERLAP_HEIGHT_RATIO | tile_overlap_height_ratio | float | Parameter to specify adjacent tiles height overlapping percentage. | 0.1 |
+| TILE_OVERLAP_WIDTH_RATIO | tile_overlap_width_ratio | float | Parameter to specify adjacent tiles width overlapping percentage. | 0.1 |
 | TILE_IGNORE_NEGATIVE_SAMPLES | tile_ignore_negative_samples | boolean | Determines whether to include images without annotation. Setting as `False` will include images without annotations. | `False` |
 | **_Data Split_** |  |  |  |  |
 | TARGET_COL | target_col | str | Column name to take reference for the class name | 'category_name' |
 | SAVE_DATA_SPLITS | save_data_splits | boolean | Determines whether to save the train/validation/test splits as separate csv files | `True` |
 | VAL_SIZE | val_size | float | Proportion of data allocated to the validation set, based on the proportion of the overall data | 0.1 |
 | TEST_SIZE | test_size | float | Proportion of data allocated to the test set, based on the proportion of the overall data | 0.2 |
-| TRAIN_BASE_FILENAME | train_base_filename | str | Base filename (prefix) to be used for naming the train split file | 'train.csv' |
-| VAL_BASE_FILENAME | validation_base_filename | str | Base filename (prefix) to be used for naming the validation split file | 'validation.csv' |
-| TEST_BASE_FILENAME | test_base_filename | str | Base filename (prefix) to be used for naming the test split file | 'test.csv' |
-| META_DATA_FILENAME | meta_data_filename | str | Meta data that contain extra information of the images such as incubation_day filepath and filename. | |
+| TRAIN_BASE_FILENAME | train_base_filename | str | Base filename (prefix) to be used for naming the train split file | 'annotations_train.csv' |
+| VAL_BASE_FILENAME | validation_base_filename | str | Base filename (prefix) to be used for naming the validation split file | 'annotations_val.csv' |
+| TEST_BASE_FILENAME | test_base_filename | str | Base filename (prefix) to be used for naming the test split file | 'annotations_test.csv' |
+| META_DATA_FILENAME | meta_data_filename | str | Absolute path pointing to the metadata Excel file that contains additional information on the images, such as incubation day. | |
 | STRATIFY_COLUMN | stratify_column | str | Column name that will be used for data stratification. | 'incubation_day' |
 
 ## Running the data pipeline
