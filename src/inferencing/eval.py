@@ -212,7 +212,7 @@ class EvalCalibrate:
         # mpl_table.auto_set_font_size(False)
         # mpl_table.set_fontsize(font_size)
 
-        f1_str = f"\nMacro f1: {macro_f1:.4f} | Weighted_f1: {weighted_f1:.4f}"
+        f1_str = f"\nMacro_f1: {macro_f1:.4f} | Weighted_f1: {weighted_f1:.4f}"
         plt.gcf().text(0.3, 0.07, f1_str, fontsize=10)
         # plt.subplots_adjust(bottom=0.3)
 
