@@ -22,7 +22,7 @@ Please see license [here](LICENSE)
 
 ## Acknowledgement
 
-The Oceans.ai project uses the following libraries:
+This project uses the following libraries:
 
 | Package           	| License      	|
 |-------------------	|--------------	|
