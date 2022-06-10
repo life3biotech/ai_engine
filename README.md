@@ -8,6 +8,7 @@
     - [Training Module](docs/3-training-module.md)
     - [Inference Module](docs/4-inference-module.md)
     - [Postprocessing Module](docs/5-postprocessing-module.md)
+    - [Cell micrometer to pixel measurement](docs/Appendix-1-cell-size-measurement.md)
 
 - Model Experiments Archive (MS Excel)
     - [EfficientDet](docs/experiments/Training_Experiments.xlsx)
