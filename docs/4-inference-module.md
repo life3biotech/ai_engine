@@ -555,7 +555,9 @@ data_prep:
 cd C:\ai_engine
 ```
 
-</div>2. Activate the conda environment with the following command:
+</div>
+
+2. Activate the conda environment with the following command:
 
 <div>
 
@@ -563,7 +565,9 @@ cd C:\ai_engine
 conda activate life3-biotech
 ```
 
-</div>3. If there are known updates to the dependencies, update the conda environment by running:
+</div>
+
+3. If there are known updates to the dependencies, update the conda environment by running:
 
 <div>
 
@@ -571,7 +575,9 @@ conda activate life3-biotech
 conda env update --file life3-biotech-conda-env.yml
 ```
 
-</div>4. Finally, run the following command to start the inference pipeline:
+</div>
+
+4. Finally, run the following command to start the inference pipeline:
 
 <div>
 
@@ -585,7 +591,19 @@ python -m src.eval_model
 
 </div>
   
+5. Go to the folder `processed_data_path` which you have set in the configuration file (pipelines.yml) and look for the folder `eval_folder\distribution_output`. 
 
+If you have not changed the configuration, the default directory will be `C:\ai_engine\data\processed\eval_folder\distribution_output`
+
+Three data distribution image files are generated for your reference.
+* **distribution.png** - Compare the data distribution between Ground truth and Predicted cell
+* **cellsize_barplot.png** - Cell Size (small, medium, large) bar chart plot between Ground truth and Predicted cell
+* **calibrated_cellsize_barplot.png** - Calibrated Cell Size (small, medium, large) bar chart plot between Ground truth and Predicted cell
+
+*Sample of calibrated cell size barplot.*
+
+Actual cell size and the calibrated Predicted box size are displayed on top.
+![Sample of calibrated cell size barplot](images/calibrated_cellsize_barplot.png)
 
 ### **Running the inference pipeline**
 
@@ -597,7 +615,9 @@ python -m src.eval_model
 cd C:\ai_engine
 ```
 
-</div>2. Activate the conda environment with the following command:
+</div>
+
+2. Activate the conda environment with the following command:
 
 <div>
 
@@ -605,7 +625,9 @@ cd C:\ai_engine
 conda activate life3-biotech
 ```
 
-</div>3. If there are known updates to the dependencies, update the conda environment by running:
+</div>
+
+3. If there are known updates to the dependencies, update the conda environment by running:
 
 <div>
 
@@ -613,7 +635,9 @@ conda activate life3-biotech
 conda env update --file life3-biotech-conda-env.yml
 ```
 
-</div>4. Finally, run the following command to start the inference pipeline:
+</div>
+
+4. Finally, run the following command to start the inference pipeline:
 
 <div>
 
@@ -636,8 +660,8 @@ python -m src.batch_inferencing
 [2022-06-09 16:27:47,064][__main__][WARNING] - Config Parameters have changed, please rerun eval_model to recalibrate cellsize.
 ```
 
-1. At the end of the inference, if you see the following warning message in the terminal, it means you have not perform model evaluation and calibration. Please run `python -m src.eval_model` to calibrate the optimal cell size. 
+2. At the end of the inference, if you see the following error message in the terminal, it means you have not perform model evaluation and calibration. Please run `python -m src.eval_model` to calibrate the optimal cell size. 
 ```
-
+[2022-06-10 10:53:46,049][__main__][ERROR] - !! No conf/calibrated_params.csv found, model not calibrated, run 'python -m src.eval_model' once to calibrate model !!
 ```
 
