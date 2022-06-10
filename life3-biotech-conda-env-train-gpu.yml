@@ -1,0 +1,11 @@
+name: life3-biotech-train
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.6.8
+  - pip=20.2.2
+  - cudatoolkit=10.1
+  - cudnn=7.6.4
+  - pip:
+    - -r requirements_train_gpu.txt

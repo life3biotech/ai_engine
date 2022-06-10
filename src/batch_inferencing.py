@@ -1,15 +1,19 @@
 import os
-import datetime
+import time
 import logging
 import hydra
-import glob
-import jsonlines
-
+from pconst import const
 
 import life3_biotech as life3
+import inferencing as inference
+
+from inferencing.inference_util import params_check
+
+from pathlib import Path
+import pandas as pd
 
 
-@hydra.main(config_path="../conf/base", config_name="pipelines.yml")
+@hydra.main(config_path="../conf/life3", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
     - load logging config
@@ -18,45 +22,40 @@ def main(args):
     - conducts inferencing on data
     - outputs prediction results to a jsonline file
     """
+    os.chdir(
+        hydra.utils.get_original_cwd()
+    )  # Default behavior of hydra changes the working directory, this line changes the working directory back to the root
 
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
-    logger_config_path = os.path.\
-        join(hydra.utils.get_original_cwd(),
-            "conf/base/logging.yml")
+    logger_config_path = os.path.join(
+        hydra.utils.get_original_cwd(), "conf/base/logging.yml"
+    )
     life3.general_utils.setup_logging(logger_config_path)
+    pipeline_conf = life3.config.PipelineConfig(args, logger)
 
-    logger.info("Loading the model...")
-    pred_model = life3.modeling.utils.load_model(
-        args["inference"]["model_path"])
+    start = time.time()
 
-    glob_expr = "{}/*.txt".\
-        format(args["inference"]["input_data_dir"])
-    logger.info("Conducting inferencing on text files...")
+    # Check if piplines parameter is different from calibrated parameter and warn user
+    if const.USE_CALIBRATED_CELLSIZE:
+        params_check_name = params_check(logger)
 
-    for movie_review_file in glob.glob(glob_expr):
+    batch_inference = inference.batch_inference.BatchInference(logger)
+    batch_inference.inferencing()
 
-        file = open(movie_review_file, "r")
-        file_content = file.readlines()
-        curr_pred_result = float(pred_model.predict(file_content))
-        sentiment = ("positive" if curr_pred_result > 0.5
-                    else "negative")
+    end = time.time()
+    logger.info("The time of execution of above program is : {}".format(end - start))
 
-        curr_time = datetime.datetime.now(
-            datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
-        curr_res_jsonl = {
-            "time": curr_time,
-            "filepath": movie_review_file,
-            "logit_prob": curr_pred_result,
-            "sentiment": sentiment}
+    if const.USE_CALIBRATED_CELLSIZE:
+        if len(params_check_name) > 0:
+            logger.warning(
+                "Config Parameters have changed, pipelines.yml differ from calibrated_params.csv. Affected parameters: "
+                + ", ".join(str(x) for x in params_check_name)
+            )
+            logger.warning(
+                "Config Parameters have changed, please rerun eval_model to recalibrate cellsize."
+            )
 
-        with jsonlines.open("batch-infer-res.jsonl", mode="a") as writer:
-            writer.write(curr_res_jsonl)
-            writer.close()
-
-    logger.info("Batch inferencing has completed.")
-    logger.info("Output result location: {}/batch-infer-res.jsonl".
-                format(os.getcwd()))
 
 if __name__ == "__main__":
     main()
