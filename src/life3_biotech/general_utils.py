@@ -10,8 +10,9 @@ import yaml
 logger = logging.getLogger(__name__)
 
 
-def setup_logging(logging_config_path="./conf/base/logging.yml",
-                default_level=logging.INFO):
+def setup_logging(
+    logging_config_path="./conf/life3/logging.yml", default_level=logging.INFO
+):
     """Set up configuration for logging utilities.
 
     Parameters
@@ -30,7 +31,7 @@ def setup_logging(logging_config_path="./conf/base/logging.yml",
     except Exception as error:
         logging.basicConfig(
             format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-            level=default_level)
+            level=default_level,
+        )
         logger.info(error)
-        logger.info(
-            "Logging config file is not found. Basic config is being used.")
+        logger.info("Logging config file is not found. Basic config is being used.")
