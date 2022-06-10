@@ -194,7 +194,7 @@ class EvalCalibrate:
 
         (
             classificationreport_df,
-            marco_f1,
+            macro_f1,
             weighted_f1,
         ) = self.generate_classification_report(list_cell_size)
 
@@ -212,7 +212,7 @@ class EvalCalibrate:
         # mpl_table.auto_set_font_size(False)
         # mpl_table.set_fontsize(font_size)
 
-        f1_str = f"\nMarco f1: {marco_f1:.4f} | Weighted_f1: {weighted_f1:.4f}"
+        f1_str = f"\nMacro f1: {macro_f1:.4f} | Weighted_f1: {weighted_f1:.4f}"
         plt.gcf().text(0.3, 0.07, f1_str, fontsize=10)
         # plt.subplots_adjust(bottom=0.3)
 
@@ -590,7 +590,7 @@ class EvalCalibrate:
             list_cell (list): [small, med, large ,small_pred, med_pred, large_pred ]
 
         Returns:
-            Tuple[pd.DataFrame, float, float]: precision recall and f1 score dataframe, marco_f1, weighted_f1
+            Tuple[pd.DataFrame, float, float]: precision recall and f1 score dataframe, macro_f1, weighted_f1
         """
 
         small, med, large, small_pred, med_pred, large_pred = list_cell
@@ -626,7 +626,7 @@ class EvalCalibrate:
         med_f1 = self.calc_f1_score(med_precision, med_recall)
         large_f1 = self.calc_f1_score(large_precision, large_recall)
 
-        marco_f1 = (small_f1 + med_f1 + large_f1) / 3
+        macro_f1 = (small_f1 + med_f1 + large_f1) / 3
         weighted_f1 = (
             actual_small_tot * small_f1
             + actual_med_tot * med_f1
@@ -664,7 +664,7 @@ class EvalCalibrate:
             ],
         )
 
-        return classificationreport_df, marco_f1, weighted_f1
+        return classificationreport_df, macro_f1, weighted_f1
 
     def calc_f1_score(self, precision: float, recall: float) -> float:
         """Calculate f1 score and check for zero.
