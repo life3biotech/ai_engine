@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>4-inference-module.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="inference-module">Inference Module</h1>
+<p>Please ensure that you have completed the &quot;Environment Setup&quot; guide before proceeding to follow this guide.</p>
+<h2 id="overview">Overview</h2>
+<p>The diagram below shows the process flow of the inference module.
+There are 2 parts to inference.</p>
+<ol>
+<li>The first part is evaluation and calibration module.</li>
+<li>The 2nd part is inference module.</li>
+</ol>
+<p>The entrypoint of the evaluation and calibration module is the script <code>src/eval_model.py</code> by default.</p>
+<p>The entrypoint of the inference module is the script <code>src/batch_inferencing.py</code> by default.</p>
+<p><img src="images/inference-module-flow.png" alt="Inference Module Process Flow"></p>
+<h2 id="configuration">Configuration</h2>
+<p>The main configuration file used to customise the AI engine is <code>pipelines.yml</code>, located in <code>conf/life3</code> subfolder.</p>
+<h3 id="general-inference-configuration">General inference configuration</h3>
+<p>In <code>pipelines.yml</code>, the following parameters in the <code>inference</code> section are configurable.</p>
+<h3 id="general-inference-configuration">General Inference configuration</h3>
+<table>
+<tr>
+<th>
+<div>
+<p>Constant (<code>const.</code>)</p>
+</div></th>
+<th>
+<div>Parameter</div></th>
+<th>
+<div>Type</div></th>
+<th>
+<div>Description</div></th>
+<th>
+<div>Default Value</div></th>
+</tr>
+<tr>
+<td>
+<h3 id="defined-cell-size"><em>Defined Cell Size</em></h3>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<div>UM_PIXEL_MAPPING</div></td>
+<td>
+<div>um_pixel_mapping</div></td>
+<td>
+<div>float</div></td>
+<td>Map one pixel of image to the corresponding micrometer for cell size. Unit: micrometer/pixel </td>
+<td>
+<div>
+<div>0.369763541667</div></td>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>SMALL_MID_CELL_CUTOFF</div></td>
+<td>
+<div>small_mid_cell_cutoff</div></td>
+<td>
+<div>float</div></td>
+<td>The upper bound of the small cell and lower bound of the mid-size cell in micrometer (μm) </td>
+<td>
+<div>
+<div>4.0</div></td>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>MID_LARGE_CELL_CUTOFF</div></td>
+<td>
+<div>mid_large_cell_cutoff</div></td>
+<td>
+<div>float</div></td>
+<td>The upper bound of the mid-size cell and lower bound of the large-size cell in micrometer (μm) </td>
+<td>
+<div>
+<div>8.0</div></td>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<h3 id="inputoutput"><em>Input/Output</em></h3>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<div>INFERENCE_MODEL_PATH</div></td>
+<td>
+<div>model_path</div></td>
+<td>
+<div>str</div></td>
+<td>Absolute or relative path pointing to the model weight to be used.</td>
+<td>
+<div>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>IMAGE_INPUT_DIR</div>
+</div></td>
+<td>
+<div>
+<div>image_input_dir</div>
+</div></td>
+<td>
+<div>
+<div>str</div>
+</div></td>
+<td>
+<div>
+<div>Absolute or relative path pointing to the input image directory for inference/prediction. File extensions = ".png" </div>
+</div></td>
+<td>
+<div>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>CSV_OUTPUT_DIR</div>
+</div></td>
+<td>
+<div>
+<div>csv_output_dir</div>
+</div></td>
+<td>
+<div>
+<div>str</div>
+</div></td>
+<td>
+<div>Absolute or relative path pointing to the output inferred/predicted annotated csv directory. File extensions = ".csv" Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder</div></td>
+<td>
+<div>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>SAVE_OUTPUT_IMAGE</div>
+</div></td>
+<td>
+<div>
+<div>save_output_image</div>
+</div></td>
+<td>
+<div>
+<div>boolean</div>
+</div></td>
+<td>
+<div>Determines whether to save inferred/predicted image.</div></td>
+<td>
+<div>True</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>SAVE_OUTPUT_IMAGE_SHOWLABEL</div>
+</div></td>
+<td>
+<div>
+<div>save_output_image_showlabel</div>
+</div></td>
+<td>
+<div>
+<div>boolean</div>
+</div></td>
+<td>
+<div>Determines whether to save inferred/predicted image with prediction text label on each detected cell.</div></td>
+<td>
+<div>True</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>SAVE_OUTPUT_IMAGE_SHOW_CELLCOUNT</div>
+</div></td>
+<td>
+<div>
+<div>save_output_image_show_cellcount</div>
+</div></td>
+<td>
+<div>
+<div>boolean</div>
+</div></td>
+<td>
+<div>Determines whether to save inferred/predicted image with prediction cell count text label on top left corner of the image.</div></td>
+<td>
+<div>True</div></td>
+</tr>
+<tr>
+<td>
+<div>
+<div>IMAGE_OUTPUT_DIR</div>
+</div></td>
+<td>
+<div>
+<div>image_output_dir</div>
+</div></td>
+<td>
+<div>
+<div>str</div>
+</div></td>
+<td>
+<div>Absolute or relative path pointing to the output inferred/predicted image with cell bounding box drawn.</div></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<h3 id="model-parameter"><em>Model parameter</em></h3>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<div>INFERENCE_BACKBONE</div></td>
+<td>
+<div>inference_backbone</div></td>
+<td>
+<div>int</div></td>
+<td>
+<div>Compound coefficient used to scale up EfficientNet, the backbone network. Possible values: 0, 1, 2, 3, 4, 5, 6.</div></td>
+<td>
+<div>0</div></td>
+</tr>
+<tr>
+<td>
+<div>INFERENCE_CONFIDENCE_THRESH</div></td>
+<td>
+<div>confidence_threshold</div></td>
+<td>
+<div>float</div></td>
+<td>
+<div>The confidence threshold is used to assess the probability of the object class appearing in the bounding box.</div></td>
+<td>0.33</td>
+</tr>
+<tr>
+<td>
+<div>INFERENCE_RUN_NMS</div></td>
+<td>
+<div>run_nms</div></td>
+<td>
+<div>boolean</div></td>
+<td>
+<div>Determines whether the non-maximum Suppression is activated during inference.</div></td>
+<td>
+<div>
+<p>False</p>
+</div></td>
+</tr>
+<tr>
+<td>
+<div>INFERENCE_NMS_THRESH</div></td>
+<td>
+<div>nms_threshold</div></td>
+<td>
+<div>float</div></td>
+<td>
+<div>Non max suppression is a technique used mainly in object detection that aims at selecting the best bounding box out of a set of overlapping boxes.</div></td>
+<td>
+<div>0.2</div></td>
+</tr>
+<tr>
+<td>
+<h3 id="postprocessing-parameter"><em>Postprocessing parameter</em></h3>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<div>SLICE_HEIGHT</div></td>
+<td>
+<div>slice_height</div></td>
+<td>
+<div>int</div></td>
+<td>
+<div>The height of the image to be sliced (Suggestion: 256, 384, 512)
+  384 - Balance, good at detecting big and small object. 256, very good at small object but might miss big object. 512, very good at big object but might miss small object</div></td>
+<td>256</td>
+</tr>
+<tr>
+<td>
+<div>SLICE_WIDTH</div></td>
+<td>
+<div>slice_width</div></td>
+<td>
+<div>int</div></td>
+<td>
+<div>The width of the image to be sliced (Suggestion: 256, 384, 512)
+  384 - Balance, good at detecting big and small object. 256, very good at small object but might miss big object. 512, very good at big object but might miss small object</div></td>
+<td>256</td>
+</tr>
+<tr>
+<td>OVERLAP_HEIGHT_RATIO</td>
+<td>overlap_height_ratio</td>
+<td>float</td>
+<td>Fractional overlap in height of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>OVERLAP_WIDTH_RATIO</td>
+<td>overlap_width_ratio</td>
+<td>float</td>
+<td>Fractional overlap in width of each window (e.g. an overlap of 0.2 for a window of size 512 yields an overlap of 102 pixels).</td>
+<td>0.15</td>
+</tr>
+<tr>
+<td>POSTPROCESS_TYPE</td>
+<td>postprocess_type</td>
+<td>str</td>
+<td>Type of the postprocess to be used after sliced inference while merging/eliminating predictions. Options are 'NMM', 'GREEDYNMM' or 'NMS'. Default is 'GREEDYNMM'.</td>
+<td>'NMS'</td>
+</tr>
+<tr>
+<td>POSTPROCESS_BBOX_SORT</td>
+<td>postprocess_bbox_sort</td>
+<td>str</td>
+<td>If True, sort bounding box according to area (Prioritise tighter bounding box). False sort bounding box acccording to score.</td>
+<td>True</td>
+</tr>
+<tr>
+<td>POSTPROCESS_MATCH_METRIC</td>
+<td>postprocess_match_metric</td>
+<td>str</td>
+<td>
+<p>Metric to be used during object prediction matching after sliced prediction. <br>IOU = intersection over union.<br>IOS =</p>
+<p>intersection over smaller area. Options are 'IOU' or 'IOS'</p>
+</td>
+<td>"IOS"</td>
+</tr>
+<tr>
+<td>POSTPROCESS_MATCH_THRESHOLD</td>
+<td>postprocess_match_threshold</td>
+<td>float</td>
+<td>Sliced predictions having higher iou than postprocess_match_threshold will be postprocessed after sliced prediction.</td>
+<td>0.01</td>
+</tr>
+</table>
+<hr>
+<hr>
+<h3 id="things-to-do-before-inference"><strong>Things to do before inference</strong></h3>
+<p>Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file <code>pipelines.yml</code> and edit the following parameters to your current environment.
+Note: Consolidated cell count info for all images are saved as <code>predicted_results.csv</code> in the same folder as csv_output_dir</p>
+<pre class="hljs"><code><div>  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220510_201515.h5"
+  image_input_dir: "C:\\ai_engine\\data\\inference\\input\\"
+  csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
+  save_output_image: True
+  image_output_dir: "C:\\ai_engine\\data\\inference\\output\\"
+</div></code></pre>
+<p><strong><em>Note:</em></strong> Models trained on a single class (i.e. &quot;cell&quot;) can only perform single class inference. If such a model is selected, another parameter in <code>pipelines.yml</code> must be amended. Under <code>data_prep</code>, comment out the line <code>'cell accumulation': 1</code> as shown below.</p>
+<div>
+<pre class="hljs"><code><div>data_prep: 
+ .
+ . 
+ .
+ class_map: { 
+        'cell': 0, 
+        # 'cell accumulation': 1 
+  }
+</div></code></pre>
+</div>
+<h3 id="running-the-evaluation-and-calibration-pipeline"><strong>Running the evaluation and calibration pipeline</strong></h3>
+<p>(Only required to execute once until the next model change or parameters update)</p>
+<p><strong>Evaluation and calibration</strong> of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.</p>
+<ol>
+<li>On the terminal, change to your working directory with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>cd C:\ai_engine
+</div></code></pre>
+</div>
+<ol start="2">
+<li>Activate the conda environment with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda activate life3-biotech
+</div></code></pre>
+</div>
+<ol start="3">
+<li>If there are known updates to the dependencies, update the conda environment by running:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda env update --file life3-biotech-conda-env.yml
+</div></code></pre>
+</div>
+<ol start="4">
+<li>Finally, run the following command to start the inference pipeline:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>python3 -m src.eval_model
+</div></code></pre>
+<p>or,</p>
+<pre class="hljs"><code><div>python -m src.eval_model
+</div></code></pre>
+</div>
+<ol start="5">
+<li>Go to the folder <code>processed_data_path</code> which you have set in the configuration file (pipelines.yml) and look for the folder <code>eval_folder\distribution_output</code>.</li>
+</ol>
+<p>If you have not changed the configuration, the default directory will be <code>C:\ai_engine\data\processed\eval_folder\distribution_output</code></p>
+<p>Three data distribution image files are generated for your reference.</p>
+<ul>
+<li><strong>distribution.png</strong> - Compare the data distribution between Ground truth and Predicted cell</li>
+<li><strong>cellsize_barplot.png</strong> - Cell Size (small, medium, large) bar chart plot between Ground truth and Predicted cell</li>
+<li><strong>calibrated_cellsize_barplot.png</strong> - Calibrated Cell Size (small, medium, large) bar chart plot between Ground truth and Predicted cell</li>
+</ul>
+<p><em>Sample of calibrated cell size barplot.</em></p>
+<p>Actual cell size and the calibrated Predicted box size are displayed on top.
+<img src="images/calibrated_cellsize_barplot.png" alt="Sample of calibrated cell size barplot"></p>
+<h3 id="running-the-inference-pipeline"><strong>Running the inference pipeline</strong></h3>
+<ol>
+<li>On the terminal, change to your working directory with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>cd C:\ai_engine
+</div></code></pre>
+</div>
+<ol start="2">
+<li>Activate the conda environment with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda activate life3-biotech
+</div></code></pre>
+</div>
+<ol start="3">
+<li>If there are known updates to the dependencies, update the conda environment by running:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda env update --file life3-biotech-conda-env.yml
+</div></code></pre>
+</div>
+<ol start="4">
+<li>Finally, run the following command to start the inference pipeline:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>python3 -m src.batch_inferencing
+</div></code></pre>
+<p>or,</p>
+<pre class="hljs"><code><div>python -m src.batch_inferencing
+</div></code></pre>
+</div>
+<h3 id="things-to-look-out-for"><strong>Things to look out for</strong></h3>
+<ol>
+<li>At the end of the inference, if you see the following warning message in the terminal, it means some of the parameters in pipelines.yml have changed and might have affected the cell size calibration. In this case, it is recommeded to rerun <code>python -m src.eval_model</code> to recalibrate the cell size measurement.</li>
+</ol>
+<pre class="hljs"><code><div>[2022-06-09 16:27:47,064][__main__][WARNING] - Config Parameters have changed, pipelines.yml differ from calibrated_params.csv. Affected parameters: postprocess_bbox_sort
+[2022-06-09 16:27:47,064][__main__][WARNING] - Config Parameters have changed, please rerun eval_model to recalibrate cellsize.
+</div></code></pre>
+<ol start="2">
+<li>At the end of the inference, if you see the following error message in the terminal, it means you have not perform model evaluation and calibration. Please run <code>python -m src.eval_model</code> to calibrate the optimal cell size.</li>
+</ol>
+<pre class="hljs"><code><div>[2022-06-10 10:53:46,049][__main__][ERROR] - !! No conf/calibrated_params.csv found, model not calibrated, run 'python -m src.eval_model' once to calibrate model !!
+</div></code></pre>
+
+</body>
+</html>
