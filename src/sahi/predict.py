@@ -324,11 +324,11 @@ def get_sliced_prediction(
 
     # merge matching predictions
     if len(object_prediction_list) > 1:
-        output = postprocess(object_prediction_list)
+        object_prediction_list = postprocess(object_prediction_list)
 
     return PredictionResult(
         image=image,
-        object_prediction_list=output,
+        object_prediction_list=object_prediction_list,
         durations_in_seconds=durations_in_seconds,
     )
 

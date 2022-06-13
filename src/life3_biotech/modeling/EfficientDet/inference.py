@@ -89,7 +89,7 @@ def load_model(logger):
     return model
 
 
-@hydra.main(config_path="../../../../conf/local", config_name="pipelines.yml")
+@hydra.main(config_path="../../../../conf/life3", config_name="pipelines.yml")
 def main(args):
     """This function iterates through the list of images, preprocesses each image, calls the prediction function on it and preprocesses the results.
 
@@ -103,7 +103,7 @@ def main(args):
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
     logger_config_path = os.path.join(
-        hydra.utils.get_original_cwd(), "conf/base/logging.yml"
+        hydra.utils.get_original_cwd(), "conf/life3/logging.yml"
     )
     general_utils.setup_logging(logger_config_path)
 

@@ -8,6 +8,7 @@ from pconst import const
 import load_data
 import life3_biotech as life3
 
+
 @hydra.main(config_path="../conf/life3", config_name="pipelines.yml")
 def main(args):
     """This main function does the following:
@@ -28,7 +29,7 @@ def main(args):
     logger = logging.getLogger(__name__)
     logger.info("Setting up logging configuration.")
     logger_config_path = os.path.join(
-        hydra.utils.get_original_cwd(), "conf/base/logging.yml"
+        hydra.utils.get_original_cwd(), "conf/life3/logging.yml"
     )
     life3.general_utils.setup_logging(logger_config_path)
 
@@ -56,7 +57,7 @@ def main(args):
 
 
 def run_efficientdet(current_datetime: str, logger) -> None:
-    """This function runs the EfficientDet model training and evaluation according to the parameters in the `pipelines.yml` config file. 
+    """This function runs the EfficientDet model training and evaluation according to the parameters in the `pipelines.yml` config file.
 
     Args:
         current_datetime (str): Current timestamp used as a suffix for model weights file
