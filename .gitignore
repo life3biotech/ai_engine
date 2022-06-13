@@ -8,6 +8,7 @@ conf/**/*credentials*
 data/**
 logs/**
 models/**
+!models/efficientdet_b0_20220607_111240.h5
 
 # Except their sub-folders
 !data/**/
