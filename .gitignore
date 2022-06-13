@@ -8,24 +8,17 @@ conf/**/*credentials*
 data/**
 logs/**
 models/**
-aisg-context/k8s/pvc/**
-aisg-context/k8s/secrets/**
 
 # Except their sub-folders
 !data/**/
 !logs/**/
 !models/**/
-!aisg-context/k8s/pvc/**/
-!aisg-context/k8s/secrets/**/
 
 # Keep all .gitkeep files
 !.gitkeep
 
 # Ignore .deb packages
 *.deb
-
-# Ignore local MLflow logs
-**/mlruns
 
 # Ignore outputs from OmegaConf/Hydra
 **/outputs
@@ -70,7 +63,6 @@ atlassian-ide-plugin.xml
 
 # C extensions
 *.so
-!compute_overlap.cpython-36m-x86_64-linux-gnu.so
 
 # Python template
 # Byte-compiled / optimized / DLL files
