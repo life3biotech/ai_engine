@@ -31,7 +31,7 @@ data_prep:
     }
   accepted_image_formats: ['jpg', 'JPG', 'jpeg', 'png']
   # Tile/slice processed images
-  run_tiling: False
+  run_tiling: True
   tile_coco_filter_categories:
     - "Cells"
     - "cell accumulation (small cells)"
@@ -122,7 +122,7 @@ efficientdet:
     gpu: 0
     train_backbone: 0
     snapshot: 'imagenet'
-    compute_val_loss: False
+    compute_val_loss: True
     weighted_bifpn: True
     freeze_bn: False
     freeze_backbone: False
