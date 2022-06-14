@@ -623,7 +623,7 @@ There are 2 parts to inference.</p>
 <div>float</div></td>
 <td>
 <div>The confidence threshold is used to assess the probability of the object class appearing in the bounding box.</div></td>
-<td>0.33</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>
@@ -759,7 +759,13 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 </div>
 <h3 id="running-the-evaluation-and-calibration-pipeline"><strong>Running the evaluation and calibration pipeline</strong></h3>
 <p>(Only required to execute once until the next model change or parameters update)</p>
-<p><strong>Evaluation and calibration</strong> of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.</p>
+<p><strong>Important:</strong> Before running <code>eval_model.py</code> script, you are required to run <code>python -m src.load_data</code> (under 2-data-pipeline-setup.html) at least once to generate the data pipeline files. Ensure the following folder and file are created if you are using the default configuration <code>data_prep</code></p>
+<ul>
+<li>in pipelines.yml - processed_data_path: <code>&quot;C:\ai_engine\data\processed&quot;</code></li>
+<li>within the folder, ensure the following file with similar naming convention is created <code>annotations_test_xxx.csv</code> or</li>
+</ul>
+<p>Failure to do so, will result in error running <code>eval_model</code></p>
+<p><strong>Evaluation and calibration</strong> of the model is required every time a <strong>new model or new parameters</strong> are applied. You are required to execute this step once only until the next modification.</p>
 <ol>
 <li>On the terminal, change to your working directory with the following command:</li>
 </ol>
@@ -848,6 +854,44 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 </ol>
 <pre class="hljs"><code><div>[2022-06-10 10:53:46,049][__main__][ERROR] - !! No conf/calibrated_params.csv found, model not calibrated, run 'python -m src.eval_model' once to calibrate model !!
 </div></code></pre>
+<ol start="3">
+<li>Generally, the following parameters will tweak the performance of the inference results. Detail descriptions are written in the General Inference configuration table above.</li>
+</ol>
+<ul>
+<li>&quot;inference_backbone&quot;,</li>
+<li>&quot;confidence_threshold&quot;,</li>
+<li>&quot;run_nms&quot;,</li>
+<li>&quot;nms_threshold&quot;,</li>
+<li>&quot;slice_height&quot;,</li>
+<li>&quot;slice_width&quot;,</li>
+<li>&quot;overlap_height_ratio&quot;,</li>
+<li>&quot;overlap_width_ratio&quot;,</li>
+<li>&quot;postprocess_type&quot;,</li>
+<li>&quot;postprocess_bbox_sort&quot;,</li>
+<li>&quot;postprocess_match_metric&quot;,</li>
+<li>&quot;postprocess_match_threshold&quot;,</li>
+<li>&quot;inference_slice&quot;,</li>
+<li>&quot;max_detections&quot;,</li>
+<li>&quot;class_specific_filter&quot;,</li>
+<li>&quot;detect_quadrangle&quot;,</li>
+<li>&quot;score_threshold&quot;,</li>
+<li>&quot;select_top_k&quot;,</li>
+</ul>
+<p>A guideline to follow, below parameters have direct impact to the inference results.</p>
+<ul>
+<li>&quot;slice_height&quot;,</li>
+<li>&quot;slice_width&quot;,</li>
+</ul>
+<p>This 2 parameters will have the following behaviors.</p>
+<p>384 - Balance, good at detecting big and small object.</p>
+<p>256 - very good at small object but might miss big object.</p>
+<p>512 - very good at big object but might miss small object.</p>
+<p>Users are welcome to try out different values from the above, but in general, the bigger the slices, the better it can detect big object at the expense of smaller object, and the smaller the slices, the better it can detect small object at the expense of bigger object.</p>
+<ul>
+<li>&quot;confidence_threshold&quot;,</li>
+</ul>
+<p>This parameter will control how accurate the inference will detect the object cell. If a higher value are used, less likely a false detection will occur, however for the current model (efficientdet_b0_20220607_111240.h5) that is shipped with the deployment package, it might not detect bigger cell. Current default recommeded value = 0.1 which will have some false detection but will be able to detect most of the cells.</p>
+<p>Note: It is recommended to keep the default value for the rest of the parameters.</p>
 
 </body>
 </html>

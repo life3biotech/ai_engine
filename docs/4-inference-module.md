@@ -368,7 +368,7 @@ Constant (`const.`)
 <td>
 
 <div>The confidence threshold is used to assess the probability of the object class appearing in the bounding box.</div></td>
-<td>0.33</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>
@@ -545,7 +545,13 @@ data_prep:
 ### **Running the evaluation and calibration pipeline** 
 (Only required to execute once until the next model change or parameters update)
 
-**Evaluation and calibration** of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.
+**Important:** Before running `eval_model.py` script, you are required to run `python -m src.load_data` (under 2-data-pipeline-setup.html) at least once to generate the data pipeline files. Ensure the following folder and file are created if you are using the default configuration `data_prep`
+*  in pipelines.yml - processed_data_path: `"C:\ai_engine\data\processed"`
+* within the folder, ensure the following file with similar naming convention is created `annotations_test_xxx.csv` or 
+  
+Failure to do so, will result in error running `eval_model`
+
+**Evaluation and calibration** of the model is required every time a **new model or new parameters** are applied. You are required to execute this step once only until the next modification.
 
 1. On the terminal, change to your working directory with the following command:
 
@@ -665,3 +671,44 @@ python -m src.batch_inferencing
 [2022-06-10 10:53:46,049][__main__][ERROR] - !! No conf/calibrated_params.csv found, model not calibrated, run 'python -m src.eval_model' once to calibrate model !!
 ```
 
+3. Generally, the following parameters will tweak the performance of the inference results. Detail descriptions are written in the General Inference configuration table above.
+
+* "inference_backbone",
+* "confidence_threshold",
+* "run_nms",
+* "nms_threshold",
+* "slice_height",
+* "slice_width",
+* "overlap_height_ratio",
+* "overlap_width_ratio",
+* "postprocess_type",
+* "postprocess_bbox_sort",
+* "postprocess_match_metric",
+* "postprocess_match_threshold",
+* "inference_slice",
+* "max_detections",
+* "class_specific_filter",
+* "detect_quadrangle",
+* "score_threshold",
+* "select_top_k",
+
+A guideline to follow, below parameters have direct impact to the inference results.
+
+* "slice_height",
+* "slice_width",
+  
+This 2 parameters will have the following behaviors.
+
+384 - Balance, good at detecting big and small object. 
+
+256 - very good at small object but might miss big object. 
+
+512 - very good at big object but might miss small object.
+
+Users are welcome to try out different values from the above, but in general, the bigger the slices, the better it can detect big object at the expense of smaller object, and the smaller the slices, the better it can detect small object at the expense of bigger object.
+
+* "confidence_threshold",
+
+This parameter will control how accurate the inference will detect the object cell. If a higher value are used, less likely a false detection will occur, however for the current model (efficientdet_b0_20220607_111240.h5) that is shipped with the deployment package, it might not detect bigger cell. Current default recommeded value = 0.1 which will have some false detection but will be able to detect most of the cells.
+
+Note: It is recommended to keep the default value for the rest of the parameters.
