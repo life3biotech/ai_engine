@@ -508,35 +508,35 @@ code {
 <td>TILE_DATA_DIR_PATHS</td>
 <td>tile_data_dir_paths</td>
 <td>str</td>
-<td>Absolute path pointing to the tile process data directory of the project. This directory contain the same directory structure as original data, with images and coco json processed as tile format.</td>
+<td>Absolute path pointing to the processed data directory of the project containing the tiled images. This directory contain the same directory structure as original data, with images and coco JSON processed as tile format.</td>
 <td></td>
 </tr>
 <tr>
 <td>TILE_SLICE_HEIGHT</td>
 <td>tile_slice_height</td>
 <td>int</td>
-<td>Parameter to determine the height of each tile/slice image.</td>
+<td>Parameter to determine the height of each image tile/slice.</td>
 <td>384</td>
 </tr>
 <tr>
 <td>TILE_SLICE_WIDTH</td>
 <td>tile_slice_width</td>
 <td>int</td>
-<td>Parameter to determine the width of each tile/slice image.</td>
+<td>Parameter to determine the width of each image tile/slice.</td>
 <td>384</td>
 </tr>
 <tr>
 <td>TILE_OVERLAP_HEIGHT_RATIO</td>
 <td>tile_overlap_height_ratio</td>
 <td>float</td>
-<td>Parameter to specify adjacent tiles height overlapping percentage.</td>
+<td>Parameter to specify adjacent tiles height overlapping percentage. If <code>tile_slice_height</code> or <code>tile_slice_width</code> is set to 512 or greater, it is recommended to set an overlap of 0.2.</td>
 <td>0.1</td>
 </tr>
 <tr>
 <td>TILE_OVERLAP_WIDTH_RATIO</td>
 <td>tile_overlap_width_ratio</td>
 <td>float</td>
-<td>Parameter to specify adjacent tiles width overlapping percentage.</td>
+<td>Parameter to specify adjacent tiles width overlapping percentage. If <code>tile_slice_height</code> or <code>tile_slice_width</code> is set to 512 or greater, it is recommended to set an overlap of 0.2.</td>
 <td>0.1</td>
 </tr>
 <tr>
@@ -585,21 +585,21 @@ code {
 <td>TRAIN_BASE_FILENAME</td>
 <td>train_base_filename</td>
 <td>str</td>
-<td>Base filename (prefix) to be used for naming the train split file</td>
+<td>Base filename (prefix) to be used for naming the train split file. To avoid overwriting of this file when running the data pipeline multiple times to generate different datasets, update this value with each run.</td>
 <td>'annotations_train.csv'</td>
 </tr>
 <tr>
 <td>VAL_BASE_FILENAME</td>
 <td>validation_base_filename</td>
 <td>str</td>
-<td>Base filename (prefix) to be used for naming the validation split file</td>
+<td>Base filename (prefix) to be used for naming the validation split file. To avoid overwriting of this file when running the data pipeline multiple times to generate different datasets, update this value with each run.</td>
 <td>'annotations_val.csv'</td>
 </tr>
 <tr>
 <td>TEST_BASE_FILENAME</td>
 <td>test_base_filename</td>
 <td>str</td>
-<td>Base filename (prefix) to be used for naming the test split file</td>
+<td>Base filename (prefix) to be used for naming the test split file. To avoid overwriting of this file when running the data pipeline multiple times to generate different datasets, update this value with each run.</td>
 <td>'annotations_test.csv'</td>
 </tr>
 <tr>

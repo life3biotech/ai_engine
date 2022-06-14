@@ -28,7 +28,7 @@ In `pipelines.yml`, the following parameters in the `train` section are configur
 | TRAIN_MODEL_NAME | model_name | str | Name of model to be trained | "efficientdet" |
 | SAVE_WEIGHTS_ONLY | save_weights_only | boolean | Determines whether to save only model weights or the entire model. The latter option will result in a larger file size. | `True` |
 | TRAIN_EARLY_STOPPING | early_stopping | boolean | Determines whether the early stopping mechanism is activated during training. | `True` |
-| TRAIN_EARLY_STOP_PATIENCE | patience | int | Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set. | |
+| TRAIN_EARLY_STOP_PATIENCE | patience | int | Number of epochs to wait before early stopping is activated if there is no improvement in the metrics used to measure performance on the validation set. | 10 |
 | LR_SCHEDULER | lr_scheduler | str | The learning rate scheduler used by the model during training. For `reduce_on_plateau`, the learning rate will reduce by `lr_reduce_factor` (see below) if there is no improvement in model performance for 2 consecutive epochs. The number of consecutive epochs depends on `lr_reduce_patience` (see below). | "reduce_on_plateau" |
 | INITIAL_LR | initial_lr | float | Learning rate to start from. | 0.001 |
 | LR_REDUCE_FACTOR | lr_reduce_factor | float | Factor by which the learning rate will be reduced. | 0.1 |
@@ -53,7 +53,7 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 | SAVED_MODEL_PATH | snapshot-path | str | Absolute or relative path to directory where model snapshots are saved during training. | |
 | None | gpu | int or str | ID of GPU device to be used. Only single GPU is supported by this EfficientDet implementation. | 0 |
 | ED_TRAIN_BACKBONE | train_backbone | int | Compound coefficient used to scale up EfficientNet, the backbone network. Possible values: 0, 1, 2, 3, 4, 5, 6. | 0 |
-| None | snapshot | str | Base model weights to start training from. If a filename is specified, the file must be in h5 format and exist in the location defined in `snapshot-path`. If 'imagenet' is specified, the base weights will be downloaded from https://github.com/Callidior/keras-applications/releases/. | 'imagenet'  |
+| None | snapshot | str | Base model weights to start training from. If a filename is specified, the file must be in h5 format and exist in the location defined in `snapshot-path`. If 'imagenet' is specified, the base weights will be downloaded from https://github.com/Callidior/keras-applications/releases/. This parameter can also be used to resume training from a previously trained snapshot by specifying the model weights file name here, e.g. `efficientdet_b0_20220607_111240.h5`. | 'imagenet' |
 | None | compute_val_loss | boolean | Determines whether to compute validation loss during training, if a validation set exists. | `True` |
 | None | weighted_bifpn | boolean | Determines whether EfficientNet backbone uses weighted BiFPN (bidirectional feature pyramid network). | `True` |
 | None | freeze_bn | boolean | Determines whether the batch normalization layers of the backbone network are frozen during training. | `False` |
@@ -65,11 +65,11 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 | ED_IMAGE_SIZES | image_sizes | list of int | Input image sizes in pixels used by each EfficientNet backbone (B0 to B6). Do not change. | `[512, 640, 768, 896, 1024, 1280, 1408]` |
 | ANCHOR_BOX_RATIOS | anchor_box_ratios | list of float | Each float represents an aspect ratio (width/height) of the anchor box. The number of ratios can be increased beyond 3. Ratios should reflect the average shape of objects in the dataset, in order for the model to fit the anchor box to the ground truth bounding box. | `[1, 0.5, 2]` |
 | ANCHOR_BOX_SCALES | anchor_box_scales | list of float | Each anchor box can have multiple scales. If 3 ratios and 3 scales are set, there will be a total of 3x3=9 anchor boxes at each anchor position in an image. This parameter may be changed to produce anchor boxes with more fine-grained scales, e.g. when you have large input images. | `[0.4, 0.496, 0.625]` |
-| MAX_DETECTIONS | max_detections | int | The maximum number of detections to keep | 400|
-| CLASS_SPECIFIC_FILTER | class_specific_filter | boolean | Whether to perform filtering per class, or take the best scoring class and filter those. | `False` |
-| DETECT_QUADRANGLE | detect_quadrangle | boolean | If this is set 'True', the model runs operations to handle the rotated bounding boxes. Else, all bounding boxes would be handled as per horizontal orientation | `False` |
+| MAX_DETECTIONS | max_detections | int | The maximum number of detections to keep | 400 |
+| CLASS_SPECIFIC_FILTER | class_specific_filter | boolean | Determines whether EfficientDet performs filtering per class, or takes the best scoring class and filter those. | `False` |
+| DETECT_QUADRANGLE | detect_quadrangle | boolean | Determines whether EfficientDet should handle quadrangles, i.e. rotated bounding boxes. Otherwise, all bounding boxes would be handled as per horizontal orientation. Do not change. | `False` |
 | SCORE_THRESHOLD | score_threshold | int | Threshold used to prefilter the bounding boxes with. | 0.9 |
-| SELECT_TOP_K | select_top_k | boolean | If this is set as 'True', then the model will filter bounding boxes based on max_detections or the number of score vectors (depending on which is lower). Else,  bounding boxes would not be filtered| `False` |
+| SELECT_TOP_K | select_top_k | boolean | Determines whether EfficientDet filters bounding boxes based on `max_detections` or the number of score vectors (depending on which is lower). Otherwise, bounding boxes would not be filtered at all. | `False` |
 
 ## Running the training pipeline
 
@@ -144,3 +144,5 @@ You may see the following error if the GPU memory is insufficient to handle the 
 ![GPU OOM](images/22.png)
 
 In this case, reduce the batch size to a number that is a power of 2. For example, if the current batch size is 16, reduce to 8 and attempt to restart the training process.
+
+As a guideline, the model is able to train on GPU memory of 6GB with a batch size of 4.
