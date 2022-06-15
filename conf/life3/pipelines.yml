@@ -79,8 +79,8 @@ inference:
   mid_large_cell_cutoff: 8.0  # value 2 in micrometer
   use_calibrated_cellsize: True # Used calibrated value for small_mid_cell_cutoff and mid_large_cell_cutoff if True
   # ===Input/Output===
-  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220505_101317.h5"
-  image_input_dir: "C:\\ai_engine\\data\\inference\\input"
+  model_path: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/models/efficientdet_b0_20220609_154100.h5"
+  image_input_dir: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/data/inference/input/60.jpg"
   csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\csv"
   save_output_image: True # option: True or False
   save_output_image_showlabel: False # Save image with per cell prediction text label. option: True or False
@@ -95,7 +95,7 @@ inference:
       "model_type": 0,
       "detect_ids": [0,1],
   }
-  pkd_base_dir: ".\\src\\inferencing\\custom_nodes"  # Do not change the default value
+  pkd_base_dir: "/Users/kwanchet/Documents/aisg_100e/life3_biotech/consultancy_project/development/ui/life3/src/inferencing/custom_nodes"  # Do not change the default value
   # ===Postprocessing parameter===
   slice_height: 256  # The height of the image to be sliced (Suggestion: 256, 384, 512)
   # 384 - Balance, good at detecting big and small object. 256, very good at small object but might miss big object. 512, very good at big object but might miss small object

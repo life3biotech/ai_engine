@@ -185,7 +185,7 @@ class PredictionResult:
         cellcount_info: pd.DataFrame = None,
     ):
         Path(export_dir).mkdir(parents=True, exist_ok=True)
-        visualize_object_predictions(
+        return visualize_object_predictions(
             image=np.ascontiguousarray(self.image),
             object_prediction_list=self.object_prediction_list,
             rect_th=rect_th,
