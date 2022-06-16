@@ -65,7 +65,8 @@ demo = gr.Blocks()
 title = "Life3 Biotech"
 description = """
 <center>
-Using AI to analyze cell numbers and cell sizes of microalgae on microscope images. Drop an image to infer the number of cells.
+<p>Using AI to analyze cell numbers and cell sizes of microalgae on microscope images. </p>
+<p>Drop an image to infer the number of cells.</p>
 <img src="file/src/images/life3.webp" width=200px>
 </center>
 """
