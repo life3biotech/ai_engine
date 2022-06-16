@@ -183,8 +183,11 @@ class PredictionResult:
         label_bool: bool = True,
         show_cellcount: bool = True,
         cellcount_info: pd.DataFrame = None,
+        less_cell_info: bool = False,
+        save_false: bool = False,
     ):
-        Path(export_dir).mkdir(parents=True, exist_ok=True)
+        if not save_false:
+            Path(export_dir).mkdir(parents=True, exist_ok=True)
         return visualize_object_predictions(
             image=np.ascontiguousarray(self.image),
             object_prediction_list=self.object_prediction_list,
@@ -198,6 +201,7 @@ class PredictionResult:
             label_bool=label_bool,
             show_cellcount=show_cellcount,
             cellcount_info=cellcount_info,
+            less_cell_info=less_cell_info,
         )
 
     def to_coco_annotations(self, panda_df_bool: bool = False):
