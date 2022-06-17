@@ -391,12 +391,13 @@ code {
 <p>2.5. Once the environment creation is complete, run <code>conda env list</code> and verify that the environment named <code>life3-biotech</code> is listed.</p>
 <p>2.6. Run <code>conda activate life3-biotech</code> to activate the environment. It should now appear as the activated environment as per the screenshot below. The Conda environment setup is now complete.</p>
 <p><img src="images/08.png" alt="08"></p>
-<p>2.7. Enter the following command to check for your python version. Ensure the version stated is <em>3.6.8</em>. Depending on your workstation setup, if python has been installed before, the command to run the python might differ. After checking which python command to use (Usually <code>python3</code> or <code>python</code>) Please use the correct command throughout the course of the documentation. Example, if after typing <code>python3 -V</code> returns <em>3.6.8</em>, kindly stick to <code>python3</code>.</p>
+<p>2.6. Enter the following command to check for your Python version. Ensure the version stated is <em>3.6.8</em>.</p>
 <pre class="hljs"><code><div>python3 -V
 </div></code></pre>
 <p>or</p>
 <pre class="hljs"><code><div>python -V
 </div></code></pre>
+<p>Depending on your workstation setup, if older versions of Python had been installed before, the command to run Python scripts may differ. After checking which Python command to use (<code>python3</code> or <code>python</code>), do use the same command throughout this guide. For example, if the command <code>python3 -V</code> returns <em>3.6.8</em>, do continue to use <code>python3</code>.</p>
 <h2 id="3-set-up-files-required-by-ai-engine">3. Set up files required by AI engine</h2>
 <p>3.1. If this is the first time the AI engine is being set up in the current environment, Microsoft's <em>Build Tools for Visual Studio</em> must be installed. Download it from <a href="https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2022">here</a>.</p>
 <p><img src="images/18.png" alt="18"></p>
@@ -442,6 +443,17 @@ python src/life3_biotech/modeling/EfficientDet/setup.py build_ext --inplace
 <p>In comparison with the <code>life3-biotech</code> environment, <code>life3-biotech-train</code> contains two additional libraries, CUDA 10.1 and cuDNN 7.6.4, which are required for the AI engine to run on GPU-enabled machine.</p>
 <p>5.3. Run <code>conda activate life3-biotech-train</code> to activate the environment. It should now appear as the activated environment.</p>
 <p>Note: The steps in this section have been tested on Windows 11 Pro and may not work on other versions of Windows.</p>
+<h2 id="6-set-up-conda-environment-for-ui-inference-web-interface">6. Set up conda environment for UI (Inference Web Interface)</h2>
+<p>6.1. Open Anaconda Prompt and run <code>conda env list</code> and verify that the environment named <code>life3-biotech-ui</code> is listed.</p>
+<p><img src="images/08.png" alt="08"></p>
+<p>6.2. If the environment is not listed, use the following command to create a new conda environment and install the relevant dependencies required to run UI:</p>
+<pre class="hljs"><code><div>conda env create -f life3-biotech-conda-env-ui.yml
+</div></code></pre>
+<p>If the environment already exists, enter the following command to update it:</p>
+<pre class="hljs"><code><div>conda env update -f life3-biotech-conda-env-ui.yml
+</div></code></pre>
+<p>In comparison with the <code>life3-biotech</code> environment, <code>life3-biotech-ui</code> contains one additional libraries, gradio 3.0.17 and a different python version 3.7, which are required for the AI engine to run web interface.</p>
+<p>6.3. Run <code>conda activate life3-biotech-ui</code> to activate the environment. It should now appear as the activated environment.</p>
 
 </body>
 </html>

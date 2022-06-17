@@ -140,3 +140,26 @@ In comparison with the `life3-biotech` environment, `life3-biotech-train` contai
 5.3. Run `conda activate life3-biotech-train` to activate the environment. It should now appear as the activated environment.
 
 Note: The steps in this section have been tested on Windows 11 Pro and may not work on other versions of Windows.
+
+## 6. Set up conda environment for UI (Inference Web Interface)
+
+
+6.1. Open Anaconda Prompt and run `conda env list` and verify that the environment named `life3-biotech-ui` is listed.
+
+![08](images/08.png)
+
+6.2. If the environment is not listed, use the following command to create a new conda environment and install the relevant dependencies required to run UI:
+```
+conda env create -f life3-biotech-conda-env-ui.yml
+```
+
+If the environment already exists, enter the following command to update it:
+```
+conda env update -f life3-biotech-conda-env-ui.yml
+```
+
+In comparison with the `life3-biotech` environment, `life3-biotech-ui` contains one additional libraries, gradio 3.0.17 and a different python version 3.7, which are required for the AI engine to run web interface.
+
+6.3. Run `conda activate life3-biotech-ui` to activate the environment. It should now appear as the activated environment.
+
+

@@ -2,7 +2,7 @@
 
 Please ensure that you have completed the "Environment Setup" guide before proceeding to follow this guide.
 
-## Overview
+## 1. Overview
 
 The diagram below shows the process flow of the inference module.
 There are 2 parts to inference.
@@ -15,7 +15,7 @@ The entrypoint of the inference module is the script `src/batch_inferencing.py` 
 
 ![Inference Module Process Flow](images/inference-module-flow.png)
 
-## Configuration
+## 2. Configuration
 
 The main configuration file used to customise the AI engine is `pipelines.yml`, located in `conf/life3` subfolder.
 
@@ -510,7 +510,7 @@ intersection over smaller area. Options are 'IOU' or 'IOS'
 ---
 ---
 
-### **Things to do before inference**
+##  3. Things to do before inference
 Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file `pipelines.yml` and edit the following parameters to your current environment. 
 Note: Consolidated cell count info for all images are saved as `predicted_results.csv` in the same folder as csv_output_dir
 
@@ -542,7 +542,7 @@ data_prep:
 
 
 
-### **Running the evaluation and calibration pipeline** 
+##  4. Running the evaluation and calibration pipeline
 (Only required to execute once until the next model change or parameters update)
 
 **Evaluation and calibration** of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.
@@ -577,7 +577,7 @@ conda env update --file life3-biotech-conda-env.yml
 
 </div>
 
-4. Finally, run the following command to start the inference pipeline:
+4. Finally, run the following command to start the evaluation and calibration pipeline:
 
 <div>
 
@@ -605,7 +605,7 @@ Three data distribution image files are generated for your reference.
 Actual cell size and the calibrated Predicted box size are displayed on top.
 ![Sample of calibrated cell size barplot](images/calibrated_cellsize_barplot.png)
 
-### **Running the inference pipeline**
+## 5. Running the inference pipeline
 
 1. On the terminal, change to your working directory with the following command:
 
@@ -651,7 +651,70 @@ python -m src.batch_inferencing
 
 </div>
 
-### **Things to look out for**
+## 6. Running the UI (Web Interface)
+
+1. On the terminal, change to your working directory with the following command:
+
+<div>
+
+```plaintext
+cd C:\ai_engine
+```
+
+</div>
+
+2. **Take note:** The conda environment is different from evaluation and inference pipeline. Activate the conda environment with the following command:
+
+<div>
+
+```plaintext
+conda activate life3-biotech-ui
+```
+
+</div>
+
+3. If there are known updates to the dependencies, update the conda environment by running:
+
+<div>
+
+```plaintext
+conda env update --file life3-biotech-conda-env-ui.yml
+```
+
+</div>
+
+4. Run the following command to start the inference web interface:
+
+<div>
+
+```plaintext
+python3 -m src.app
+```
+or,
+```plaintext
+python -m src.app
+```
+
+</div>
+
+5. Finally, a web page will be launched from your default browser. Alternatively, you can copy the local URL in the terminal after the script starts running. The url can be different from the example below.
+
+<div>
+
+```plaintext
+Running on local URL:  http://127.0.0.1:7860/
+```
+
+</div>
+
+6. Drop the image of interest or click on the box enclosed in red. Click **submit** to run inference. Wait for approximately 20-30 seconds and the results will be displyed on the right. To run inference again, click **clear** and drag another image into the box on the left.
+
+![Sample of web interface](images/23.png)
+
+Sample after inference
+![Sample of web interface](images/24.png)
+
+## 7. Things to look out for
 
 
 1. At the end of the inference, if you see the following warning message in the terminal, it means some of the parameters in pipelines.yml have changed and might have affected the cell size calibration. In this case, it is recommeded to rerun `python -m src.eval_model` to recalibrate the cell size measurement.
@@ -665,3 +728,44 @@ python -m src.batch_inferencing
 [2022-06-10 10:53:46,049][__main__][ERROR] - !! No conf/calibrated_params.csv found, model not calibrated, run 'python -m src.eval_model' once to calibrate model !!
 ```
 
+3. Generally, the following parameters will tweak the performance of the inference results. Detail descriptions are written in the General Inference configuration table above.
+
+* "inference_backbone",
+* "confidence_threshold",
+* "run_nms",
+* "nms_threshold",
+* "slice_height",
+* "slice_width",
+* "overlap_height_ratio",
+* "overlap_width_ratio",
+* "postprocess_type",
+* "postprocess_bbox_sort",
+* "postprocess_match_metric",
+* "postprocess_match_threshold",
+* "inference_slice",
+* "max_detections",
+* "class_specific_filter",
+* "detect_quadrangle",
+* "score_threshold",
+* "select_top_k",
+
+A guideline to follow, below parameters have direct impact to the inference results.
+
+* "slice_height",
+* "slice_width",
+  
+This 2 parameters will have the following behaviors.
+
+384 - Balance, good at detecting big and small object. 
+
+256 - very good at small object but might miss big object. 
+
+512 - very good at big object but might miss small object.
+
+Users are welcome to try out different values from the above, but in general, the bigger the slices, the better it can detect big object at the expense of smaller object, and the smaller the slices, the better it can detect small object at the expense of bigger object.
+
+* "confidence_threshold",
+
+This parameter will control how accurate the inference will detect the object cell. If a higher value are used, less likely a false detection will occur, however for the current model (efficientdet_b0_20220607_111240.h5) that is shipped with the deployment package, it might not detect bigger cell. Current default recommeded value = 0.1 which will have some false detection but will be able to detect most of the cells.
+
+Note: It is recommended to keep the default value for the rest of the parameters.

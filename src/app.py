@@ -57,6 +57,10 @@ def main(input_image):
     fig = plt.figure()
     plots = sns.barplot(data=df, x="Cell_Size", y="Count")
 
+    title = f"Total Cell Count:  {process_df['cell_tot'][0]}"
+
+    plt.title(title, fontsize=14, y=1)
+
     for bar in plots.patches:
 
         # Using Matplotlib's annotate function and
