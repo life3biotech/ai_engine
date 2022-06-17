@@ -1,4 +1,3 @@
-import cv2
 import gradio as gr
 import hydra
 import logging
@@ -7,9 +6,9 @@ from pconst import const
 # from batch_inferencing import main
 import life3_biotech as life3
 import inferencing as inference
-
-# import sahi
-
+import pandas as pd
+from matplotlib import pyplot as plt
+import seaborn as sns
 
 # Get configuration
 @hydra.main(config_path="../conf/life3", config_name="pipelines.yml")
@@ -43,7 +42,40 @@ def main(input_image):
     percentage_large = process_df["tot_large_cell"][0] / process_df["cell_tot"][0] * 100
 
     results_text = f"Total Cell Count:  {process_df['cell_tot'][0]}  (100%)\nSmall:                       {process_df['tot_small_cell'][0]}  ({percentage_small:.2f}%)\nMedium:                 {process_df['tot_mid_cell'][0]}  ({percentage_medium:.2f}%)\nLarge:                      {process_df['tot_large_cell'][0]}  ({percentage_large:.2f}%)"
-    return img_output, results_text
+
+    df = pd.DataFrame(
+        {
+            "Cell_Size": ["Small", "Medium", "Large"],
+            "Count": [
+                process_df["tot_small_cell"][0],
+                process_df["tot_mid_cell"][0],
+                process_df["tot_large_cell"][0],
+            ],
+        }
+    )
+
+    fig = plt.figure()
+    plots = sns.barplot(data=df, x="Cell_Size", y="Count")
+
+    for bar in plots.patches:
+
+        # Using Matplotlib's annotate function and
+        # passing the coordinates where the annotation shall be done
+        # x-coordinate: bar.get_x() + bar.get_width() / 2
+        # y-coordinate: bar.get_height()
+        # free space to be left to make graph pleasing: (0, 8)
+        # ha and va stand for the horizontal and vertical alignment
+        plots.annotate(
+            format(bar.get_height(), ""),
+            (bar.get_x() + bar.get_width() / 2, bar.get_height()),
+            ha="center",
+            va="center",
+            size=8,
+            xytext=(0, 6),
+            textcoords="offset points",
+        )
+
+    return img_output, results_text, fig
 
 
 col_n = [
@@ -83,11 +115,12 @@ Created by AISG.
 imagein_path = gr.Image(label="Image Input", type="filepath")
 imageout = gr.Image(label="Inferred Output", type="pil", shape=None)
 textout = gr.Textbox(label="Cell Info",)
+plot_output = gr.Plot(label="Plot",)
 
 gr.Interface(
     fn=main,
     inputs=imagein_path,
-    outputs=[imageout, textout],
+    outputs=[imageout, textout, plot_output],
     allow_flagging="never",
     allow_screenshot=True,
     title=title,
