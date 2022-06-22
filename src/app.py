@@ -54,32 +54,7 @@ def main(input_image):
         }
     )
 
-    fig = plt.figure()
-    plots = sns.barplot(data=df, x="Cell_Size", y="Count")
-
-    title = f"Total Cell Count:  {process_df['cell_tot'][0]}"
-
-    plt.title(title, fontsize=14, y=1)
-
-    for bar in plots.patches:
-
-        # Using Matplotlib's annotate function and
-        # passing the coordinates where the annotation shall be done
-        # x-coordinate: bar.get_x() + bar.get_width() / 2
-        # y-coordinate: bar.get_height()
-        # free space to be left to make graph pleasing: (0, 8)
-        # ha and va stand for the horizontal and vertical alignment
-        plots.annotate(
-            format(bar.get_height(), ""),
-            (bar.get_x() + bar.get_width() / 2, bar.get_height()),
-            ha="center",
-            va="center",
-            size=8,
-            xytext=(0, 6),
-            textcoords="offset points",
-        )
-
-    return img_output, results_text, fig
+    return img_output, results_text
 
 
 col_n = [
@@ -119,12 +94,11 @@ Created by AISG.
 imagein_path = gr.Image(label="Image Input", type="filepath")
 imageout = gr.Image(label="Inferred Output", type="pil", shape=None)
 textout = gr.Textbox(label="Cell Info",)
-plot_output = gr.Plot(label="Plot",)
 
 gr.Interface(
     fn=main,
     inputs=imagein_path,
-    outputs=[imageout, textout, plot_output],
+    outputs=[imageout, textout],
     allow_flagging="never",
     allow_screenshot=True,
     title=title,
