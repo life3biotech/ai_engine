@@ -79,7 +79,7 @@ inference:
   mid_large_cell_cutoff: 8.0  # value 2 in micrometer
   use_calibrated_cellsize: True # Used calibrated value for small_mid_cell_cutoff and mid_large_cell_cutoff if True
   # ===Input/Output===
-  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220505_101317.h5"
+  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220607_111240.h5"
   image_input_dir: "C:\\ai_engine\\data\\inference\\input"
   csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\csv"
   save_output_image: True # option: True or False
