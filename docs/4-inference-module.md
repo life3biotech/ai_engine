@@ -368,7 +368,7 @@ Constant (`const.`)
 <td>
 
 <div>The confidence threshold is used to assess the probability of the object class appearing in the bounding box.</div></td>
-<td>0.33</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>
@@ -545,7 +545,13 @@ data_prep:
 ##  4. Running the evaluation and calibration pipeline
 (Only required to execute once until the next model change or parameters update)
 
-**Evaluation and calibration** of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.
+**Important:** Before running `eval_model.py` script, you are required to run `python -m src.load_data` (under 2-data-pipeline-setup.html) at least once to generate the data pipeline files. Ensure the following folder and file are created if you are using the default configuration `data_prep`
+*  in pipelines.yml - processed_data_path: `"C:\ai_engine\data\processed"`
+* within the folder, ensure the following file with similar naming convention is created `annotations_test_xxx.csv` or 
+  
+Failure to do so, will result in error running `eval_model`
+
+**Evaluation and calibration** of the model is required every time a **new model or new parameters** are applied. You are required to execute this step once only until the next modification.
 
 1. On the terminal, change to your working directory with the following command:
 

@@ -75,12 +75,19 @@ Under the `efficientdet` section in `pipelines.yml`, the training-related hyperp
 
 1. Open Anaconda Prompt or Windows Powershell and change to your working directory, e.g. `cd C:\ai_engine`.
 
-2. Activate the conda environment with the following command: 
+2. Activate the conda environment with the following command if you are training on a GPU-enabled machine: 
+```
+conda activate life3-biotech-train
+```
+Or this command if you are training on a CPU-only machine:
 ```
 conda activate life3-biotech
 ```
 
-3. If there are known updates to the dependencies, update the conda environment by running:
+3. If there are known updates to the dependencies, update the conda environment by running either or both of these commands:
+```
+conda env update --file life3-biotech-conda-env-train.yml
+```
 ```
 conda env update --file life3-biotech-conda-env.yml
 ```
@@ -91,6 +98,23 @@ train:
   load_data: True
 ...
 ```
+
+Additionally, ensure that the prefixes of the train, validation and test data filenames match in both the `data_prep` and `efficientdet` sections:
+```
+data_prep:
+  ...
+  train_base_filename: 'annotations_train.csv'
+  validation_base_filename: 'annotations_val.csv'
+  test_base_filename: 'annotations_test.csv'
+
+efficientdet:
+    train_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_train_efficientdet_b0.csv"
+    val_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_val_efficientdet_b0.csv"
+    test_annotations_path: "C:\\ai_engine\\data\\processed\\annotations_test_efficientdet_b0.csv"
+  ...
+```
+
+For example, if `train_base_filename` is '**annotations_train**.csv', `train_annotations_path` should point to a file named '**annotations_train**_efficientdet_b0.csv'. This is because the EfficientDet preprocessor will use the filenames defined under `data_prep` and rename them with a suffix such as `_efficientdet_b0` (depending on the EfficientNet backbone used).
 
 5. To train a model to detect the `cell` class ONLY, in the `data_prep` section, comment out or remove the line `'cell accumulation': 1` as shown below. (In Python, a single-line comment is prefixed by the pound sign `#`.)
 
@@ -103,7 +127,16 @@ data_prep:
   }
 ```
 
-6. Finally, run the following command to start the model training pipeline:
+6. If you are training on a newly generated dataset after having run the data pipeline, check the number of images in the train dataset. The data pipeline process would have shown an output similar to this near the end of the process:
+
+```
+Number of images in train: 1631
+Number of images in validation: 233
+Number of images in test: 466
+```
+Divide the number of images in train set by the batch size and update the number of steps per epoch (parameter: `steps` under `efficientdet` section) with this value, rounded down to the nearest whole number.
+
+7. Finally, run the following command to start the model training pipeline:
 ```
 python3 -m src.train_model
 ```

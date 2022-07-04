@@ -623,7 +623,7 @@ There are 2 parts to inference.</p>
 <div>float</div></td>
 <td>
 <div>The confidence threshold is used to assess the probability of the object class appearing in the bounding box.</div></td>
-<td>0.33</td>
+<td>0.1</td>
 </tr>
 <tr>
 <td>
@@ -759,7 +759,13 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 </div>
 <h2 id="4-running-the-evaluation-and-calibration-pipeline">4. Running the evaluation and calibration pipeline</h2>
 <p>(Only required to execute once until the next model change or parameters update)</p>
-<p><strong>Evaluation and calibration</strong> of the model is required every time a new model or new parameters are applied. You are required to execute this step once only until the next modification.</p>
+<p><strong>Important:</strong> Before running <code>eval_model.py</code> script, you are required to run <code>python -m src.load_data</code> (under 2-data-pipeline-setup.html) at least once to generate the data pipeline files. Ensure the following folder and file are created if you are using the default configuration <code>data_prep</code></p>
+<ul>
+<li>in pipelines.yml - processed_data_path: <code>&quot;C:\ai_engine\data\processed&quot;</code></li>
+<li>within the folder, ensure the following file with similar naming convention is created <code>annotations_test_xxx.csv</code> or</li>
+</ul>
+<p>Failure to do so, will result in error running <code>eval_model</code></p>
+<p><strong>Evaluation and calibration</strong> of the model is required every time a <strong>new model or new parameters</strong> are applied. You are required to execute this step once only until the next modification.</p>
 <ol>
 <li>On the terminal, change to your working directory with the following command:</li>
 </ol>
