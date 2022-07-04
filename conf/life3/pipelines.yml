@@ -48,7 +48,7 @@ data_prep:
   val_size: 0.1 # The proportion of data allocated to the validation set, based ongit  the proportion of the overall data
   test_size: 0.2  # The proportion of data allocated to the test set, based on the proportion of the overall data
   train_base_filename: 'annotations_train.csv'
-  validation_base_filename: 'annotations_validation.csv'
+  validation_base_filename: 'annotations_val.csv'
   test_base_filename: 'annotations_test.csv'
   meta_data_filename: "C:\\ai_engine\\data\\metadata.xlsx"
   stratify_column: 'incubation_day' # option: 'incubation_day' or 'dilution_factor' or 'incub_day_dilu_fact' or None. Note: 'incub_day_dilu_fact' not suitable without tiling
@@ -60,13 +60,13 @@ train:
   lr_scheduler: "reduce_on_plateau"
   initial_lr: 0.001
   # LR parameters for reduce on plateau
-  lr_reduce_factor: 0.2
+  lr_reduce_factor: 0.1
   lr_reduce_patience: 2
-  lr_min_delta: 0.1
+  lr_min_delta: 0.001
   early_stopping: True
   patience: 10
   # Evaluation params
-  eval_batch_size: 16
+  eval_batch_size: 4
   eval_iou_threshold: [0.5]
   eval_score_threshold: 0.01
   eval_cell_accu_as_cell: False
@@ -79,7 +79,7 @@ inference:
   mid_large_cell_cutoff: 8.0  # value 2 in micrometer
   use_calibrated_cellsize: True # Used calibrated value for small_mid_cell_cutoff and mid_large_cell_cutoff if True
   # ===Input/Output===
-  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220505_101317.h5"
+  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220607_111240.h5"
   image_input_dir: "C:\\ai_engine\\data\\inference\\input"
   csv_output_dir: "C:\\ai_engine\\data\\inference\\output\\csv"
   save_output_image: True # option: True or False
@@ -88,7 +88,7 @@ inference:
   image_output_dir: "C:\\ai_engine\\data\\inference\\output\\img"
   # ===Model parameter===
   inference_backbone: 0
-  confidence_threshold: 0.33
+  confidence_threshold: 0.1
   run_nms: False
   nms_threshold: 0.2
   efficientdet_config: {  # Do not change the default value
@@ -127,9 +127,9 @@ efficientdet:
     freeze_bn: False
     freeze_backbone: False
     random_transform: False
-    batch_size: 16
+    batch_size: 4
     epochs: 100
-    steps: 64
+    steps: 128
     # parameters for anchor boxes
     anchor_box_scales: [0.4, 0.496, 0.625]
     anchor_box_ratios: [1, 0.5, 2]

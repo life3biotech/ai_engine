@@ -6,6 +6,7 @@ conf/**/*credentials*
 
 # Ignore everything in the following folders
 data/**
+!data/metadata.xlsx
 logs/**
 models/**
 !models/efficientdet_b0_20220607_111240.h5

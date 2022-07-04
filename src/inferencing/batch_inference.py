@@ -50,17 +50,12 @@ class BatchInference:
         """
         Inference multiple images in a folder
 
-        Args:
-            eval_mode (bool, optional): If set to True, inference is used for eval_model. Defaults to False.
-
         Returns:
             pd.DataFrame: return all images annotated boundingbox
         """
 
         # Init EfficientDet model as required by sahi
-        detection_model = sahi.model.EfficientDetModel(
-            device="cpu",  # or 'cuda:0'
-        )
+        detection_model = sahi.model.EfficientDetModel(device="cpu",)  # or 'cuda:0'
 
         image_list = get_image_list(self.logger, self.image_input_dir)
         self.logger.info("Total images to be inferred: {}".format(len(image_list)))
@@ -73,10 +68,7 @@ class BatchInference:
             self.logger.info("Predicting image: {}".format(img_file))
             if not const.INFERENCE_SLICE:
                 # predicting without slicing the image
-                result = sahi.predict.get_prediction(
-                    img_file,
-                    detection_model,
-                )
+                result = sahi.predict.get_prediction(img_file, detection_model,)
             else:
                 result = sahi.predict.get_sliced_prediction(
                     img_file,
@@ -154,3 +146,58 @@ class BatchInference:
             )
 
         return tot_annotations_df
+
+    def single_inferencing(self, inp: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
+        """ Inference single image for gradio app
+
+        Args:
+            inp (str): input image path
+
+        Returns:
+            Tuple[pd.DataFrame, pd.DataFrame]: return all images annotated boundingbox, cell count info
+        """
+        from sahi.utils.cv import visualize_object_predictions
+
+        # Init EfficientDet model as required by sahi
+        detection_model = sahi.model.EfficientDetModel(device="cpu",)  # or 'cuda:0'
+
+        # Batch inference
+        img_file = str(Path(inp).resolve())
+        filename = str(Path(inp).stem)
+        # img_file = str(Path(self.image_input_dir).resolve())
+        # filename = str(Path(self.image_input_dir).stem)
+        self.logger.info("Predicting image: {}".format(img_file))
+        if not const.INFERENCE_SLICE:
+            # predicting without slicing the image
+            result = sahi.predict.get_prediction(img_file, detection_model,)
+        else:
+            result = sahi.predict.get_sliced_prediction(
+                img_file,
+                detection_model,
+                slice_height=const.SLICE_HEIGHT,
+                slice_width=const.SLICE_WIDTH,
+                overlap_height_ratio=const.OVERLAP_HEIGHT_RATIO,
+                overlap_width_ratio=const.OVERLAP_WIDTH_RATIO,
+                postprocess_type=const.POSTPROCESS_TYPE,
+                postprocess_match_metric=const.POSTPROCESS_MATCH_METRIC,
+                postprocess_match_threshold=const.POSTPROCESS_MATCH_THRESHOLD,
+            )
+
+        # Export predicted output annotations to csv
+        df = result.to_coco_annotations(panda_df_bool=True)
+
+        process_df = generate_img_results(self.logger, df, img_file, self.eval_bool)
+
+        export_result = result.export_visuals(
+            export_dir=None,
+            file_name=filename.rsplit(".", 1)[0],
+            text_size=0,
+            rect_th=1,
+            label_bool=const.SAVE_OUTPUT_IMAGE_SHOWLABEL,
+            show_cellcount=const.SAVE_OUTPUT_IMAGE_SHOW_CELLCOUNT,
+            cellcount_info=process_df,
+            less_cell_info=True,
+            save_false=True,
+        )
+
+        return export_result, process_df

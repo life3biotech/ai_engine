@@ -367,7 +367,7 @@ code {
   </script>
 <h1 id="inference-module">Inference Module</h1>
 <p>Please ensure that you have completed the &quot;Environment Setup&quot; guide before proceeding to follow this guide.</p>
-<h2 id="overview">Overview</h2>
+<h2 id="1-overview">1. Overview</h2>
 <p>The diagram below shows the process flow of the inference module.
 There are 2 parts to inference.</p>
 <ol>
@@ -377,7 +377,7 @@ There are 2 parts to inference.</p>
 <p>The entrypoint of the evaluation and calibration module is the script <code>src/eval_model.py</code> by default.</p>
 <p>The entrypoint of the inference module is the script <code>src/batch_inferencing.py</code> by default.</p>
 <p><img src="images/inference-module-flow.png" alt="Inference Module Process Flow"></p>
-<h2 id="configuration">Configuration</h2>
+<h2 id="2-configuration">2. Configuration</h2>
 <p>The main configuration file used to customise the AI engine is <code>pipelines.yml</code>, located in <code>conf/life3</code> subfolder.</p>
 <h3 id="general-inference-configuration">General inference configuration</h3>
 <p>In <code>pipelines.yml</code>, the following parameters in the <code>inference</code> section are configurable.</p>
@@ -736,7 +736,7 @@ There are 2 parts to inference.</p>
 </table>
 <hr>
 <hr>
-<h3 id="things-to-do-before-inference"><strong>Things to do before inference</strong></h3>
+<h2 id="3-things-to-do-before-inference">3. Things to do before inference</h2>
 <p>Before any inference or prediction on images can be performed, some parameters must be configured according to your environment settings. Open the file <code>pipelines.yml</code> and edit the following parameters to your current environment.
 Note: Consolidated cell count info for all images are saved as <code>predicted_results.csv</code> in the same folder as csv_output_dir</p>
 <pre class="hljs"><code><div>  model_path: "C:\\ai_engine\\models\\efficientdet_b0_20220510_201515.h5"
@@ -757,7 +757,7 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
   }
 </div></code></pre>
 </div>
-<h3 id="running-the-evaluation-and-calibration-pipeline"><strong>Running the evaluation and calibration pipeline</strong></h3>
+<h2 id="4-running-the-evaluation-and-calibration-pipeline">4. Running the evaluation and calibration pipeline</h2>
 <p>(Only required to execute once until the next model change or parameters update)</p>
 <p><strong>Important:</strong> Before running <code>eval_model.py</code> script, you are required to run <code>python -m src.load_data</code> (under 2-data-pipeline-setup.html) at least once to generate the data pipeline files. Ensure the following folder and file are created if you are using the default configuration <code>data_prep</code></p>
 <ul>
@@ -788,7 +788,7 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 </div></code></pre>
 </div>
 <ol start="4">
-<li>Finally, run the following command to start the inference pipeline:</li>
+<li>Finally, run the following command to start the evaluation and calibration pipeline:</li>
 </ol>
 <div>
 <pre class="hljs"><code><div>python3 -m src.eval_model
@@ -810,7 +810,7 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 <p><em>Sample of calibrated cell size barplot.</em></p>
 <p>Actual cell size and the calibrated Predicted box size are displayed on top.
 <img src="images/calibrated_cellsize_barplot.png" alt="Sample of calibrated cell size barplot"></p>
-<h3 id="running-the-inference-pipeline"><strong>Running the inference pipeline</strong></h3>
+<h2 id="5-running-the-inference-pipeline">5. Running the inference pipeline</h2>
 <ol>
 <li>On the terminal, change to your working directory with the following command:</li>
 </ol>
@@ -842,7 +842,52 @@ Note: Consolidated cell count info for all images are saved as <code>predicted_r
 <pre class="hljs"><code><div>python -m src.batch_inferencing
 </div></code></pre>
 </div>
-<h3 id="things-to-look-out-for"><strong>Things to look out for</strong></h3>
+<h2 id="6-running-the-ui-web-interface">6. Running the UI (Web Interface)</h2>
+<ol>
+<li>On the terminal, change to your working directory with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>cd C:\ai_engine
+</div></code></pre>
+</div>
+<ol start="2">
+<li><strong>Take note:</strong> The conda environment is different from evaluation and inference pipeline. Activate the conda environment with the following command:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda activate life3-biotech-ui
+</div></code></pre>
+</div>
+<ol start="3">
+<li>If there are known updates to the dependencies, update the conda environment by running:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>conda env update --file life3-biotech-conda-env-ui.yml
+</div></code></pre>
+</div>
+<ol start="4">
+<li>Run the following command to start the inference web interface:</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>python3 -m src.app
+</div></code></pre>
+<p>or,</p>
+<pre class="hljs"><code><div>python -m src.app
+</div></code></pre>
+</div>
+<ol start="5">
+<li>Finally, a web page will be launched from your default browser. Alternatively, you can copy the local URL in the terminal after the script starts running. The url can be different from the example below.</li>
+</ol>
+<div>
+<pre class="hljs"><code><div>Running on local URL:  http://127.0.0.1:7860/
+</div></code></pre>
+</div>
+<ol start="6">
+<li>Drop the image of interest or click on the box enclosed in red. Click <strong>submit</strong> to run inference. Wait for approximately 20-30 seconds and the results will be displyed on the right. To run inference again, click <strong>clear</strong> and drag another image into the box on the left.</li>
+</ol>
+<p><img src="images/23.png" alt="Sample of web interface"></p>
+<p>Sample after inference
+<img src="images/24.png" alt="Sample of web interface"></p>
+<h2 id="7-things-to-look-out-for">7. Things to look out for</h2>
 <ol>
 <li>At the end of the inference, if you see the following warning message in the terminal, it means some of the parameters in pipelines.yml have changed and might have affected the cell size calibration. In this case, it is recommeded to rerun <code>python -m src.eval_model</code> to recalibrate the cell size measurement.</li>
 </ol>

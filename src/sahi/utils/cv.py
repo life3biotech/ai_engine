@@ -79,11 +79,7 @@ def crop_object_predictions(
         # crop detections
         # deepcopy crops so that original is not altered
         cropped_img = copy.deepcopy(
-            image[
-                int(bbox[1]) : int(bbox[3]),
-                int(bbox[0]) : int(bbox[2]),
-                :,
-            ]
+            image[int(bbox[1]) : int(bbox[3]), int(bbox[0]) : int(bbox[2]), :,]
         )
         save_path = os.path.join(
             output_dir,
@@ -276,11 +272,7 @@ def visualize_prediction(
         p1, p2 = (int(box[0]), int(box[1])), (int(box[2]), int(box[3]))
         # visualize boxes
         cv2.rectangle(
-            image,
-            p1,
-            p2,
-            color=color,
-            thickness=rect_th,
+            image, p1, p2, color=color, thickness=rect_th,
         )
         # arange bounding box text location
         label = f"{class_}"
@@ -323,6 +315,7 @@ def visualize_object_predictions(
     label_bool: bool = True,
     show_cellcount: bool = True,
     cellcount_info: pd.DataFrame = None,
+    less_cell_info: bool = False,
 ):
     """
     Visualizes prediction category names, bounding boxes over the source image
@@ -336,6 +329,10 @@ def visualize_object_predictions(
         output_dir: directory for resulting visualization to be exported
         file_name: exported file will be saved as: output_dir+file_name+".png"
         export_format: can be specified as 'jpg' or 'png'
+        label_bool: If True, Show class type and confidence score info on each detected cell
+        show_cellcount: Show cell count info on top left corner of images
+        cellcount_info: Dataframe of cell count info for each images
+        less_cell_info: Hide cell accu info from top left corner. 
     """
     elapsed_time = time.time()
     # deepcopy image so that original is not altered
@@ -367,20 +364,21 @@ def visualize_object_predictions(
             pos=(10, 10 + 3 * h),
             # text_color_bg=(255, 0, 0),
         )
-        draw_text(
-            image,
-            f" Single Cells: {cellcount_info.cell_type_tot[0]} ",
-            # font_scale=4,
-            pos=(10, 10 + 4 * h),
-            # text_color_bg=(255, 0, 0),
-        )
-        draw_text(
-            image,
-            f" Cells accu: {cellcount_info.cell_accum_type_tot[0]} ",
-            # font_scale=4,
-            pos=(10, 10 + 5 * h),
-            # text_color_bg=(255, 0, 0),
-        )
+        if not less_cell_info:
+            draw_text(
+                image,
+                f" Single Cells: {cellcount_info.cell_type_tot[0]} ",
+                # font_scale=4,
+                pos=(10, 10 + 4 * h),
+                # text_color_bg=(255, 0, 0),
+            )
+            draw_text(
+                image,
+                f" Cells accu: {cellcount_info.cell_accum_type_tot[0]} ",
+                # font_scale=4,
+                pos=(10, 10 + 5 * h),
+                # text_color_bg=(255, 0, 0),
+            )
 
     # select predefined classwise color palette if not specified
 
@@ -417,11 +415,7 @@ def visualize_object_predictions(
         p1, p2 = (int(bbox[0]), int(bbox[1])), (int(bbox[2]), int(bbox[3]))
         # visualize boxes
         cv2.rectangle(
-            image,
-            p1,
-            p2,
-            color=color,
-            thickness=rect_th,
+            image, p1, p2, color=color, thickness=rect_th,
         )
         if label_bool:
             # arange bounding box text location
