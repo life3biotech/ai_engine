@@ -718,6 +718,7 @@ Running on local URL:  http://127.0.0.1:7860/
 ![Sample of web interface](images/23.png)
 
 Sample after inference
+
 ![Sample of web interface](images/24.png)
 
 ## 7. Things to look out for
